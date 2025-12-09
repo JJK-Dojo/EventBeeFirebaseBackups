@@ -39,11 +39,17 @@ export function Combobox({
   onValueChange
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [internalValue, setInternalValue] = React.useState("")
-  
+  const [internalValue, setInternalValue] = React.useState(controlledValue || "")
+
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : internalValue;
   const setValue = isControlled ? onValueChange! : setInternalValue;
+
+  React.useEffect(() => {
+    if (isControlled) {
+      setInternalValue(controlledValue);
+    }
+  }, [controlledValue, isControlled]);
 
 
   return (
