@@ -14,7 +14,7 @@ export default function Logo({ className }: { className?: string }) {
           LocalLooms
         </span>
         <p className="text-xs text-muted-foreground -mt-1">
-          Weaving Your Community Together
+          Your Guide to Local Events & Festivals
         </p>
       </div>
     </div>
