@@ -8,6 +8,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Search } from 'lucide-react';
 import { Combobox } from '@/components/ui/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
+
 
 const categories = [
   { value: 'music', label: 'Music' },
@@ -18,6 +20,19 @@ const categories = [
   { value: 'community', label: 'Community' },
   { value: 'wellness', label: 'Wellness' },
   { value: 'literature', label: 'Literature' },
+];
+
+const eventTags = [
+    { value: 'live music', label: 'Live Music' },
+    { value: 'concert', label: 'Concert' },
+    { value: 'exhibition', label: 'Exhibition' },
+    { value: 'workshop', label: 'Workshop' },
+    { value: 'seminar', label: 'Seminar' },
+    { value: 'conference', label: 'Conference' },
+    { value: 'festival', label: 'Festival' },
+    { value: 'marathon', label: 'Marathon' },
+    { value: 'meetup', label: 'Meetup' },
+    { value: 'hackathon', label: 'Hackathon' },
 ];
 
 const indianStatesAndDistricts: Record<string, string[]> = {
@@ -161,14 +176,12 @@ export default function EventFilters() {
             <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="search">Search events</Label>
-                    <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                        id="search"
-                        placeholder="Search by name or keyword"
-                        className="pl-10"
+                    <MultiSelectCombobox 
+                        items={eventTags}
+                        placeholder="Search by name or keyword..."
+                        searchPlaceholder="Search tags..."
+                        noResultsText="No tags found."
                     />
-                    </div>
                 </div>
 
                 <div className="grid w-full max-w-sm items-center gap-1.5">
