@@ -1,3 +1,58 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "event_music_concert",
+      "description": "A lively music concert with a crowd.",
+      "imageUrl": "https://images.unsplash.com/photo-1499364615650-ec38552f4f34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtdXNpYyUyMGNvbmNlcnR8ZW58MHx8fHwxNzY1MjM1OTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "music concert"
+    },
+    {
+      "id": "event_art_exhibition",
+      "description": "An art exhibition in a modern gallery.",
+      "imageUrl": "https://images.unsplash.com/photo-1569783721854-33a99b4c0bae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnQlMjBnYWxsZXJ5fGVufDB8fHx8MTc2NTI3MDYzNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "art gallery"
+    },
+    {
+      "id": "event_food_festival",
+      "description": "A bustling food festival with various stalls.",
+      "imageUrl": "https://images.unsplash.com/photo-1551883738-19ffa3dc4c43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmb29kJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzY1MjQ2MzcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "food festival"
+    },
+    {
+      "id": "event_tech_conference",
+      "description": "A speaker on stage at a tech conference.",
+      "imageUrl": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWNoJTIwY29uZmVyZW5jZXxlbnwwfHx8fDE3NjUxODc0MzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tech conference"
+    },
+    {
+      "id": "event_community_run",
+      "description": "People participating in a morning marathon.",
+      "imageUrl": "https://images.unsplash.com/photo-1570004119777-2b1786b0e5bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXJhdGhvbiUyMHJ1bnxlbnwwfHx8fDE3NjUyNTkwMDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "marathon run"
+    },
+    {
+      "id": "event_farmers_market",
+      "description": "Fresh produce at a local farmers market.",
+      "imageUrl": "https://images.unsplash.com/photo-1567306295427-94503f8300d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmYXJtZXJzJTIwbWFya2V0fGVufDB8fHx8MTc2NTIwOTQ3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "farmers market"
+    },
+    {
+      "id": "event_yoga_workshop",
+      "description": "A group of people in a yoga session outdoors.",
+      "imageUrl": "https://images.unsplash.com/photo-1661308411865-4fce7576bef8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx5b2dhJTIwd29ya3Nob3B8ZW58MHx8fHwxNzY1MzAwODAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "yoga workshop"
+    },
+    {
+      "id": "event_book_fair",
+      "description": "Shelves filled with books at a book fair.",
+      "imageUrl": "https://images.unsplash.com/photo-1547126298-f0ae8a42c489?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxib29rJTIwZmFpcnxlbnwwfHx8fDE3NjUyMjk0Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "book fair"
+    },
+    {
+      "id": "user_avatar_1",
+      "description": "Avatar for a user.",
+      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUyNDQyOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "person portrait"
+    }
+  ]
 }
