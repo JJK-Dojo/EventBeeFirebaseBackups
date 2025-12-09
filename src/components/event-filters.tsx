@@ -128,9 +128,14 @@ export default function EventFilters() {
         const response = await fetch(endpoint);
         const data = await response.json();
         if (data && data[0].Status === 'Success') {
-          const postOffices: PostOffice[] = data[0].PostOffice;
+          let postOffices: PostOffice[] = data[0].PostOffice;
+          
+          if (selectedDistrict) {
+            postOffices = postOffices.filter(po => po.District.toLowerCase() === selectedDistrict.toLowerCase());
+          }
+
           setPincodeData(postOffices);
-          setIsPopoverOpen(true);
+          setIsPopoverOpen(postOffices.length > 0);
           
           if (!selectedState) {
             const uniqueStates = [...new Set(postOffices.map(po => po.State))];
@@ -139,8 +144,10 @@ export default function EventFilters() {
             }
           }
 
-          const uniqueDistricts = [...new Set(postOffices.map(po => po.District))];
-          setDistricts(uniqueDistricts.map(d => ({ value: d, label: d })));
+          if (!selectedDistrict) {
+            const uniqueDistricts = [...new Set(postOffices.map(po => po.District))];
+            setDistricts(uniqueDistricts.map(d => ({ value: d, label: d })));
+          }
 
 
         } else {
