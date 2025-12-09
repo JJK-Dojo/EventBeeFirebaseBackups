@@ -30,16 +30,67 @@ const categories = [
 ];
 
 const locations = [
-  { value: 'mumbai', label: 'Mumbai' },
-  { value: 'delhi', label: 'Delhi' },
-  { value: 'bangalore', label: 'Bangalore' },
-  { value: 'hyderabad', label: 'Hyderabad' },
-  { value: 'chennai', label: 'Chennai' },
-  { value: 'kolkata', label: 'Kolkata' },
-  { value: 'pune', label: 'Pune' },
-  { value: 'jaipur', label: 'Jaipur' },
-  { value: 'ahmedabad', label: 'Ahmedabad' },
-  { value: 'lucknow', label: 'Lucknow' },
+    // States and Union Territories
+    { value: 'andaman-nicobar', label: 'Andaman & Nicobar Islands' },
+    { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
+    { value: 'arunachal-pradesh', label: 'Arunachal Pradesh' },
+    { value: 'assam', label: 'Assam' },
+    { value: 'bihar', label: 'Bihar' },
+    { value: 'chandigarh', label: 'Chandigarh' },
+    { value: 'chhattisgarh', label: 'Chhattisgarh' },
+    { value: 'dadra-nagar-haveli', label: 'Dadra & Nagar Haveli' },
+    { value: 'daman-diu', label: 'Daman & Diu' },
+    { value: 'delhi', label: 'Delhi' },
+    { value: 'goa', label: 'Goa' },
+    { value: 'gujarat', label: 'Gujarat' },
+    { value: 'haryana', label: 'Haryana' },
+    { value: 'himachal-pradesh', label: 'Himachal Pradesh' },
+    { value: 'jammu-kashmir', label: 'Jammu & Kashmir' },
+    { value: 'jharkhand', label: 'Jharkhand' },
+    { value: 'karnataka', label: 'Karnataka' },
+    { value: 'kerala', label: 'Kerala' },
+    { value: 'ladakh', label: 'Ladakh' },
+    { value: 'lakshadweep', label: 'Lakshadweep' },
+    { value: 'madhya-pradesh', label: 'Madhya Pradesh' },
+    { value: 'maharashtra', label: 'Maharashtra' },
+    { value: 'manipur', label: 'Manipur' },
+    { value: 'meghalaya', label: 'Meghalaya' },
+    { value: 'mizoram', label: 'Mizoram' },
+    { value: 'nagaland', label: 'Nagaland' },
+    { value: 'odisha', label: 'Odisha' },
+    { value: 'puducherry', label: 'Puducherry' },
+    { value: 'punjab', label: 'Punjab' },
+    { value: 'rajasthan', label: 'Rajasthan' },
+    { value: 'sikkim', label: 'Sikkim' },
+    { value: 'tamil-nadu', label: 'Tamil Nadu' },
+    { value: 'telangana', label: 'Telangana' },
+    { value: 'tripura', label: 'Tripura' },
+    { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
+    { value: 'uttarakhand', label: 'Uttarakhand' },
+    { value: 'west-bengal', label: 'West Bengal' },
+  
+    // Major Cities
+    { value: 'mumbai', label: 'Mumbai' },
+    { value: 'bangalore', label: 'Bangalore' },
+    { value: 'hyderabad', label: 'Hyderabad' },
+    { value: 'chennai', label: 'Chennai' },
+    { value: 'kolkata', label: 'Kolkata' },
+    { value: 'pune', label: 'Pune' },
+    { value: 'jaipur', label: 'Jaipur' },
+    { value: 'ahmedabad', label: 'Ahmedabad' },
+    { value: 'lucknow', label: 'Lucknow' },
+    { value: 'kochi', label: 'Kochi' },
+    { value: 'agra', label: 'Agra' },
+    { value: 'varanasi', label: 'Varanasi' },
+    { value: 'surat', label: 'Surat' },
+    { value: 'nagpur', label: 'Nagpur' },
+    { value: 'indore', label: 'Indore' },
+    { value: 'bhopal', label: 'Bhopal' },
+    { value: 'patna', label: 'Patna' },
+    { value: 'visakhapatnam', label: 'Visakhapatnam' },
+    { value: 'kanpur', label: 'Kanpur' },
+    { value: 'ghaziabad', label: 'Ghaziabad' },
+    { value: 'ludhiana', label: 'Ludhiana' },
 ];
 
 type PostOffice = {
@@ -88,7 +139,7 @@ export default function EventFilters() {
   
   const handleLocationSelect = (postOffice: PostOffice) => {
     setLocation(`${postOffice.District}, ${postOffice.State}`);
-    setSearchInput(postOffice.Pincode);
+    setSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
     setIsPopoverOpen(false);
   };
 
@@ -165,8 +216,15 @@ export default function EventFilters() {
                   The selected location will appear in the filter.
                 </DialogDescription>
               </DialogHeader>
-              <div className="h-[400px] w-full rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
-                Google Map Placeholder
+              <div className="flex h-[400px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                {location ? (
+                  <div className="text-center">
+                    <p className="font-semibold">Showing map for:</p>
+                    <p className="text-lg text-primary">{location}</p>
+                  </div>
+                ) : (
+                  'Google Map Placeholder'
+                )}
               </div>
               <DialogFooter>
                 <Button onClick={() => setLocation('New York, NY')}>
