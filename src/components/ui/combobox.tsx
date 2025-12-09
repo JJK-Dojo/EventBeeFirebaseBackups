@@ -46,21 +46,24 @@ export function Combobox({
   const setValue = isControlled ? onValueChange! : setInternalValue;
 
   React.useEffect(() => {
-    if (isControlled && controlledValue !== internalValue) {
-      setInternalValue(controlledValue);
+    if (isControlled) {
+      setInternalValue(controlledValue || '');
     }
-  }, [controlledValue, isControlled, internalValue]);
+  }, [controlledValue, isControlled]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Tab') {
+    if (e.key === 'Enter' || e.key === 'Tab') {
       const commandElement = e.currentTarget as HTMLDivElement;
       const selectedItem = commandElement.querySelector('[aria-selected="true"]');
       if (selectedItem) {
-        const value = selectedItem.getAttribute('data-value');
-        if (value) {
-            setValue(value);
+        const itemValue = selectedItem.getAttribute('data-value');
+        if (itemValue) {
+            setValue(itemValue === value ? "" : itemValue);
             setOpen(false);
+            e.preventDefault(); // Prevent default Tab behavior to allow custom focus management if needed
         }
+      } else if (e.key === 'Tab') {
+          setOpen(false);
       }
     }
   }
