@@ -46,10 +46,24 @@ export function Combobox({
   const setValue = isControlled ? onValueChange! : setInternalValue;
 
   React.useEffect(() => {
-    if (isControlled) {
+    if (isControlled && controlledValue !== internalValue) {
       setInternalValue(controlledValue);
     }
-  }, [controlledValue, isControlled]);
+  }, [controlledValue, isControlled, internalValue]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Tab') {
+      const commandElement = e.currentTarget as HTMLDivElement;
+      const selectedItem = commandElement.querySelector('[aria-selected="true"]');
+      if (selectedItem) {
+        const value = selectedItem.getAttribute('data-value');
+        if (value) {
+            setValue(value);
+            setOpen(false);
+        }
+      }
+    }
+  }
 
 
   return (
@@ -76,6 +90,7 @@ export function Combobox({
             }
             return 0;
           }}
+          onKeyDown={handleKeyDown}
         >
           <CommandInput placeholder={searchPlaceholder} />
           <CommandEmpty>{noResultsText}</CommandEmpty>
