@@ -1,21 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, Search } from 'lucide-react';
 import { Combobox } from '@/components/ui/combobox';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const categories = [
@@ -29,68 +20,43 @@ const categories = [
   { value: 'literature', label: 'Literature' },
 ];
 
-const locations = [
-    // States and Union Territories
-    { value: 'andaman-nicobar', label: 'Andaman & Nicobar Islands' },
-    { value: 'andhra-pradesh', label: 'Andhra Pradesh' },
-    { value: 'arunachal-pradesh', label: 'Arunachal Pradesh' },
-    { value: 'assam', label: 'Assam' },
-    { value: 'bihar', label: 'Bihar' },
-    { value: 'chandigarh', label: 'Chandigarh' },
-    { value: 'chhattisgarh', label: 'Chhattisgarh' },
-    { value: 'dadra-nagar-haveli', label: 'Dadra & Nagar Haveli' },
-    { value: 'daman-diu', label: 'Daman & Diu' },
-    { value: 'delhi', label: 'Delhi' },
-    { value: 'goa', label: 'Goa' },
-    { value: 'gujarat', label: 'Gujarat' },
-    { value: 'haryana', label: 'Haryana' },
-    { value: 'himachal-pradesh', label: 'Himachal Pradesh' },
-    { value: 'jammu-kashmir', label: 'Jammu & Kashmir' },
-    { value: 'jharkhand', label: 'Jharkhand' },
-    { value: 'karnataka', label: 'Karnataka' },
-    { value: 'kerala', label: 'Kerala' },
-    { value: 'ladakh', label: 'Ladakh' },
-    { value: 'lakshadweep', label: 'Lakshadweep' },
-    { value: 'madhya-pradesh', label: 'Madhya Pradesh' },
-    { value: 'maharashtra', label: 'Maharashtra' },
-    { value: 'manipur', label: 'Manipur' },
-    { value: 'meghalaya', label: 'Meghalaya' },
-    { value: 'mizoram', label: 'Mizoram' },
-    { value: 'nagaland', label: 'Nagaland' },
-    { value: 'odisha', label: 'Odisha' },
-    { value: 'puducherry', label: 'Puducherry' },
-    { value: 'punjab', label: 'Punjab' },
-    { value: 'rajasthan', label: 'Rajasthan' },
-    { value: 'sikkim', label: 'Sikkim' },
-    { value: 'tamil-nadu', label: 'Tamil Nadu' },
-    { value: 'telangana', label: 'Telangana' },
-    { value: 'tripura', label: 'Tripura' },
-    { value: 'uttar-pradesh', label: 'Uttar Pradesh' },
-    { value: 'uttarakhand', label: 'Uttarakhand' },
-    { value: 'west-bengal', label: 'West Bengal' },
-  
-    // Major Cities
-    { value: 'mumbai', label: 'Mumbai' },
-    { value: 'bangalore', label: 'Bangalore' },
-    { value: 'hyderabad', label: 'Hyderabad' },
-    { value: 'chennai', label: 'Chennai' },
-    { value: 'kolkata', label: 'Kolkata' },
-    { value: 'pune', label: 'Pune' },
-    { value: 'jaipur', label: 'Jaipur' },
-    { value: 'ahmedabad', label: 'Ahmedabad' },
-    { value: 'lucknow', label: 'Lucknow' },
-    { value: 'kochi', label: 'Kochi' },
-    { value: 'agra', label: 'Agra' },
-    { value: 'varanasi', label: 'Varanasi' },
-    { value: 'surat', label: 'Surat' },
-    { value: 'nagpur', label: 'Nagpur' },
-    { value: 'indore', label: 'Indore' },
-    { value: 'bhopal', label: 'Bhopal' },
-    { value: 'patna', label: 'Patna' },
-    { value: 'visakhapatnam', label: 'Visakhapatnam' },
-    { value: 'kanpur', label: 'Kanpur' },
-    { value: 'ghaziabad', label: 'Ghaziabad' },
-    { value: 'ludhiana', label: 'Ludhiana' },
+const states = [
+    { value: 'Andaman & Nicobar Islands', label: 'Andaman & Nicobar Islands' },
+    { value: 'Andhra Pradesh', label: 'Andhra Pradesh' },
+    { value: 'Arunachal Pradesh', label: 'Arunachal Pradesh' },
+    { value: 'Assam', label: 'Assam' },
+    { value: 'Bihar', label: 'Bihar' },
+    { value: 'Chandigarh', label: 'Chandigarh' },
+    { value: 'Chhattisgarh', label: 'Chhattisgarh' },
+    { value: 'Dadra & Nagar Haveli and Daman & Diu', label: 'Dadra & Nagar Haveli and Daman & Diu' },
+    { value: 'Delhi', label: 'Delhi' },
+    { value: 'Goa', label: 'Goa' },
+    { value: 'Gujarat', label: 'Gujarat' },
+    { value: 'Haryana', label: 'Haryana' },
+    { value: 'Himachal Pradesh', label: 'Himachal Pradesh' },
+    { value: 'Jammu & Kashmir', label: 'Jammu & Kashmir' },
+    { value: 'Jharkhand', label: 'Jharkhand' },
+    { value: 'Karnataka', label: 'Karnataka' },
+    { value: 'Kerala', label: 'Kerala' },
+    { value: 'Ladakh', label: 'Ladakh' },
+    { value: 'Lakshadweep', label: 'Lakshadweep' },
+    { value: 'Madhya Pradesh', label: 'Madhya Pradesh' },
+    { value: 'Maharashtra', label: 'Maharashtra' },
+    { value: 'Manipur', label: 'Manipur' },
+    { value: 'Meghalaya', label: 'Meghalaya' },
+    { value: 'Mizoram', label: 'Mizoram' },
+    { value: 'Nagaland', label: 'Nagaland' },
+    { value: 'Odisha', label: 'Odisha' },
+    { value: 'Puducherry', label: 'Puducherry' },
+    { value: 'Punjab', label: 'Punjab' },
+    { value: 'Rajasthan', label: 'Rajasthan' },
+    { value: 'Sikkim', label: 'Sikkim' },
+    { value: 'Tamil Nadu', label: 'Tamil Nadu' },
+    { value: 'Telangana', label: 'Telangana' },
+    { value: 'Tripura', label: 'Tripura' },
+    { value: 'Uttar Pradesh', label: 'Uttar Pradesh' },
+    { value: 'Uttarakhand', label: 'Uttarakhand' },
+    { value: 'West Bengal', label: 'West Bengal' },
 ];
 
 type PostOffice = {
@@ -101,10 +67,30 @@ type PostOffice = {
 };
 
 export default function EventFilters() {
-  const [location, setLocation] = useState('');
+  const [selectedState, setSelectedState] = useState('');
+  const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [mapLocation, setMapLocation] = useState('');
+
+  useEffect(() => {
+    if (selectedState) {
+      // In a real app, you'd fetch districts for the selected state from an API.
+      // For now, we'll just clear the district if the state changes.
+      setSelectedDistrict('');
+      setDistricts([]); 
+      setMapLocation(selectedState);
+    }
+  }, [selectedState]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      setMapLocation(`${selectedDistrict}, ${selectedState}`);
+    }
+  }, [selectedDistrict, selectedState]);
+
 
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -120,8 +106,14 @@ export default function EventFilters() {
         const response = await fetch(endpoint);
         const data = await response.json();
         if (data && data[0].Status === 'Success') {
-          setPincodeData(data[0].PostOffice);
+          const postOffices: PostOffice[] = data[0].PostOffice;
+          setPincodeData(postOffices);
           setIsPopoverOpen(true);
+          
+          // You could also populate the districts from this data
+          const uniqueDistricts = [...new Set(postOffices.map(po => po.District))];
+          setDistricts(uniqueDistricts.map(d => ({ value: d, label: d })));
+
         } else {
           setPincodeData([]);
           setIsPopoverOpen(false);
@@ -138,115 +130,117 @@ export default function EventFilters() {
   };
   
   const handleLocationSelect = (postOffice: PostOffice) => {
-    setLocation(`${postOffice.District}, ${postOffice.State}`);
+    setSelectedState(postOffice.State);
+    setSelectedDistrict(postOffice.District);
     setSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
+    setMapLocation(`${postOffice.Name}, ${postOffice.District}, ${postOffice.State}`);
     setIsPopoverOpen(false);
   };
-
 
   return (
     <Card className="mb-8">
       <CardContent className="p-4">
-        <div className="grid grid-cols-1 items-end gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="search">Search events</Label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="search"
-                placeholder="Search by name or keyword"
-                className="pl-10"
-              />
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
+                <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="search">Search events</Label>
+                    <div className="relative">
+                    <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                        id="search"
+                        placeholder="Search by name or keyword"
+                        className="pl-10"
+                    />
+                    </div>
+                </div>
+
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label>Category</Label>
+                    <Combobox 
+                        items={categories} 
+                        placeholder="Select category..."
+                        searchPlaceholder="Search categories..."
+                        noResultsText="No categories found."
+                    />
+                </div>
             </div>
-          </div>
-
-          <div className="grid w-full items-center gap-1.5">
-            <Label>Location</Label>
-            <Combobox 
-                items={locations}
-                placeholder="Select location..."
-                searchPlaceholder="Search locations..."
-                noResultsText="No locations found."
-                value={location}
-                onValueChange={setLocation}
-            />
-          </div>
-
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
+            
+            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
               <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="pincode">Pincode or Location Name</Label>
-                <Input 
-                  id="pincode" 
-                  placeholder="e.g. 400001 or Mumbai" 
-                  value={searchInput}
-                  onChange={handleSearchChange}
+                <Label>State</Label>
+                <Combobox 
+                    items={states}
+                    placeholder="Select state..."
+                    searchPlaceholder="Search states..."
+                    noResultsText="No states found."
+                    value={selectedState}
+                    onValueChange={setSelectedState}
                 />
               </div>
-            </PopoverTrigger>
-            {pincodeData.length > 0 && (
-            <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
-                <ul className="max-h-60 overflow-y-auto">
-                  {pincodeData.map((po, index) => (
-                    <li 
-                      key={index} 
-                      className="cursor-pointer p-2 hover:bg-muted"
-                      onClick={() => handleLocationSelect(po)}
-                    >
-                      <p className="font-semibold">{po.Name}, {po.Pincode}</p>
-                      <p className="text-sm text-muted-foreground">{po.District}, {po.State}</p>
-                    </li>
-                  ))}
-                </ul>
-              </PopoverContent>
-            )}
-          </Popover>
 
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full lg:w-auto">
-                <MapPin className="mr-2 h-5 w-5" /> Select on Map
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[625px]">
-              <DialogHeader>
-                <DialogTitle>Select Location on Map</DialogTitle>
-                <DialogDescription>
-                  Click on the map to select a location, or search for a place.
-                  The selected location will appear in the filter.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex h-[400px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                {location ? (
-                  <div className="text-center">
-                    <p className="font-semibold">Showing map for:</p>
-                    <p className="text-lg text-primary">{location}</p>
-                  </div>
-                ) : (
-                  'Google Map Placeholder'
-                )}
+              <div className="grid w-full items-center gap-1.5">
+                <Label>District</Label>
+                <Combobox 
+                    items={districts}
+                    placeholder="Select district..."
+                    searchPlaceholder="Search districts..."
+                    noResultsText="Select a state first or search by pincode."
+                    value={selectedDistrict}
+                    onValueChange={setSelectedDistrict}
+                />
               </div>
-              <DialogFooter>
-                <Button onClick={() => setLocation('New York, NY')}>
-                  Select this location
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+            </div>
 
-          <Button className="w-full lg:w-auto">
-            <Search className="mr-2 h-5 w-5" />
-            Find Events
-          </Button>
-        </div>
-        <div className="mt-4 grid w-full max-w-sm items-center gap-1.5">
-            <Label>Category</Label>
-            <Combobox 
-                items={categories} 
-                placeholder="Select category..."
-                searchPlaceholder="Search categories..."
-                noResultsText="No categories found."
-            />
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                <PopoverTrigger asChild>
+                <div className="grid w-full items-center gap-1.5">
+                    <Label htmlFor="pincode">Pincode or Location Name</Label>
+                    <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                        <Input 
+                        id="pincode" 
+                        placeholder="e.g. 400001 or Mumbai" 
+                        value={searchInput}
+                        onChange={handleSearchChange}
+                        className="pl-10"
+                        />
+                    </div>
+                </div>
+                </PopoverTrigger>
+                {pincodeData.length > 0 && (
+                <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+                    <ul className="max-h-60 overflow-y-auto">
+                    {pincodeData.map((po, index) => (
+                        <li 
+                        key={index} 
+                        className="cursor-pointer p-2 hover:bg-muted"
+                        onClick={() => handleLocationSelect(po)}
+                        >
+                        <p className="font-semibold">{po.Name}, {po.Pincode}</p>
+                        <p className="text-sm text-muted-foreground">{po.District}, {po.State}</p>
+                        </li>
+                    ))}
+                    </ul>
+                </PopoverContent>
+                )}
+            </Popover>
+
+            <Button className="w-full sm:w-auto">
+                <Search className="mr-2 h-5 w-5" />
+                Find Events
+            </Button>
+          </div>
+          <div className="flex h-full min-h-[300px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground lg:min-h-[400px]">
+            {mapLocation ? (
+              <div className="text-center p-4">
+                <p className="font-semibold">Showing map for:</p>
+                <p className="text-lg text-primary">{mapLocation}</p>
+              </div>
+            ) : (
+              'Google Map Placeholder'
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
