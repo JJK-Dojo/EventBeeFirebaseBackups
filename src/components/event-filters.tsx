@@ -46,43 +46,50 @@ type PostOffice = {
   Name: string;
   District: string;
   State: string;
+  Pincode: string;
 };
 
 export default function EventFilters() {
   const [location, setLocation] = useState('');
-  const [pincode, setPincode] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
-  const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setPincode(value);
+    setSearchInput(value);
 
-    if (value.length === 6) {
+    if (value.length > 2) {
+      const isPincode = /^\d{6}$/.test(value);
+      const endpoint = isPincode
+        ? `https://api.postalpincode.in/pincode/${value}`
+        : `https://api.postalpincode.in/postoffice/${value}`;
+
       try {
-        const response = await fetch(`https://api.postalpincode.in/pincode/${value}`);
+        const response = await fetch(endpoint);
         const data = await response.json();
         if (data && data[0].Status === 'Success') {
           setPincodeData(data[0].PostOffice);
-          setIsPincodePopoverOpen(true);
+          setIsPopoverOpen(true);
         } else {
           setPincodeData([]);
-          setIsPincodePopoverOpen(false);
+          setIsPopoverOpen(false);
         }
       } catch (error) {
-        console.error('Failed to fetch pincode data:', error);
+        console.error('Failed to fetch location data:', error);
         setPincodeData([]);
-        setIsPincodePopoverOpen(false);
+        setIsPopoverOpen(false);
       }
     } else {
       setPincodeData([]);
-      setIsPincodePopoverOpen(false);
+      setIsPopoverOpen(false);
     }
   };
   
   const handleLocationSelect = (postOffice: PostOffice) => {
     setLocation(`${postOffice.District}, ${postOffice.State}`);
-    setIsPincodePopoverOpen(false);
+    setSearchInput(postOffice.Pincode);
+    setIsPopoverOpen(false);
   };
 
 
@@ -114,16 +121,15 @@ export default function EventFilters() {
             />
           </div>
 
-          <Popover open={isPincodePopoverOpen} onOpenChange={setIsPincodePopoverOpen}>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <div className="grid w-full items-center gap-1.5">
-                <Label htmlFor="pincode">Pincode</Label>
+                <Label htmlFor="pincode">Pincode or Location Name</Label>
                 <Input 
                   id="pincode" 
-                  placeholder="e.g. 400001" 
-                  value={pincode}
-                  onChange={handlePincodeChange}
-                  maxLength={6}
+                  placeholder="e.g. 400001 or Mumbai" 
+                  value={searchInput}
+                  onChange={handleSearchChange}
                 />
               </div>
             </PopoverTrigger>
@@ -136,7 +142,7 @@ export default function EventFilters() {
                       className="cursor-pointer p-2 hover:bg-muted"
                       onClick={() => handleLocationSelect(po)}
                     >
-                      <p className="font-semibold">{po.Name}</p>
+                      <p className="font-semibold">{po.Name}, {po.Pincode}</p>
                       <p className="text-sm text-muted-foreground">{po.District}, {po.State}</p>
                     </li>
                   ))}
