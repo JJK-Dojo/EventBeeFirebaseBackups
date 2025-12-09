@@ -25,6 +25,8 @@ type ComboboxProps = {
   searchPlaceholder?: string;
   noResultsText?: string;
   className?: string;
+  value?: string;
+  onValueChange?: (value: string) => void;
 };
 
 export function Combobox({ 
@@ -32,10 +34,17 @@ export function Combobox({
   placeholder = "Select item...", 
   searchPlaceholder = "Search items...", 
   noResultsText = "No item found.",
-  className
+  className,
+  value: controlledValue,
+  onValueChange
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+  const [internalValue, setInternalValue] = React.useState("")
+  
+  const isControlled = controlledValue !== undefined;
+  const value = isControlled ? controlledValue : internalValue;
+  const setValue = isControlled ? onValueChange! : setInternalValue;
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -47,7 +56,7 @@ export function Combobox({
           className={cn("w-full justify-between", className)}
         >
           {value
-            ? items.find((item) => item.value === value)?.label
+            ? items.find((item) => item.value.toLowerCase() === value.toLowerCase())?.label ?? placeholder
             : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

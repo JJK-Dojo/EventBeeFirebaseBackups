@@ -16,6 +16,7 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const categories = [
   { value: 'music', label: 'Music' },
@@ -28,8 +29,62 @@ const categories = [
   { value: 'literature', label: 'Literature' },
 ];
 
+const locations = [
+  { value: 'mumbai', label: 'Mumbai' },
+  { value: 'delhi', label: 'Delhi' },
+  { value: 'bangalore', label: 'Bangalore' },
+  { value: 'hyderabad', label: 'Hyderabad' },
+  { value: 'chennai', label: 'Chennai' },
+  { value: 'kolkata', label: 'Kolkata' },
+  { value: 'pune', label: 'Pune' },
+  { value: 'jaipur', label: 'Jaipur' },
+  { value: 'ahmedabad', label: 'Ahmedabad' },
+  { value: 'lucknow', label: 'Lucknow' },
+];
+
+type PostOffice = {
+  Name: string;
+  District: string;
+  State: string;
+};
+
 export default function EventFilters() {
   const [location, setLocation] = useState('');
+  const [pincode, setPincode] = useState('');
+  const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
+  const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
+
+  const handlePincodeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPincode(value);
+
+    if (value.length === 6) {
+      try {
+        const response = await fetch(`https://api.postalpincode.in/pincode/${value}`);
+        const data = await response.json();
+        if (data && data[0].Status === 'Success') {
+          setPincodeData(data[0].PostOffice);
+          setIsPincodePopoverOpen(true);
+        } else {
+          setPincodeData([]);
+          setIsPincodePopoverOpen(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch pincode data:', error);
+        setPincodeData([]);
+        setIsPincodePopoverOpen(false);
+      }
+    } else {
+      setPincodeData([]);
+      setIsPincodePopoverOpen(false);
+    }
+  };
+  
+  const handleLocationSelect = (postOffice: PostOffice) => {
+    setLocation(`${postOffice.District}, ${postOffice.State}`);
+    setIsPincodePopoverOpen(false);
+  };
+
 
   return (
     <Card className="mb-8">
@@ -48,23 +103,47 @@ export default function EventFilters() {
           </div>
 
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="location">Location</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="location"
-                placeholder="e.g. Mumbai"
-                className="pl-10"
+            <Label>Location</Label>
+            <Combobox 
+                items={locations}
+                placeholder="Select location..."
+                searchPlaceholder="Search locations..."
+                noResultsText="No locations found."
                 value={location}
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
+                onValueChange={setLocation}
+            />
           </div>
 
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="pincode">Pincode</Label>
-            <Input id="pincode" placeholder="e.g. 400001" />
-          </div>
+          <Popover open={isPincodePopoverOpen} onOpenChange={setIsPincodePopoverOpen}>
+            <PopoverTrigger asChild>
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="pincode">Pincode</Label>
+                <Input 
+                  id="pincode" 
+                  placeholder="e.g. 400001" 
+                  value={pincode}
+                  onChange={handlePincodeChange}
+                  maxLength={6}
+                />
+              </div>
+            </PopoverTrigger>
+            {pincodeData.length > 0 && (
+            <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+                <ul className="max-h-60 overflow-y-auto">
+                  {pincodeData.map((po, index) => (
+                    <li 
+                      key={index} 
+                      className="cursor-pointer p-2 hover:bg-muted"
+                      onClick={() => handleLocationSelect(po)}
+                    >
+                      <p className="font-semibold">{po.Name}</p>
+                      <p className="text-sm text-muted-foreground">{po.District}, {po.State}</p>
+                    </li>
+                  ))}
+                </ul>
+              </PopoverContent>
+            )}
+          </Popover>
 
           <Dialog>
             <DialogTrigger asChild>
