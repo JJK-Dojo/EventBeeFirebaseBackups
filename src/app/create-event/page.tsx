@@ -184,10 +184,16 @@ export default function CreateEventPage() {
   };
   
   const handlePincodeLocationSelect = (postOffice: PostOffice) => {
-    setSelectedState(postOffice.State);
-    const districtsForState = indianStatesAndDistricts[postOffice.State] || [];
-    setDistricts(districtsForState.map(d => ({ value: d, label: d })));
-    setSelectedDistrict(postOffice.District);
+    if (postOffice.State && !indianStatesAndDistricts[postOffice.State]) {
+      // Data from API is sometimes inconsistent, handle gracefully
+      setSelectedState('');
+      setSelectedDistrict('');
+    } else {
+      setSelectedState(postOffice.State);
+      const districtsForState = indianStatesAndDistricts[postOffice.State] || [];
+      setDistricts(districtsForState.map(d => ({ value: d, label: d })));
+      setSelectedDistrict(postOffice.District);
+    }
     setPincodeSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
     setIsPincodePopoverOpen(false);
   };
@@ -355,6 +361,7 @@ export default function CreateEventPage() {
                                                 placeholder="e.g. Connaught Place or 110001"
                                                 value={pincodeSearchInput}
                                                 onChange={handlePincodeSearchChange}
+                                                autoComplete="off"
                                             />
                                         </PopoverTrigger>
                                         {pincodeData.length > 0 && (
@@ -362,7 +369,7 @@ export default function CreateEventPage() {
                                             <ul className="max-h-60 overflow-y-auto">
                                             {pincodeData.map((po, index) => (
                                                 <li 
-                                                key={index} 
+                                                key={`${po.Name}-${po.Pincode}-${index}`}
                                                 className="cursor-pointer p-2 hover:bg-muted"
                                                 onClick={() => handlePincodeLocationSelect(po)}
                                                 >
@@ -401,10 +408,11 @@ export default function CreateEventPage() {
                         <MultiSelectCombobox
                             items={eventTags}
                             placeholder="Add relevant tags..."
-                            searchPlaceholder="Search tags..."
+                            searchPlaceholder="Search or create tags..."
                             noResultsText="No tags found."
                             selectedValues={selectedTags}
                             onSelectedValuesChange={setSelectedTags}
+                            allowFreeText
                         />
                     </div>
                 </div>

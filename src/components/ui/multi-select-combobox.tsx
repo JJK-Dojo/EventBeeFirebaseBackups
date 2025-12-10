@@ -29,6 +29,7 @@ type MultiSelectComboboxProps = {
   className?: string;
   selectedValues: string[];
   onSelectedValuesChange: (values: string[]) => void;
+  allowFreeText?: boolean;
 };
 
 export function MultiSelectCombobox({ 
@@ -38,30 +39,52 @@ export function MultiSelectCombobox({
   noResultsText = "No items found.",
   className,
   selectedValues,
-  onSelectedValuesChange
+  onSelectedValuesChange,
+  allowFreeText = false,
 }: MultiSelectComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  const [inputValue, setInputValue] = React.useState('');
 
   const handleSelect = (currentValue: string) => {
-    onSelectedValuesChange(
-        selectedValues.includes(currentValue)
-        ? selectedValues.filter(v => v !== currentValue)
-        : [...selectedValues, currentValue]
-    )
+    const formattedValue = currentValue.toLowerCase().trim();
+    if (!formattedValue) return;
+
+    if (!selectedValues.includes(formattedValue)) {
+      onSelectedValuesChange([...selectedValues, formattedValue]);
+    } else {
+      onSelectedValuesChange(selectedValues.filter(v => v !== formattedValue));
+    }
+    setInputValue('');
+  }
+
+  const handleRemove = (valueToRemove: string) => {
+    onSelectedValuesChange(selectedValues.filter(v => v !== valueToRemove));
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    const input = e.currentTarget.querySelector('input')
-    if (e.key === 'Backspace' && (!input || input.value === '')) {
+    const commandInput = e.currentTarget.querySelector('input');
+    if (e.key === 'Backspace' && (!commandInput || commandInput.value === '')) {
         onSelectedValuesChange(selectedValues.slice(0, -1));
     }
     if (e.key === "Escape") {
       setOpen(false)
     }
+    if (allowFreeText && (e.key === 'Enter' || e.key === 'Tab') && inputValue) {
+        e.preventDefault();
+        handleSelect(inputValue);
+    }
   }
 
+  const displayedItems = React.useMemo(() => {
+    const allValues = new Set([...items.map(item => item.value), ...selectedValues]);
+    return Array.from(allValues).map(value => {
+        const existingItem = items.find(item => item.value === value);
+        return existingItem || { value, label: value };
+    });
+  }, [items, selectedValues]);
+
   const selectedLabels = selectedValues.map(value => {
-    const item = items.find(i => i.value === value);
+    const item = displayedItems.find(i => i.value === value);
     return item ? item.label : value;
   })
 
@@ -70,25 +93,23 @@ export function MultiSelectCombobox({
       <PopoverTrigger asChild>
         <div className={cn("group flex w-full flex-wrap items-center rounded-md border border-input bg-background text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2", className)}>
             <div className="flex flex-wrap items-center gap-1.5 p-2">
-            {selectedLabels.map(label => (
+            {selectedValues.map(value => (
                 <Badge
-                    key={label}
+                    key={value}
                     variant="secondary"
                     className="gap-1.5"
                 >
-                    {label}
+                    {displayedItems.find(i => i.value === value)?.label || value}
                     <button
-                        aria-label={`Remove ${label}`}
+                        aria-label={`Remove ${value}`}
                         onClick={(e) => {
                             e.stopPropagation();
-                            const valueToToggle = items.find(item => item.label === label)?.value
-                            if(valueToToggle) handleSelect(valueToToggle);
+                            handleRemove(value);
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
                                 e.stopPropagation();
-                                const valueToToggle = items.find(item => item.label === label)?.value
-                                if(valueToToggle) handleSelect(valueToToggle);
+                                handleRemove(value);
                             }
                         }}
                     >
@@ -103,24 +124,28 @@ export function MultiSelectCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command
-          filter={(value, search) => {
-            const item = items.find(i => i.value === value);
-            if (item) {
-              return item.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
-            }
-            return 0;
-          }}
           onKeyDown={handleKeyDown}
         >
-          <CommandInput placeholder={searchPlaceholder} />
+          <CommandInput 
+            placeholder={searchPlaceholder} 
+            value={inputValue}
+            onValueChange={setInputValue}
+            onBlur={() => {
+                if (allowFreeText && inputValue) {
+                    handleSelect(inputValue);
+                }
+            }}
+          />
           <CommandList>
-            <CommandEmpty>{noResultsText}</CommandEmpty>
+            <CommandEmpty>
+                {allowFreeText ? `No results. Press Enter to add "${inputValue}"` : noResultsText}
+            </CommandEmpty>
             <CommandGroup>
-              {items.map((item) => (
+              {displayedItems.map((item) => (
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={handleSelect}
+                  onSelect={() => handleSelect(item.value)}
                   >
                   <Check
                     className={cn(
