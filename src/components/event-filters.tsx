@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -177,9 +178,9 @@ export default function EventFilters() {
 
   return (
     <Card className="mb-8">
-      <CardContent className="p-4">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="flex flex-col gap-4">
+      <CardContent className="p-4 md:p-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+          <div className="flex flex-col gap-4 lg:col-span-3">
             <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="search">Search events</Label>
@@ -191,7 +192,7 @@ export default function EventFilters() {
                     />
                 </div>
 
-                <div className="grid w-full max-w-sm items-center gap-1.5">
+                <div className="grid w-full items-center gap-1.5">
                     <Label>Category</Label>
                     <Combobox 
                         items={categories} 
@@ -267,7 +268,7 @@ export default function EventFilters() {
                 Find Events
             </Button>
           </div>
-          <div className="flex h-full min-h-[300px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground lg:min-h-[400px]">
+          <div className="flex h-64 min-h-[200px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground lg:col-span-2 lg:h-full">
             {mapLocation ? (
               <div className="text-center p-4">
                 <p className="font-semibold">Showing map for:</p>

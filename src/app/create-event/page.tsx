@@ -76,7 +76,7 @@ export default function CreateEventPage() {
         <div className="container mx-auto max-w-4xl px-4 py-8">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">
+              <CardTitle className="font-headline text-2xl md:text-3xl">
                 Create a New Event
               </CardTitle>
               <CardDescription>
@@ -132,7 +132,7 @@ export default function CreateEventPage() {
                     <ImageIcon className="mr-2 h-5 w-5 text-primary" />
                     Event Image
                   </Label>
-                  <div className="flex items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-center gap-4">
                     <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-lg border-2 border-dashed border-border">
                       {imagePreview ? (
                         <img
@@ -202,7 +202,7 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="flex justify-end pt-4">
-                  <Button size="lg">
+                  <Button size="lg" className="w-full sm:w-auto">
                     <Clapperboard className="mr-2 h-5 w-5" />
                     Create Event
                   </Button>
