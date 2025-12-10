@@ -57,6 +57,7 @@ const eventTags = [
 
 export default function CreateEventPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -122,6 +123,8 @@ export default function CreateEventPage() {
                             placeholder="Add relevant tags..."
                             searchPlaceholder="Search tags..."
                             noResultsText="No tags found."
+                            selectedValues={selectedTags}
+                            onSelectedValuesChange={setSelectedTags}
                         />
                     </div>
                 </div>
