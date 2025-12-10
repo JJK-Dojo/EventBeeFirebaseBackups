@@ -6,6 +6,9 @@ import {
   BarChart2,
   MessageSquare,
   Award,
+  Edit,
+  FileCheck,
+  FileText,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,6 +23,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { DUMMY_EVENTS } from '@/lib/data';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
 
 const BeeIcon = ({ className }: { className?: string }) => (
     <svg
@@ -33,14 +37,69 @@ const BeeIcon = ({ className }: { className?: string }) => (
 );
 
 
-const userEvents = DUMMY_EVENTS.slice(0, 5).map((event, i) => ({
+const userEvents = DUMMY_EVENTS.slice(0, 10).map((event, i) => ({
   ...event,
   views: Math.floor(Math.random() * 5000) + 200,
   comments: Math.floor(Math.random() * 100) + 10,
   bees: Math.floor(Math.random() * 50) + 5,
 }));
 
+const publishedEvents = userEvents.filter(e => e.status === 'published');
+const draftEvents = userEvents.filter(e => e.status === 'draft');
+
 const totalBees = userEvents.reduce((acc, event) => acc + event.bees, 0) + 500;
+
+function EventListItem({ event }: { event: (typeof userEvents)[0] }) {
+    return (
+        <Card key={event.id} className="flex flex-col overflow-hidden transition-shadow hover:shadow-md md:flex-row">
+            <div className="relative h-48 w-full flex-shrink-0 md:h-auto md:w-48">
+            <Image
+                src={event.imageUrl}
+                alt={event.title}
+                fill
+                className="object-cover"
+                data-ai-hint={event.imageHint}
+            />
+            </div>
+            <div className="flex flex-1 flex-col p-4">
+            <div className="flex-1">
+                <div className="flex justify-between items-start">
+                    <Badge variant="secondary" className="mb-2">{event.category}</Badge>
+                    {event.status === 'draft' && (
+                        <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4 text-muted-foreground" />
+                        </Button>
+                    )}
+                </div>
+                <h3 className="text-xl font-bold font-headline">
+                {event.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
+                </p>
+            </div>
+            <Separator className="my-3" />
+            <div className="grid grid-cols-3 gap-2 text-center text-sm">
+                <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
+                <BarChart2 className="h-5 w-5 text-muted-foreground" />
+                <span className="font-semibold">{event.views.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground">Views</span>
+                </div>
+                <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
+                <MessageSquare className="h-5 w-5 text-muted-foreground" />
+                <span className="font-semibold">{event.comments}</span>
+                <span className="text-xs text-muted-foreground">Comments</span>
+                </div>
+                <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
+                <Award className="h-5 w-5 text-muted-foreground" />
+                <span className="font-semibold">{event.bees}</span>
+                <span className="text-xs text-muted-foreground">Bees Earned</span>
+                </div>
+            </div>
+            </div>
+        </Card>
+    );
+}
 
 export default function ProfilePage() {
   return (
@@ -77,67 +136,57 @@ export default function ProfilePage() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="mb-6 flex items-center gap-3">
-                <Calendar className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-bold font-headline">
-                  My Events
-                </h2>
-                <Badge variant="outline">Last 100 days</Badge>
-              </div>
+                <div className="mb-8">
+                    <div className="mb-6 flex items-center gap-3">
+                        <FileCheck className="h-6 w-6 text-primary" />
+                        <h2 className="text-2xl font-bold font-headline">
+                            Published Events
+                        </h2>
+                        <Badge variant="outline">{publishedEvents.length} Events</Badge>
+                    </div>
 
-              {userEvents.length > 0 ? (
-                <div className="space-y-6">
-                  {userEvents.map((event) => (
-                    <Card key={event.id} className="flex flex-col overflow-hidden transition-shadow hover:shadow-md md:flex-row">
-                      <div className="relative h-48 w-full flex-shrink-0 md:h-auto md:w-48">
-                        <Image
-                          src={event.imageUrl}
-                          alt={event.title}
-                          fill
-                          className="object-cover"
-                          data-ai-hint={event.imageHint}
-                        />
-                      </div>
-                      <div className="flex flex-1 flex-col p-4">
-                        <div className="flex-1">
-                          <Badge variant="secondary" className="mb-2">{event.category}</Badge>
-                          <h3 className="text-xl font-bold font-headline">
-                            {event.title}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
-                          </p>
+                    {publishedEvents.length > 0 ? (
+                        <div className="space-y-6">
+                        {publishedEvents.map((event) => (
+                           <EventListItem key={event.id} event={event} />
+                        ))}
                         </div>
-                        <Separator className="my-3" />
-                        <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                          <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
-                            <BarChart2 className="h-5 w-5 text-muted-foreground" />
-                            <span className="font-semibold">{event.views.toLocaleString()}</span>
-                            <span className="text-xs text-muted-foreground">Views</span>
-                          </div>
-                           <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
-                            <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                            <span className="font-semibold">{event.comments}</span>
-                             <span className="text-xs text-muted-foreground">Comments</span>
-                          </div>
-                           <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
-                            <Award className="h-5 w-5 text-muted-foreground" />
-                            <span className="font-semibold">{event.bees}</span>
-                             <span className="text-xs text-muted-foreground">Bees Earned</span>
-                          </div>
+                    ) : (
+                        <div className="py-12 text-center rounded-lg border-2 border-dashed">
+                        <p className="text-lg font-semibold">No published events</p>
+                        <p className="text-muted-foreground">
+                            Create and publish an event to see it here.
+                        </p>
                         </div>
-                      </div>
-                    </Card>
-                  ))}
+                    )}
                 </div>
-              ) : (
-                <div className="py-12 text-center">
-                  <p className="text-lg font-semibold">No events created yet</p>
-                  <p className="text-muted-foreground">
-                    Create your first event to see it here.
-                  </p>
+                
+                <Separator className="my-12"/>
+
+                <div>
+                    <div className="mb-6 flex items-center gap-3">
+                        <FileText className="h-6 w-6 text-primary" />
+                        <h2 className="text-2xl font-bold font-headline">
+                            Drafts
+                        </h2>
+                        <Badge variant="outline">{draftEvents.length} Events</Badge>
+                    </div>
+                    {draftEvents.length > 0 ? (
+                        <div className="space-y-6">
+                        {draftEvents.map((event) => (
+                            <EventListItem key={event.id} event={event} />
+                        ))}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center rounded-lg border-2 border-dashed">
+                        <p className="text-lg font-semibold">No drafts saved</p>
+                        <p className="text-muted-foreground">
+                            Save an event as a draft to see it here.
+                        </p>
+                        </div>
+                    )}
                 </div>
-              )}
+
             </CardContent>
           </Card>
         </div>

@@ -11,4 +11,5 @@ export type Event = {
     avatarUrl: string;
   };
   category: string;
+  status: 'published' | 'draft';
 };

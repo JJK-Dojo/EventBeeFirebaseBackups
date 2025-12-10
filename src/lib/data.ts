@@ -15,6 +15,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/101/40/40',
     },
     category: 'Music',
+    status: 'published',
   },
   {
     id: '2',
@@ -30,6 +31,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/102/40/40',
     },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '3',
@@ -45,6 +47,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/103/40/40',
     },
     category: 'Food',
+    status: 'draft',
   },
   {
     id: '4',
@@ -60,6 +63,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/104/40/40',
     },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '5',
@@ -75,6 +79,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/105/40/40',
     },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '6',
@@ -90,6 +95,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/106/40/40',
     },
     category: 'Community',
+    status: 'draft',
   },
   {
     id: '7',
@@ -105,6 +111,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/107/40/40',
     },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '8',
@@ -120,6 +127,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/108/40/40',
     },
     category: 'Literature',
+    status: 'published',
   },
   {
     id: '9',
@@ -135,6 +143,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/109/40/40',
     },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '10',
@@ -150,6 +159,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/110/40/40',
     },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '11',
@@ -165,6 +175,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/111/40/40',
     },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '12',
@@ -180,6 +191,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/112/40/40',
     },
     category: 'Community',
+    status: 'draft',
   },
   {
     id: '13',
@@ -195,6 +207,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/113/40/40',
     },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '14',
@@ -210,6 +223,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/114/40/40',
     },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '15',
@@ -225,6 +239,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/115/40/40',
     },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '16',
@@ -240,6 +255,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/116/40/40',
     },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '17',
@@ -255,6 +271,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/117/40/40',
     },
     category: 'Music',
+    status: 'published',
   },
   {
     id: '18',
@@ -270,6 +287,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/118/40/40',
     },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '19',
@@ -285,6 +303,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/119/40/40',
     },
     category: 'Literature',
+    status: 'published',
   },
   {
     id: '20',
@@ -300,6 +319,7 @@ export const DUMMY_EVENTS: Event[] = [
       avatarUrl: 'https://picsum.photos/seed/120/40/40',
     },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '21',
@@ -311,6 +331,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'kathakali dance',
     organizer: { name: 'Kala Kendra', avatarUrl: 'https://picsum.photos/seed/121/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '22',
@@ -322,6 +343,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'art biennale',
     organizer: { name: 'Art Connect', avatarUrl: 'https://picsum.photos/seed/122/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '23',
@@ -333,6 +355,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'food festival',
     organizer: { name: 'Taste of Malabar', avatarUrl: 'https://picsum.photos/seed/123/40/40' },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '24',
@@ -344,6 +367,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'theyyam ritual',
     organizer: { name: 'Kannur Heritage', avatarUrl: 'https://picsum.photos/seed/124/40/40' },
     category: 'Community',
+    status: 'published',
   },
   {
     id: '25',
@@ -355,6 +379,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'tea plantation',
     organizer: { name: 'Wayanad Trails', avatarUrl: 'https://picsum.photos/seed/125/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '26',
@@ -366,6 +391,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'tech summit',
     organizer: { name: 'Tech Trivandrum', avatarUrl: 'https://picsum.photos/seed/126/40/40' },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '27',
@@ -377,6 +403,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'boat race',
     organizer: { name: 'Kollam Sports Council', avatarUrl: 'https://picsum.photos/seed/127/40/40' },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '28',
@@ -388,6 +415,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'wellness retreat',
     organizer: { name: 'Shanti Ayurveda', avatarUrl: 'https://picsum.photos/seed/128/40/40' },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '29',
@@ -399,6 +427,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'literary festival',
     organizer: { name: 'Aksharam', avatarUrl: 'https://picsum.photos/seed/129/40/40' },
     category: 'Literature',
+    status: 'published',
   },
   {
     id: '30',
@@ -410,6 +439,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'wildlife trek',
     organizer: { name: 'Jungle Journeys', avatarUrl: 'https://picsum.photos/seed/130/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '31',
@@ -421,6 +451,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'fort exploration',
     organizer: { name: 'Kasaragod Tourism', avatarUrl: 'https://picsum.photos/seed/131/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '32',
@@ -432,6 +463,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'bamboo rafting',
     organizer: { name: 'River Adventures', avatarUrl: 'https://picsum.photos/seed/132/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '33',
@@ -443,6 +475,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'temple festival',
     organizer: { name: 'Festival Committee', avatarUrl: 'https://picsum.photos/seed/133/40/40' },
     category: 'Community',
+    status: 'published',
   },
   {
     id: '34',
@@ -454,6 +487,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'cooking class',
     organizer: { name: 'Saras Kitchen', avatarUrl: 'https://picsum.photos/seed/134/40/40' },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '35',
@@ -465,6 +499,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'music concert',
     organizer: { name: 'Malappuram Arts', avatarUrl: 'https://picsum.photos/seed/135/40/40' },
     category: 'Music',
+    status: 'published',
   },
   {
     id: '36',
@@ -476,6 +511,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'backwater cruise',
     organizer: { name: 'Poovar Boating', avatarUrl: 'https://picsum.photos/seed/136/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '37',
@@ -487,6 +523,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'cultural exhibition',
     organizer: { name: 'Pooram Committee', avatarUrl: 'https://picsum.photos/seed/137/40/40' },
     category: 'Community',
+    status: 'published',
   },
   {
     id: '38',
@@ -498,6 +535,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'martial arts',
     organizer: { name: 'Kalari Gurukulam', avatarUrl: 'https://picsum.photos/seed/138/40/40' },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '39',
@@ -509,6 +547,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'photography tour',
     organizer: { name: 'Capture Kerala', avatarUrl: 'https://picsum.photos/seed/139/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '40',
@@ -520,6 +559,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'spice garden',
     organizer: { name: 'Munnar Spice Co.', avatarUrl: 'https://picsum.photos/seed/140/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '41',
@@ -531,6 +571,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'paragliding festival',
     organizer: { name: 'Fly Vagamon', avatarUrl: 'https://picsum.photos/seed/141/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '42',
@@ -542,6 +583,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'tech conclave',
     organizer: { name: 'NASSCOM Kerala', avatarUrl: 'https://picsum.photos/seed/142/40/40' },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '43',
@@ -553,6 +595,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'jungle safari',
     organizer: { name: 'Forest Dept.', avatarUrl: 'https://picsum.photos/seed/143/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '44',
@@ -564,6 +607,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'beach yoga',
     organizer: { name: 'Yoga Waves', avatarUrl: 'https://picsum.photos/seed/144/40/40' },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '45',
@@ -575,6 +619,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'boat building',
     organizer: { name: 'Backwater Artisans', avatarUrl: 'https://picsum.photos/seed/145/40/40' },
     category: 'Workshop',
+    status: 'published',
   },
   {
     id: '46',
@@ -586,6 +631,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'film festival',
     organizer: { name: 'Chalachitra Academy', avatarUrl: 'https://picsum.photos/seed/146/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '47',
@@ -597,6 +643,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'seafood festival',
     organizer: { name: 'Coastal Flavors', avatarUrl: 'https://picsum.photos/seed/147/40/40' },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '48',
@@ -608,6 +655,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'heritage walk',
     organizer: { name: 'Wayanad Heritage Society', avatarUrl: 'https://picsum.photos/seed/148/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '49',
@@ -619,6 +667,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'painting workshop',
     organizer: { name: 'Chitram', avatarUrl: 'https://picsum.photos/seed/149/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '50',
@@ -630,6 +679,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'fan meetup',
     organizer: { name: 'Manjappada', avatarUrl: 'https://picsum.photos/seed/150/40/40' },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '51',
@@ -641,6 +691,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'traditional feast',
     organizer: { name: 'Onam Celebrations', avatarUrl: 'https://picsum.photos/seed/151/40/40' },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '52',
@@ -652,6 +703,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'pottery workshop',
     organizer: { name: 'Clay Creators', avatarUrl: 'https://picsum.photos/seed/152/40/40' },
     category: 'Workshop',
+    status: 'published',
   },
   {
     id: '53',
@@ -663,6 +715,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'bird watching',
     organizer: { name: 'Nature Watch', avatarUrl: 'https://picsum.photos/seed/153/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '54',
@@ -674,6 +727,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'handicrafts fair',
     organizer: { name: 'Kerala Crafts', avatarUrl: 'https://picsum.photos/seed/154/40/40' },
     category: 'Community',
+    status: 'published',
   },
   {
     id: '55',
@@ -685,6 +739,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'cycling tour',
     organizer: { name: 'Kochi Cyclists', avatarUrl: 'https://picsum.photos/seed/155/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '56',
@@ -696,6 +751,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'folk dance',
     organizer: { name: 'Cultural Group', avatarUrl: 'https://picsum.photos/seed/156/40/40' },
     category: 'Art',
+    status: 'published',
   },
   {
     id: '57',
@@ -707,6 +763,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'robotics expo',
     organizer: { name: 'Future Tech', avatarUrl: 'https://picsum.photos/seed/157/40/40' },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '58',
@@ -718,6 +775,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'sea kayaking',
     organizer: { name: 'Coastal Adventures', avatarUrl: 'https://picsum.photos/seed/158/40/40' },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '59',
@@ -729,6 +787,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'mindfulness workshop',
     organizer: { name: 'Calm Minds', avatarUrl: 'https://picsum.photos/seed/159/40/40' },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '60',
@@ -740,6 +799,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'poetry reading',
     organizer: { name: 'Kavitha Sargam', avatarUrl: 'https://picsum.photos/seed/160/40/40' },
     category: 'Literature',
+    status: 'published',
   },
   {
     id: '61',
@@ -751,6 +811,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'hacking workshop',
     organizer: { name: 'CyberSafe', avatarUrl: 'https://picsum.photos/seed/161/40/40' },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '62',
@@ -762,6 +823,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'cooking class',
     organizer: { name: 'Palakkad Cooks', avatarUrl: 'https://picsum.photos/seed/162/40/40' },
     category: 'Food',
+    status: 'published',
   },
   {
     id: '63',
@@ -773,6 +835,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'night camping',
     organizer: { name: 'Starry Nights', avatarUrl: 'https://picsum.photos/seed/163/40/40' },
     category: 'Adventure',
+    status: 'published',
   },
   {
     id: '64',
@@ -784,6 +847,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'book drive',
     organizer: { name: 'Readers for Change', avatarUrl: 'https://picsum.photos/seed/164/40/40' },
     category: 'Community',
+    status: 'published',
   },
   {
     id: '65',
@@ -795,6 +859,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'eco tour',
     organizer: { name: 'Green Getaways', avatarUrl: 'https://picsum.photos/seed/165/40/40' },
     category: 'Travel',
+    status: 'published',
   },
   {
     id: '66',
@@ -806,6 +871,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'beach football',
     organizer: { name: 'Beach Sports', avatarUrl: 'https://picsum.photos/seed/166/40/40' },
     category: 'Sports',
+    status: 'published',
   },
   {
     id: '67',
@@ -817,6 +883,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'percussion music',
     organizer: { name: 'Rhythm of Kerala', avatarUrl: 'https://picsum.photos/seed/167/40/40' },
     category: 'Music',
+    status: 'published',
   },
   {
     id: '68',
@@ -828,6 +895,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'pitch competition',
     organizer: { name: 'Startup Mission', avatarUrl: 'https://picsum.photos/seed/168/40/40' },
     category: 'Tech',
+    status: 'published',
   },
   {
     id: '69',
@@ -839,6 +907,7 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'laughter yoga',
     organizer: { name: 'Happy Souls', avatarUrl: 'https://picsum.photos/seed/169/40/40' },
     category: 'Wellness',
+    status: 'published',
   },
   {
     id: '70',
@@ -850,5 +919,6 @@ export const DUMMY_EVENTS: Event[] = [
     imageHint: 'writing contest',
     organizer: { name: 'Katha Junction', avatarUrl: 'https://picsum.photos/seed/170/40/40' },
     category: 'Literature',
+    status: 'published',
   },
 ];

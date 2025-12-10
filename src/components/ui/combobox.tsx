@@ -27,6 +27,7 @@ type ComboboxProps = {
   className?: string;
   value?: string;
   onValueChange?: (value: string) => void;
+  disabled?: boolean;
 };
 
 export function Combobox({ 
@@ -36,7 +37,8 @@ export function Combobox({
   noResultsText = "No item found.",
   className,
   value: controlledValue,
-  onValueChange
+  onValueChange,
+  disabled = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [internalValue, setInternalValue] = React.useState(controlledValue || "")
@@ -77,6 +79,7 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className={cn("w-full justify-between", className)}
+          disabled={disabled}
         >
           {value
             ? items.find((item) => item.value.toLowerCase() === value.toLowerCase())?.label ?? placeholder
@@ -95,7 +98,7 @@ export function Combobox({
           }}
           onKeyDown={handleKeyDown}
         >
-          <CommandInput placeholder={searchPlaceholder} />
+          <CommandInput placeholder={searchPlaceholder} disabled={disabled} />
           <CommandEmpty>{noResultsText}</CommandEmpty>
           <CommandList>
             <CommandGroup>
@@ -107,6 +110,7 @@ export function Combobox({
                     setValue(currentValue === value ? "" : currentValue)
                     setOpen(false)
                   }}
+                  disabled={disabled}
                 >
                   <Check
                     className={cn(

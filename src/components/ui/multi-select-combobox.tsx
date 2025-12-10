@@ -30,6 +30,7 @@ type MultiSelectComboboxProps = {
   selectedValues: string[];
   onSelectedValuesChange: (values: string[]) => void;
   allowFreeText?: boolean;
+  disabled?: boolean;
 };
 
 export function MultiSelectCombobox({ 
@@ -41,11 +42,13 @@ export function MultiSelectCombobox({
   selectedValues,
   onSelectedValuesChange,
   allowFreeText = false,
+  disabled = false,
 }: MultiSelectComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState('');
 
   const handleSelect = (currentValue: string) => {
+    if (disabled) return;
     const formattedValue = currentValue.toLowerCase().trim();
     if (!formattedValue) return;
 
@@ -58,10 +61,12 @@ export function MultiSelectCombobox({
   }
 
   const handleRemove = (valueToRemove: string) => {
+    if (disabled) return;
     onSelectedValuesChange(selectedValues.filter(v => v !== valueToRemove));
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (disabled) return;
     const commandInput = e.currentTarget.querySelector('input');
     if (e.key === 'Backspace' && (!commandInput || commandInput.value === '')) {
         onSelectedValuesChange(selectedValues.slice(0, -1));
@@ -89,9 +94,9 @@ export function MultiSelectCombobox({
   })
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={!disabled && open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <div className={cn("group flex w-full flex-wrap items-center rounded-md border border-input bg-background text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2", className)}>
+        <div className={cn("group flex w-full flex-wrap items-center rounded-md border border-input bg-background text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2", disabled && "cursor-not-allowed opacity-50", className)}>
             <div className="flex flex-wrap items-center gap-1.5 p-2">
             {selectedValues.map(value => (
                 <Badge
@@ -112,6 +117,7 @@ export function MultiSelectCombobox({
                                 handleRemove(value);
                             }
                         }}
+                        disabled={disabled}
                     >
                         <X className="h-3 w-3" />
                     </button>
@@ -135,6 +141,7 @@ export function MultiSelectCombobox({
                     handleSelect(inputValue);
                 }
             }}
+            disabled={disabled}
           />
           <CommandList>
             <CommandEmpty>
@@ -146,6 +153,7 @@ export function MultiSelectCombobox({
                   key={item.value}
                   value={item.value}
                   onSelect={() => handleSelect(item.value)}
+                  disabled={disabled}
                   >
                   <Check
                     className={cn(

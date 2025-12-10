@@ -102,7 +102,7 @@ export type FilterState = {
     searchText: string;
 }
 type EventFiltersProps = {
-    onFilter: (filters: FilterState) => void;
+    onFilter?: (filters: FilterState) => void;
 }
 
 
@@ -138,7 +138,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
   }, [selectedDistrict, selectedState]);
 
   const handleSearch = () => {
-    onFilter({
+    onFilter?.({
         tags: selectedTags,
         category: selectedCategory,
         state: selectedState,
@@ -224,6 +224,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                         noResultsText="No tags found."
                         selectedValues={selectedTags}
                         onSelectedValuesChange={setSelectedTags}
+                        disabled
                     />
                 </div>
 
@@ -236,6 +237,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                         noResultsText="No categories found."
                         value={selectedCategory}
                         onValueChange={setSelectedCategory}
+                        disabled
                     />
                 </div>
             </div>
@@ -306,14 +308,9 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
             </Button>
           </div>
           <div className="flex h-64 min-h-[200px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground lg:col-span-2 lg:h-full">
-            {mapLocation ? (
-              <div className="text-center p-4">
-                <p className="font-semibold">Showing map for:</p>
-                <p className="text-lg text-primary">{mapLocation}</p>
-              </div>
-            ) : (
-              'Google Map Placeholder'
-            )}
+            <div className="text-center p-4">
+                <p className="font-semibold">Map currently disabled</p>
+            </div>
           </div>
         </div>
       </CardContent>
