@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'LocalLooms',
-  description: 'Discover and post local events in your community.',
+  title: 'EventBee.com',
+  description: 'EventBee.com - Your Hive for Local Happenings.',
 };
 
 export default function RootLayout({

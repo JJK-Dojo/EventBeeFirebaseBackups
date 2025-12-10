@@ -26,9 +26,9 @@ export default function LoginPage() {
           <div className="mb-4 flex justify-center">
             <Logo />
           </div>
-          <CardTitle className="font-headline text-2xl">Welcome Back</CardTitle>
+          <CardTitle className="font-headline text-2xl">Welcome to EventBee</CardTitle>
           <CardDescription>
-            Sign in to discover and create local events.
+            Sign in to join the hive and discover local events.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
