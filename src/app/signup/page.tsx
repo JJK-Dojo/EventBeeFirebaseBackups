@@ -18,7 +18,7 @@ const GoogleIcon = () => (
     </svg>
 )
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
@@ -26,15 +26,15 @@ export default function LoginPage() {
           <div className="mb-4 flex justify-center">
             <Logo />
           </div>
-          <CardTitle className="font-headline text-2xl">Welcome Back!</CardTitle>
+          <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
           <CardDescription>
-            Sign in to your EventBee account to continue.
+            Join the hive and start discovering local events!
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
           <Button variant="outline" className="w-full">
             <GoogleIcon />
-            Sign in with Google
+            Sign up with Google
           </Button>
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
@@ -46,25 +46,33 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+          <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="first-name">First Name</Label>
+                <Input id="first-name" placeholder="John" required />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="last-name">Last Name</Label>
+                <Input id="last-name" placeholder="Doe" required />
+              </div>
           </div>
-          <Button className="w-full">Sign in with Phone</Button>
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="john.doe@example.com" required />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" required />
+          </div>
+          <Button className="w-full">Create account</Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/signup" className="underline hover:text-primary">
-                Sign up
+              Already have an account?{' '}
+              <Link href="/login" className="underline hover:text-primary">
+                Log in
               </Link>
             </div>
-            <p className="text-xs text-muted-foreground">
-              Just browsing?{' '}
-              <Link href="/" className="underline underline-offset-2 hover:text-primary">
-                Continue as guest
-              </Link>
-            </p>
         </CardFooter>
       </Card>
     </div>
