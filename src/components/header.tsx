@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -74,16 +75,18 @@ export default function Header() {
           <Logo />
         </Link>
         <div className="flex items-center gap-4">
-          <Button
-            style={{
-              backgroundColor: 'hsl(var(--accent))',
-              color: 'hsl(var(--accent-foreground))',
-            }}
-            className="hidden sm:flex hover:opacity-90"
-          >
-            <PlusCircle className="mr-2 h-5 w-5" />
-            Create Event
-          </Button>
+          <Link href="/create-event">
+            <Button
+              style={{
+                backgroundColor: 'hsl(var(--accent))',
+                color: 'hsl(var(--accent-foreground))',
+              }}
+              className="hidden sm:flex hover:opacity-90"
+            >
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Create Event
+            </Button>
+          </Link>
           <UserMenu />
         </div>
       </div>
