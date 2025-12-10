@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,6 +60,10 @@ export default function SignupPage() {
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="john.doe@example.com" required />
+          </div>
+           <div className="grid gap-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
