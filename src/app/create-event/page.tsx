@@ -28,6 +28,15 @@ import {
 } from '@/components/ui/card';
 import { Combobox } from '@/components/ui/combobox';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
+
+type PostOffice = {
+  Name: string;
+  District: string;
+  State: string;
+  Pincode: string;
+};
 
 const categories = [
     { value: 'music', label: 'Music' },
@@ -104,6 +113,9 @@ export default function CreateEventPage() {
   const [selectedState, setSelectedState] = useState('');
   const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [pincodeSearchInput, setPincodeSearchInput] = useState('');
+  const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
+  const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,6 +138,53 @@ export default function CreateEventPage() {
        setSelectedDistrict('');
     }
   }, [selectedState]);
+
+  const handlePincodeSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPincodeSearchInput(value);
+
+    if (value.length > 2) {
+      const isPincode = /^\d{6}$/.test(value);
+      const endpoint = isPincode
+        ? `https://api.postalpincode.in/pincode/${value}`
+        : `https://api.postalpincode.in/postoffice/${value}`;
+
+      try {
+        const response = await fetch(endpoint);
+        const data = await response.json();
+        if (data && data[0].Status === 'Success') {
+          let postOffices: PostOffice[] = data[0].PostOffice;
+          
+          if (selectedDistrict) {
+            postOffices = postOffices.filter(po => po.District.toLowerCase() === selectedDistrict.toLowerCase());
+          }
+
+          setPincodeData(postOffices);
+          setIsPincodePopoverOpen(postOffices.length > 0);
+          
+        } else {
+          setPincodeData([]);
+          setIsPincodePopoverOpen(false);
+        }
+      } catch (error) {
+        console.error('Failed to fetch location data:', error);
+        setPincodeData([]);
+        setIsPincodePopoverOpen(false);
+      }
+    } else {
+      setPincodeData([]);
+      setIsPincodePopoverOpen(false);
+    }
+  };
+  
+  const handlePincodeLocationSelect = (postOffice: PostOffice) => {
+    setSelectedState(postOffice.State);
+    const districtsForState = indianStatesAndDistricts[postOffice.State] || [];
+    setDistricts(districtsForState.map(d => ({ value: d, label: d })));
+    setSelectedDistrict(postOffice.District);
+    setPincodeSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
+    setIsPincodePopoverOpen(false);
+  };
 
 
   return (
@@ -208,7 +267,32 @@ export default function CreateEventPage() {
                                 </div>
                                 <div className="grid w-full items-center gap-1.5">
                                     <Label htmlFor="area-pincode">Area / Pincode</Label>
-                                    <Input id="area-pincode" placeholder="e.g. Connaught Place or 110001"/>
+                                    <Popover open={isPincodePopoverOpen} onOpenChange={setIsPincodePopoverOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Input 
+                                                id="area-pincode" 
+                                                placeholder="e.g. Connaught Place or 110001"
+                                                value={pincodeSearchInput}
+                                                onChange={handlePincodeSearchChange}
+                                            />
+                                        </PopoverTrigger>
+                                        {pincodeData.length > 0 && (
+                                        <PopoverContent className="p-0 w-[--radix-popover-trigger-width]" align="start">
+                                            <ul className="max-h-60 overflow-y-auto">
+                                            {pincodeData.map((po, index) => (
+                                                <li 
+                                                key={index} 
+                                                className="cursor-pointer p-2 hover:bg-muted"
+                                                onClick={() => handlePincodeLocationSelect(po)}
+                                                >
+                                                <p className="font-semibold">{po.Name}, {po.Pincode}</p>
+                                                <p className="text-sm text-muted-foreground">{po.District}, {po.State}</p>
+                                                </li>
+                                            ))}
+                                            </ul>
+                                        </PopoverContent>
+                                        )}
+                                    </Popover>
                                 </div>
                             </div>
                         </div>
