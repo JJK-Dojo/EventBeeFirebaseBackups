@@ -7,13 +7,15 @@ import {
   Link as LinkIcon,
   MapPin,
   Youtube,
-  Calendar,
+  Calendar as CalendarIcon,
   Tag,
   List,
   Clapperboard,
   Link2,
   Save,
+  Check,
 } from 'lucide-react';
+import { format } from 'date-fns';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +31,8 @@ import {
 import { Combobox } from '@/components/ui/combobox';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
 
 type PostOffice = {
@@ -116,6 +120,8 @@ export default function CreateEventPage() {
   const [pincodeSearchInput, setPincodeSearchInput] = useState('');
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>();
+  const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -186,6 +192,34 @@ export default function CreateEventPage() {
     setIsPincodePopoverOpen(false);
   };
 
+  const handleDateSelect = (selectedDate: Date | undefined) => {
+    if (!selectedDate) return;
+    const newDate = new Date(selectedDate);
+    
+    if (date) {
+        newDate.setHours(date.getHours());
+        newDate.setMinutes(date.getMinutes());
+    } else {
+        newDate.setHours(new Date().getHours());
+        newDate.setMinutes(new Date().getMinutes());
+    }
+    setDate(newDate);
+  }
+
+  const handleTimeChange = (type: 'hours' | 'minutes', value: string) => {
+    const newDate = date ? new Date(date) : new Date();
+    const numericValue = parseInt(value, 10);
+    
+    if (!isNaN(numericValue)) {
+        if (type === 'hours') {
+            newDate.setHours(numericValue);
+        } else {
+            newDate.setMinutes(numericValue);
+        }
+        setDate(newDate);
+    }
+  }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -219,11 +253,58 @@ export default function CreateEventPage() {
                     </div>
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="date" className="text-lg font-semibold flex items-center">
-                                <Calendar className="mr-2 h-5 w-5 text-primary"/>
+                             <Label htmlFor="date" className="text-lg font-semibold flex items-center">
+                                <CalendarIcon className="mr-2 h-5 w-5 text-primary"/>
                                 Date & Time
                             </Label>
-                            <Input id="date" type="datetime-local" />
+                            <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-start text-left font-normal",
+                                        !date && "text-muted-foreground"
+                                    )}
+                                    >
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    {date ? format(date, "PPP, h:mm a") : <span>Pick a date and time</span>}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={date}
+                                        onSelect={handleDateSelect}
+                                        initialFocus
+                                    />
+                                    <div className="p-3 border-t border-border">
+                                        <div className="flex items-center justify-center gap-2">
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max="23"
+                                                className="w-16"
+                                                placeholder="HH"
+                                                value={date ? date.getHours().toString().padStart(2, '0') : ''}
+                                                onChange={(e) => handleTimeChange('hours', e.target.value)}
+                                            />
+                                            <span>:</span>
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max="59"
+                                                className="w-16"
+                                                placeholder="MM"
+                                                value={date ? date.getMinutes().toString().padStart(2, '0') : ''}
+                                                onChange={(e) => handleTimeChange('minutes', e.target.value)}
+                                            />
+                                            <Button size="icon" onClick={() => setIsDatePopoverOpen(false)}>
+                                                <Check className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                         <div className="space-y-2">
                             <Label className="text-lg font-semibold flex items-center">
@@ -405,3 +486,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
