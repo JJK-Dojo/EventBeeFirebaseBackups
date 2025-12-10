@@ -12,6 +12,7 @@ import {
   List,
   Clapperboard,
   Link2,
+  Save,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
@@ -302,10 +303,14 @@ export default function CreateEventPage() {
                     </div>
                 </div>
 
-                <div className="flex justify-end pt-4">
+                <div className="flex flex-wrap justify-end gap-4 pt-4">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                    <Save className="mr-2 h-5 w-5" />
+                    Save as Draft
+                  </Button>
                   <Button size="lg" className="w-full sm:w-auto">
                     <Clapperboard className="mr-2 h-5 w-5" />
-                    Create Event
+                    Create & Publish Event
                   </Button>
                 </div>
               </form>
