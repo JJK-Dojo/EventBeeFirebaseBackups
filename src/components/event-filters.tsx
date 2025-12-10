@@ -11,7 +11,6 @@ import { Combobox } from '@/components/ui/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 
-
 const categories = [
   { value: 'music', label: 'Music' },
   { value: 'art', label: 'Art' },
@@ -21,6 +20,9 @@ const categories = [
   { value: 'community', label: 'Community' },
   { value: 'wellness', label: 'Wellness' },
   { value: 'literature', label: 'Literature' },
+  { value: 'adventure', label: 'Adventure' },
+  { value: 'travel', label: 'Travel' },
+  { value: 'workshop', label: 'Workshop' },
 ];
 
 const eventTags = [
@@ -34,7 +36,15 @@ const eventTags = [
     { value: 'marathon', label: 'Marathon' },
     { value: 'meetup', label: 'Meetup' },
     { value: 'hackathon', label: 'Hackathon' },
+    { value: 'food festival', label: 'Food Festival' },
+    { value: 'art gallery', label: 'Art Gallery' },
+    { value: 'tech summit', label: 'Tech Summit' },
+    { value: 'farmers market', label: 'Farmers Market' },
+    { value: 'yoga', label: 'Yoga' },
+    { value: 'book fair', label: 'Book Fair' },
+    { value: 'trekking', label: 'Trekking' },
 ];
+
 
 const indianStatesAndDistricts: Record<string, string[]> = {
     "Andaman & Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
@@ -77,7 +87,6 @@ const indianStatesAndDistricts: Record<string, string[]> = {
 
 const states = Object.keys(indianStatesAndDistricts).map(state => ({ value: state, label: state }));
 
-
 type PostOffice = {
   Name: string;
   District: string;
@@ -85,7 +94,21 @@ type PostOffice = {
   Pincode: string;
 };
 
-export default function EventFilters() {
+export type FilterState = {
+    tags: string[];
+    category: string;
+    state: string;
+    district: string;
+    searchText: string;
+}
+type EventFiltersProps = {
+    onFilter: (filters: FilterState) => void;
+}
+
+
+export default function EventFilters({ onFilter }: EventFiltersProps) {
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedState, setSelectedState] = useState('');
   const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
@@ -113,6 +136,16 @@ export default function EventFilters() {
       setMapLocation(selectedState);
     }
   }, [selectedDistrict, selectedState]);
+
+  const handleSearch = () => {
+    onFilter({
+        tags: selectedTags,
+        category: selectedCategory,
+        state: selectedState,
+        district: selectedDistrict,
+        searchText: searchInput,
+    });
+  }
 
 
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,6 +222,8 @@ export default function EventFilters() {
                         placeholder="Search by name or keyword..."
                         searchPlaceholder="Search tags..."
                         noResultsText="No tags found."
+                        selectedValues={selectedTags}
+                        onSelectedValuesChange={setSelectedTags}
                     />
                 </div>
 
@@ -199,6 +234,8 @@ export default function EventFilters() {
                         placeholder="Select category..."
                         searchPlaceholder="Search categories..."
                         noResultsText="No categories found."
+                        value={selectedCategory}
+                        onValueChange={setSelectedCategory}
                     />
                 </div>
             </div>
@@ -263,7 +300,7 @@ export default function EventFilters() {
                 )}
             </Popover>
 
-            <Button className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto" onClick={handleSearch}>
                 <Search className="mr-2 h-5 w-5" />
                 Find Events
             </Button>

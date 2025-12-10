@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -26,6 +27,8 @@ type MultiSelectComboboxProps = {
   searchPlaceholder?: string;
   noResultsText?: string;
   className?: string;
+  selectedValues: string[];
+  onSelectedValuesChange: (values: string[]) => void;
 };
 
 export function MultiSelectCombobox({ 
@@ -34,22 +37,23 @@ export function MultiSelectCombobox({
   searchPlaceholder = "Search items...", 
   noResultsText = "No items found.",
   className,
+  selectedValues,
+  onSelectedValuesChange
 }: MultiSelectComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [selectedValues, setSelectedValues] = React.useState<string[]>([])
 
   const handleSelect = (currentValue: string) => {
-    setSelectedValues(prev => 
-      prev.includes(currentValue)
-        ? prev.filter(v => v !== currentValue)
-        : [...prev, currentValue]
+    onSelectedValuesChange(
+        selectedValues.includes(currentValue)
+        ? selectedValues.filter(v => v !== currentValue)
+        : [...selectedValues, currentValue]
     )
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     const input = e.currentTarget.querySelector('input')
     if (e.key === 'Backspace' && (!input || input.value === '')) {
-      setSelectedValues(prev => prev.slice(0, -1));
+        onSelectedValuesChange(selectedValues.slice(0, -1));
     }
     if (e.key === "Escape") {
       setOpen(false)
