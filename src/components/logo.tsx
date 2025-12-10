@@ -24,7 +24,7 @@ export default function Logo({ className }: { className?: string }) {
           EventBee.com
         </span>
         <p className="text-xs text-muted-foreground -mt-1">
-          Your Hive for Local Happenings
+          Your Hive for Local Events
         </p>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'EventBee.com',
-  description: 'EventBee.com - Your Hive for Local Happenings.',
+  description: 'EventBee.com - Your Hive for Local Events.',
 };
 
 export default function RootLayout({
