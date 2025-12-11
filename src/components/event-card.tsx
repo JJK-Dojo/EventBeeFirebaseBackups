@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -14,7 +15,7 @@ import type { Event } from '@/lib/types';
 export default function EventCard({ event }: { event: Event }) {
   return (
     <Link href={`/events/${event.id}`} className="group block">
-      <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1">
+      <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col">
         <CardHeader className="p-0">
           <div className="relative h-48 w-full">
             <Image
@@ -24,10 +25,12 @@ export default function EventCard({ event }: { event: Event }) {
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               data-ai-hint={event.imageHint}
             />
-            <Badge className="absolute right-3 top-3" variant="secondary">{event.category}</Badge>
           </div>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="p-4 flex-grow">
+           <div className="flex justify-between items-center mb-2">
+            <Badge variant="secondary">{event.category}</Badge>
+           </div>
           <h3 className="mb-2 truncate font-headline text-xl font-bold group-hover:text-primary">
             {event.title}
           </h3>

@@ -66,7 +66,7 @@ export default function Home() {
               Find Your Next Experience
             </h1>
             <p className="text-muted-foreground">
-              Discover events happening around you.
+              Hyperlocal events for your city, curated for students & young professionals.
             </p>
           </div>
           <EventFilters onFilter={handleFilter} />

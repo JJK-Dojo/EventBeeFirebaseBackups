@@ -115,27 +115,17 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
   const [searchInput, setSearchInput] = useState('');
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [mapLocation, setMapLocation] = useState('');
 
   useEffect(() => {
     if (selectedState) {
       const districtsForState = indianStatesAndDistricts[selectedState] || [];
       setDistricts(districtsForState.map(d => ({ value: d, label: d })));
       setSelectedDistrict(''); 
-      setMapLocation(selectedState);
     } else {
        setDistricts([]);
        setSelectedDistrict('');
     }
   }, [selectedState]);
-
-  useEffect(() => {
-    if (selectedDistrict) {
-      setMapLocation(`${selectedDistrict}, ${selectedState}`);
-    } else if (selectedState) {
-      setMapLocation(selectedState);
-    }
-  }, [selectedDistrict, selectedState]);
 
   const handleSearch = () => {
     onFilter?.({
@@ -205,15 +195,14 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
     setDistricts(districtsForState.map(d => ({ value: d, label: d })));
     setSelectedDistrict(postOffice.District);
     setSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
-    setMapLocation(`${postOffice.Name}, ${postOffice.District}, ${postOffice.State}`);
     setIsPopoverOpen(false);
   };
 
   return (
     <Card className="mb-8">
       <CardContent className="p-4 md:p-6">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <div className="flex flex-col gap-4 lg:col-span-3">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="flex flex-col gap-4">
             <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="search">Search events</Label>
@@ -224,7 +213,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                         noResultsText="No tags found."
                         selectedValues={selectedTags}
                         onSelectedValuesChange={setSelectedTags}
-                        disabled
+                        allowFreeText
                     />
                 </div>
 
@@ -237,7 +226,6 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                         noResultsText="No categories found."
                         value={selectedCategory}
                         onValueChange={setSelectedCategory}
-                        disabled
                     />
                 </div>
             </div>
@@ -306,11 +294,6 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                 <Search className="mr-2 h-5 w-5" />
                 Find Events
             </Button>
-          </div>
-          <div className="flex h-64 min-h-[200px] w-full items-center justify-center rounded-lg bg-muted text-muted-foreground lg:col-span-2 lg:h-full">
-            <div className="text-center p-4">
-                <p className="font-semibold">Map currently disabled</p>
-            </div>
           </div>
         </div>
       </CardContent>
