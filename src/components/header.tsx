@@ -76,18 +76,37 @@ export default function Header() {
         <Link href="/">
           <Logo />
         </Link>
-        <div className="flex items-center gap-4">
-          <Link href="/create-event">
-            <Button
-              style={{
-                backgroundColor: 'hsl(var(--accent))',
-                color: 'hsl(var(--accent-foreground))',
-              }}
-              className="hidden sm:flex hover:opacity-90"
-            >
-              <PlusCircle className="mr-2 h-5 w-5" />
-              Create Event
-            </Button>
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link href="/create-event" passHref>
+              <Button
+                size="sm"
+                className="flex hover:opacity-90 sm:hidden"
+                style={{
+                    backgroundColor: 'hsl(var(--accent))',
+                    color: 'hsl(var(--accent-foreground))',
+                }}
+                aria-label="Create Event"
+                asChild
+              >
+                <a>
+                    <PlusCircle className="h-5 w-5" />
+                </a>
+              </Button>
+          </Link>
+           <Link href="/create-event" passHref>
+              <Button
+                className="hidden sm:flex hover:opacity-90"
+                 style={{
+                    backgroundColor: 'hsl(var(--accent))',
+                    color: 'hsl(var(--accent-foreground))',
+                }}
+                asChild
+              >
+                <a>
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Create Event
+                </a>
+              </Button>
           </Link>
           <UserMenu />
         </div>
