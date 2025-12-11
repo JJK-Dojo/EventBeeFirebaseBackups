@@ -86,11 +86,8 @@ export default function Header() {
                     color: 'hsl(var(--accent-foreground))',
                 }}
                 aria-label="Create Event"
-                asChild
               >
-                <a>
-                    <PlusCircle className="h-5 w-5" />
-                </a>
+                <PlusCircle className="h-5 w-5" />
               </Button>
           </Link>
            <Link href="/create-event" passHref>
@@ -100,12 +97,9 @@ export default function Header() {
                     backgroundColor: 'hsl(var(--accent))',
                     color: 'hsl(var(--accent-foreground))',
                 }}
-                asChild
               >
-                <a>
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Create Event
-                </a>
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Create Event
               </Button>
           </Link>
           <UserMenu />
