@@ -45,7 +45,7 @@ export default function TestUIPage() {
               Event Filters
             </h2>
              <p className="mb-4 text-muted-foreground">This is the main component for searching and filtering events.</p>
-            <EventFilters />
+            <EventFilters onFilter={() => {}} />
           </section>
 
           <Separator className="my-8" />
