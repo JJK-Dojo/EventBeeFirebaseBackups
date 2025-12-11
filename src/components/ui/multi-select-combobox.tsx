@@ -39,7 +39,7 @@ export function MultiSelectCombobox({
   searchPlaceholder = "Search items...", 
   noResultsText = "No items found.",
   className,
-  selectedValues,
+  selectedValues = [], // Default to empty array
   onSelectedValuesChange,
   allowFreeText = false,
   disabled = false,

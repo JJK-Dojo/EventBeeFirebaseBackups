@@ -36,7 +36,7 @@ export default function EventCard({ event }: { event: Event }) {
           </h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <CalendarDays className="h-4 w-4" />
-            <span>{format(new Date(event.date), 'EEE, MMM d')}</span>
+            <span>{format(new Date(event.date), 'EEE, MMM d, yyyy')}</span>
           </div>
           <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />

@@ -79,7 +79,7 @@ export default function EventDetailPage({ params }: { params: { id: string } }) 
             <Card>
                 <CardContent className="p-0">
                 <div className="flex h-60 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                    Google Map Placeholder
+                    Map Placeholder
                 </div>
                 </CardContent>
             </Card>
