@@ -15,8 +15,10 @@ import {
   Link2,
   Save,
   Check,
+  Sparkles,
+  LoaderCircle
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +39,7 @@ import { cn } from '@/lib/utils';
 import { useEvents } from '@/lib/event-store';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
 
 
 type PostOffice = {
@@ -136,6 +139,7 @@ export default function CreateEventPage() {
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -147,6 +151,55 @@ export default function CreateEventPage() {
       reader.readAsDataURL(file);
     }
   };
+
+  const handleAutoFill = async () => {
+    if (!imagePreview) {
+      toast({
+        variant: 'destructive',
+        title: 'No Image Selected',
+        description: 'Please upload an event flyer or poster first.',
+      });
+      return;
+    }
+
+    setIsExtracting(true);
+    try {
+      const result = await extractEventDetailsFromImage({ imageDataUri: imagePreview });
+      
+      setTitle(result.title);
+      setDescription(result.description);
+      
+      if (result.date) {
+        try {
+          const parsedDate = parseISO(result.date);
+          handleDateSelect(parsedDate);
+        } catch (dateError) {
+          console.error("Could not parse date from AI:", result.date, dateError);
+          toast({
+            variant: "destructive",
+            title: "AI Error",
+            description: `The AI suggested an invalid date: ${result.date}`
+          })
+        }
+      }
+      
+      toast({
+        title: 'Fields Auto-filled!',
+        description: 'The event details have been extracted from the image.',
+      });
+
+    } catch (error) {
+      console.error('AI extraction failed:', error);
+      toast({
+        variant: 'destructive',
+        title: 'AI Extraction Failed',
+        description: 'Could not extract details from the image. Please fill them manually.',
+      });
+    } finally {
+      setIsExtracting(false);
+    }
+  };
+
 
   useEffect(() => {
     if (selectedState) {
@@ -491,7 +544,7 @@ export default function CreateEventPage() {
                         </div>
                       )}
                     </div>
-                    <div className="w-full">
+                    <div className="w-full space-y-2">
                       <Label htmlFor="image-upload" className="sr-only">Upload Image</Label>
                       <Input
                         id="image-upload"
@@ -500,9 +553,22 @@ export default function CreateEventPage() {
                         onChange={handleImageChange}
                         className="cursor-pointer file:cursor-pointer file:font-medium file:text-primary hover:file:text-primary/80"
                       />
-                      <p className="mt-1 text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground">
                         PNG, JPG, GIF up to 10MB. Recommended: 1200x628px.
                       </p>
+                       <Button 
+                        onClick={handleAutoFill} 
+                        disabled={!imagePreview || isExtracting} 
+                        className="w-full sm:w-auto"
+                        variant="outline"
+                        >
+                        {isExtracting ? (
+                          <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+                        ) : (
+                          <Sparkles className="mr-2 h-5 w-5" />
+                        )}
+                        Auto-fill with AI
+                      </Button>
                     </div>
                   </div>
                 </div>
