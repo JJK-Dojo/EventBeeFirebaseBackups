@@ -9,8 +9,12 @@ import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 
+const sortedEvents = DUMMY_EVENTS.sort(
+  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+
 export default function Home() {
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>(DUMMY_EVENTS);
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
 
   const handleFilter = (filters: FilterState) => {
     const {
@@ -21,7 +25,7 @@ export default function Home() {
       searchText,
     } = filters;
 
-    let events = DUMMY_EVENTS;
+    let events = sortedEvents;
 
     if (tags.length > 0) {
         events = events.filter(event => 
