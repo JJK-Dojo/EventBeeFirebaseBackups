@@ -1,15 +1,15 @@
 
+'use client';
 
 import Image from 'next/image';
 import {
   User,
-  Calendar,
-  BarChart2,
-  MessageSquare,
-  Award,
   Edit,
   FileCheck,
   FileText,
+  BarChart2,
+  MessageSquare,
+  Award,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,9 +22,11 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useEvents } from '@/lib/event-store';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import type { Event } from '@/lib/types';
+
 
 const BeeIcon = ({ className }: { className?: string }) => (
     <svg
@@ -37,20 +39,14 @@ const BeeIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
+type UserEvent = Event & {
+    views: number;
+    comments: number;
+    bees: number;
+}
 
-const userEvents = DUMMY_EVENTS.slice(0, 10).map((event, i) => ({
-  ...event,
-  views: Math.floor(Math.random() * 5000) + 200,
-  comments: Math.floor(Math.random() * 100) + 10,
-  bees: Math.floor(Math.random() * 50) + 5,
-}));
 
-const publishedEvents = userEvents.filter(e => e.status === 'published');
-const draftEvents = userEvents.filter(e => e.status === 'draft');
-
-const totalBees = userEvents.reduce((acc, event) => acc + event.bees, 0) + 500;
-
-function EventListItem({ event }: { event: (typeof userEvents)[0] }) {
+function EventListItem({ event }: { event: UserEvent }) {
     return (
         <Card key={event.id} className="flex flex-col overflow-hidden transition-shadow hover:shadow-md md:flex-row">
             <div className="relative h-48 w-full flex-shrink-0 md:h-auto md:w-48">
@@ -103,6 +99,19 @@ function EventListItem({ event }: { event: (typeof userEvents)[0] }) {
 }
 
 export default function ProfilePage() {
+    const { events } = useEvents();
+
+    const userEvents: UserEvent[] = events.map((event) => ({
+      ...event,
+      views: Math.floor(Math.random() * 5000) + 200,
+      comments: Math.floor(Math.random() * 100) + 10,
+      bees: Math.floor(Math.random() * 50) + 5,
+    }));
+
+    const publishedEvents = userEvents.filter(e => e.status === 'published');
+    const draftEvents = userEvents.filter(e => e.status === 'draft');
+    const totalBees = userEvents.reduce((acc, event) => acc + event.bees, 0) + 500;
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />

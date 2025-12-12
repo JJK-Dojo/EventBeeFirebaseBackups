@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { EventProvider } from '@/lib/event-store';
 
 export const metadata: Metadata = {
   title: 'EventBee.com',
@@ -23,7 +24,9 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        {children}
+        <EventProvider>
+          {children}
+        </EventProvider>
         <Toaster />
       </body>
     </html>

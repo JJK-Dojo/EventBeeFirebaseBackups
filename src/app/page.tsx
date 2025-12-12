@@ -2,18 +2,19 @@
 'use client';
 
 import { useState } from 'react';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useEvents } from '@/lib/event-store';
 import EventCard from '@/components/event-card';
 import EventFilters from '@/components/event-filters';
 import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 
-const sortedEvents = DUMMY_EVENTS.sort(
-  (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-);
-
 export default function Home() {
+  const { events: allEvents } = useEvents();
+  const sortedEvents = [...allEvents].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
 
   const handleFilter = (filters: FilterState) => {

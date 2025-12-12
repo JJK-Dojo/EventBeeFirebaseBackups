@@ -13,3 +13,11 @@ export type Event = {
   category: string;
   status: 'published' | 'draft';
 };
+
+// Add this to your types file if it's not already there
+export type PostOffice = {
+  Name: string;
+  District: string;
+  State: string;
+  Pincode: string;
+};

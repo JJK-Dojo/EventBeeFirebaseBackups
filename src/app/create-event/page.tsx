@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Image as ImageIcon,
   Link as LinkIcon,
@@ -33,6 +34,9 @@ import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
+import { useEvents } from '@/lib/event-store';
+import type { Event } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
 
 
 type PostOffice = {
@@ -111,16 +115,26 @@ const states = Object.keys(indianStatesAndDistricts).map(state => ({ value: stat
 const countries = [{ value: 'India', label: 'India' }];
 
 export default function CreateEventPage() {
+  const router = useRouter();
+  const { addEvent } = useEvents();
+  const { toast } = useToast();
+
+  // Form State
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState<Date | undefined>();
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('India');
   const [selectedState, setSelectedState] = useState('');
-  const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [pincodeSearchInput, setPincodeSearchInput] = useState('');
+  
+  // UI State
+  const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
-  const [date, setDate] = useState<Date | undefined>();
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,6 +240,42 @@ export default function CreateEventPage() {
     }
   }
 
+  const handleSubmit = (status: 'published' | 'draft') => {
+     if (!title || !description || !date || !selectedCategory || !pincodeSearchInput) {
+      toast({
+        variant: 'destructive',
+        title: 'Missing Information',
+        description: 'Please fill out all required fields to create an event.',
+      });
+      return;
+    }
+
+    const newEvent: Event = {
+        id: new Date().getTime().toString(),
+        title,
+        description,
+        date: date.toISOString(),
+        location: pincodeSearchInput,
+        imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
+        imageHint: 'event image',
+        organizer: {
+            name: 'Guest User', // Replace with actual user data later
+            avatarUrl: 'https://picsum.photos/seed/9/40/40',
+        },
+        category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+        status,
+    };
+
+    addEvent(newEvent);
+
+    toast({
+      title: `Event ${status === 'published' ? 'Published' : 'Saved'}!`,
+      description: `${title} has been successfully ${status === 'published' ? 'created' : 'saved as a draft'}.`,
+    });
+
+    router.push(status === 'published' ? `/events/${newEvent.id}` : '/profile');
+  }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -242,10 +292,10 @@ export default function CreateEventPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form className="space-y-8">
+              <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-lg font-semibold">Event Title</Label>
-                  <Input id="title" placeholder="What's your event called?" />
+                  <Input id="title" placeholder="What's your event called?" value={title} onChange={(e) => setTitle(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
@@ -255,6 +305,8 @@ export default function CreateEventPage() {
                             id="description"
                             placeholder="Tell us more about your event..."
                             rows={15}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
                     <div className="space-y-6">
@@ -398,6 +450,8 @@ export default function CreateEventPage() {
                             placeholder="Select a category..."
                             searchPlaceholder="Search categories..."
                             noResultsText="No categories found."
+                            value={selectedCategory}
+                            onValueChange={setSelectedCategory}
                         />
                     </div>
                     <div className="space-y-2">
@@ -477,11 +531,11 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="flex flex-wrap justify-end gap-4 pt-4">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={() => handleSubmit('draft')}>
                     <Save className="mr-2 h-5 w-5" />
                     Save as Draft
                   </Button>
-                  <Button size="lg" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto" onClick={() => handleSubmit('published')}>
                     <Clapperboard className="mr-2 h-5 w-5" />
                     Create & Publish Event
                   </Button>
@@ -494,5 +548,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    
