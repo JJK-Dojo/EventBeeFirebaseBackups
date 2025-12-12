@@ -171,14 +171,25 @@ export default function CreateEventPage() {
       
       if (result.date) {
         try {
-          const parsedDate = parseISO(result.date);
+          // Attempt to parse as ISO string first
+          let parsedDate = parseISO(result.date);
+          // Check if the parsed date is valid
+          if (isNaN(parsedDate.getTime())) {
+            // Fallback for other common date formats
+            parsedDate = new Date(result.date);
+          }
+
+          if (isNaN(parsedDate.getTime())) {
+             throw new Error(`Invalid date format: ${result.date}`);
+          }
+
           handleDateSelect(parsedDate);
         } catch (dateError) {
           console.error("Could not parse date from AI:", result.date, dateError);
           toast({
             variant: "destructive",
             title: "AI Error",
-            description: `The AI suggested an invalid date: ${result.date}`
+            description: `The AI suggested an invalid date: ${result.date}. Please set it manually.`
           })
         }
       }
@@ -614,3 +625,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
