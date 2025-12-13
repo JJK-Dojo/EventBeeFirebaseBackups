@@ -16,7 +16,13 @@ import {
   Save,
   Check,
   Sparkles,
-  LoaderCircle
+  LoaderCircle,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+  Ghost
 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import Header from '@/components/header';
@@ -593,9 +599,51 @@ export default function CreateEventPage() {
                         <div className="space-y-2">
                             <Label htmlFor="youtube" className="flex items-center text-muted-foreground">
                                 <Youtube className="mr-2 h-4 w-4"/>
-                                YouTube Link
+                                YouTube
                             </Label>
-                            <Input id="youtube" placeholder="https://www.youtube.com/watch?v=your-video" />
+                            <Input id="youtube" placeholder="https://youtube.com/your-channel" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="facebook" className="flex items-center text-muted-foreground">
+                                <Facebook className="mr-2 h-4 w-4"/>
+                                Facebook
+                            </Label>
+                            <Input id="facebook" placeholder="https://facebook.com/your-page" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="instagram" className="flex items-center text-muted-foreground">
+                                <Instagram className="mr-2 h-4 w-4"/>
+                                Instagram
+                            </Label>
+                            <Input id="instagram" placeholder="https://instagram.com/your-profile" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="x-platform" className="flex items-center text-muted-foreground">
+                                <Twitter className="mr-2 h-4 w-4"/>
+                                X (Twitter)
+                            </Label>
+                            <Input id="x-platform" placeholder="https://x.com/your-handle" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="linkedin" className="flex items-center text-muted-foreground">
+                                <Linkedin className="mr-2 h-4 w-4"/>
+                                LinkedIn
+                            </Label>
+                            <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="whatsapp" className="flex items-center text-muted-foreground">
+                                <MessageCircle className="mr-2 h-4 w-4"/>
+                                WhatsApp
+                            </Label>
+                            <Input id="whatsapp" type="tel" placeholder="Your WhatsApp group link or number" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="snapchat" className="flex items-center text-muted-foreground">
+                                <Ghost className="mr-2 h-4 w-4"/>
+                                Snapchat
+                            </Label>
+                            <Input id="snapchat" placeholder="Your Snapchat username or link" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="website" className="flex items-center text-muted-foreground">
@@ -625,3 +673,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
