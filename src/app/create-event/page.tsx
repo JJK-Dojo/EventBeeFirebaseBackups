@@ -311,7 +311,7 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = (status: 'published' | 'draft') => {
-     if (!title || !description || !date || !selectedCategory || !pincodeSearchInput) {
+     if (!title || !description || !date || !selectedCategory) {
       toast({
         variant: 'destructive',
         title: 'Missing Information',
@@ -437,7 +437,7 @@ export default function CreateEventPage() {
                         <div className="space-y-2">
                             <Label className="text-lg font-semibold flex items-center">
                                 <MapPin className="mr-2 h-5 w-5 text-primary"/>
-                                Location <span className="text-destructive">*</span>
+                                Location
                             </Label>
                             <div className="space-y-4 rounded-md border p-4">
                                 <div className="grid w-full items-center gap-1.5">
@@ -475,7 +475,7 @@ export default function CreateEventPage() {
                                     />
                                 </div>
                                 <div className="grid w-full items-center gap-1.5">
-                                    <Label htmlFor="area-pincode">Area / Pincode <span className="text-destructive">*</span></Label>
+                                    <Label htmlFor="area-pincode">Area / Pincode</Label>
                                     <Popover open={isPincodePopoverOpen} onOpenChange={setIsPincodePopoverOpen}>
                                         <PopoverTrigger asChild>
                                             <Input 
