@@ -12,7 +12,7 @@ import type { FilterState } from '@/components/event-filters';
 export default function Home() {
   const { events: allEvents } = useEvents();
   const sortedEvents = [...allEvents].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
@@ -30,20 +30,20 @@ export default function Home() {
 
     if (tags.length > 0) {
         events = events.filter(event => 
-            tags.some(tag => event.title.toLowerCase().includes(tag) || event.description.toLowerCase().includes(tag))
+            tags.some(tag => (event.title?.toLowerCase() || '').includes(tag) || (event.description?.toLowerCase() || '').includes(tag))
         );
     }
     
     if (category) {
-        events = events.filter(event => event.category.toLowerCase() === category.toLowerCase());
+        events = events.filter(event => (event.category?.toLowerCase() || '') === category.toLowerCase());
     }
 
     if (state) {
-        events = events.filter(event => event.location.toLowerCase().includes(state.toLowerCase()));
+        events = events.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
     }
 
     if (district) {
-        events = events.filter(event => event.location.toLowerCase().includes(district.toLowerCase()));
+        events = events.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
     }
 
     if (searchText) {
@@ -52,9 +52,9 @@ export default function Home() {
         
         events = events.filter(event => {
             if (isPincode) {
-                return event.location.includes(lowercasedSearch);
+                return (event.location || '').includes(lowercasedSearch);
             }
-            return event.location.toLowerCase().includes(lowercasedSearch) || event.title.toLowerCase().includes(lowercasedSearch)
+            return (event.location?.toLowerCase() || '').includes(lowercasedSearch) || (event.title?.toLowerCase() || '').includes(lowercasedSearch)
         });
     }
 
