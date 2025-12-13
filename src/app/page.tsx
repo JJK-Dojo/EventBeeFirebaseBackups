@@ -12,7 +12,7 @@ import type { FilterState } from '@/components/event-filters';
 export default function Home() {
   const { events: allEvents } = useEvents();
   const sortedEvents = [...allEvents].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
