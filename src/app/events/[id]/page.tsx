@@ -1,15 +1,17 @@
+
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import { CalendarDays, MapPin, Navigation, User, Clock } from 'lucide-react';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useEvents } from '@/lib/event-store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
-  const event = DUMMY_EVENTS.find((e) => e.id === params.id);
+  const { events } = useEvents();
+  const event = events.find((e) => e.id === params.id);
 
   if (!event) {
     notFound();

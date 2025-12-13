@@ -625,7 +625,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    
-
-    
