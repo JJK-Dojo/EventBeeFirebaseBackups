@@ -2,6 +2,7 @@
 'use client';
 
 import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 import {
   User,
   Edit,
@@ -100,17 +101,23 @@ function EventListItem({ event }: { event: UserEvent }) {
 
 export default function ProfilePage() {
     const { events } = useEvents();
+    const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
+    const [totalBees, setTotalBees] = useState(0);
 
-    const userEvents: UserEvent[] = events.map((event) => ({
-      ...event,
-      views: Math.floor(Math.random() * 5000) + 200,
-      comments: Math.floor(Math.random() * 100) + 10,
-      bees: Math.floor(Math.random() * 50) + 5,
-    }));
+    useEffect(() => {
+        const eventsWithStats = events.map((event) => ({
+            ...event,
+            views: Math.floor(Math.random() * 5000) + 200,
+            comments: Math.floor(Math.random() * 100) + 10,
+            bees: Math.floor(Math.random() * 50) + 5,
+        }));
+        setUserEvents(eventsWithStats);
+        setTotalBees(eventsWithStats.reduce((acc, event) => acc + event.bees, 0) + 500);
+    }, [events]);
+
 
     const publishedEvents = userEvents.filter(e => e.status === 'published');
     const draftEvents = userEvents.filter(e => e.status === 'draft');
-    const totalBees = userEvents.reduce((acc, event) => acc + event.bees, 0) + 500;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
