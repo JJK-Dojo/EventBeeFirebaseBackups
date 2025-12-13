@@ -12,6 +12,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
+import { Facebook, Instagram, Twitter, Linkedin, MessageCircle, Ghost } from 'lucide-react';
+
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -21,8 +23,8 @@ const GoogleIcon = () => (
 
 export default function SignupPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
             <Logo />
@@ -69,7 +71,59 @@ export default function SignupPage() {
             <Label htmlFor="password">Password</Label>
             <Input id="password" type="password" required />
           </div>
-          <Button className="w-full">Create account</Button>
+
+          <div className="space-y-4 pt-4">
+              <h3 className="text-md font-semibold text-center text-muted-foreground">
+                  Connect Your Social Accounts (Optional)
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                      <Label htmlFor="facebook" className="flex items-center text-muted-foreground">
+                          <Facebook className="mr-2 h-4 w-4"/>
+                          Facebook
+                      </Label>
+                      <Input id="facebook" placeholder="https://facebook.com/your-page" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="instagram" className="flex items-center text-muted-foreground">
+                          <Instagram className="mr-2 h-4 w-4"/>
+                          Instagram
+                      </Label>
+                      <Input id="instagram" placeholder="https://instagram.com/your-profile" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="x-platform" className="flex items-center text-muted-foreground">
+                          <Twitter className="mr-2 h-4 w-4"/>
+                          X (Twitter)
+                      </Label>
+                      <Input id="x-platform" placeholder="https://x.com/your-handle" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="linkedin" className="flex items-center text-muted-foreground">
+                          <Linkedin className="mr-2 h-4 w-4"/>
+                          LinkedIn
+                      </Label>
+                      <Input id="linkedin" placeholder="https://linkedin.com/in/your-profile" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="whatsapp" className="flex items-center text-muted-foreground">
+                          <MessageCircle className="mr-2 h-4 w-4"/>
+                          WhatsApp
+                      </Label>
+                      <Input id="whatsapp" type="tel" placeholder="Your WhatsApp group link or number" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="snapchat" className="flex items-center text-muted-foreground">
+                          <Ghost className="mr-2 h-4 w-4"/>
+                          Snapchat
+                      </Label>
+                      <Input id="snapchat" placeholder="Your Snapchat username or link" />
+                  </div>
+              </div>
+          </div>
+
+
+          <Button className="w-full mt-4">Create account</Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">
