@@ -352,19 +352,19 @@ export default function CreateEventPage() {
                 Create a New Event
               </CardTitle>
               <CardDescription>
-                Fill out the form below to add your event to EventBee.com
+                Fill out the form below to add your event to EventBee.com. Fields marked with <span className="text-destructive">*</span> are required.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-lg font-semibold">Event Title</Label>
+                  <Label htmlFor="title" className="text-lg font-semibold">Event Title <span className="text-destructive">*</span></Label>
                   <Input id="title" placeholder="What's your event called?" value={title} onChange={(e) => setTitle(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="description" className="text-lg font-semibold">Description</Label>
+                        <Label htmlFor="description" className="text-lg font-semibold">Description <span className="text-destructive">*</span></Label>
                         <Textarea
                             id="description"
                             placeholder="Tell us more about your event..."
@@ -377,7 +377,7 @@ export default function CreateEventPage() {
                         <div className="space-y-2">
                              <Label htmlFor="date" className="text-lg font-semibold flex items-center">
                                 <CalendarIcon className="mr-2 h-5 w-5 text-primary"/>
-                                Date & Time
+                                Date & Time <span className="text-destructive">*</span>
                             </Label>
                             <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
                                 <PopoverTrigger asChild>
@@ -431,7 +431,7 @@ export default function CreateEventPage() {
                         <div className="space-y-2">
                             <Label className="text-lg font-semibold flex items-center">
                                 <MapPin className="mr-2 h-5 w-5 text-primary"/>
-                                Location
+                                Location <span className="text-destructive">*</span>
                             </Label>
                             <div className="space-y-4 rounded-md border p-4">
                                 <div className="grid w-full items-center gap-1.5">
@@ -469,7 +469,7 @@ export default function CreateEventPage() {
                                     />
                                 </div>
                                 <div className="grid w-full items-center gap-1.5">
-                                    <Label htmlFor="area-pincode">Area / Pincode</Label>
+                                    <Label htmlFor="area-pincode">Area / Pincode <span className="text-destructive">*</span></Label>
                                     <Popover open={isPincodePopoverOpen} onOpenChange={setIsPincodePopoverOpen}>
                                         <PopoverTrigger asChild>
                                             <Input 
@@ -507,7 +507,7 @@ export default function CreateEventPage() {
                     <div className="space-y-2">
                         <Label className="text-lg font-semibold flex items-center">
                             <List className="mr-2 h-5 w-5 text-primary"/>
-                            Category
+                            Category <span className="text-destructive">*</span>
                         </Label>
                         <Combobox
                             items={categories}
@@ -625,5 +625,7 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
 
     
