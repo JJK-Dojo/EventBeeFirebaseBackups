@@ -125,7 +125,9 @@ const countries = [{ value: 'India', label: 'India' }];
 
 // Function to robustly parse date strings from AI
 const parseDateString = (dateString: string): Date | null => {
-    // Try ISO format first (YYYY-MM-DD)
+    if (!dateString) return null;
+
+    // Try ISO format first, as it's the most reliable
     let date = parseISO(dateString);
     if (!isNaN(date.getTime())) return date;
     
@@ -142,17 +144,18 @@ const parseDateString = (dateString: string): Date | null => {
         'MMMM d yyyy',
     ];
 
-    // Try parsing with different formats
+    // Try parsing with different formats from date-fns
     for (const format of formats) {
         date = parse(dateString, format, new Date());
         if (!isNaN(date.getTime())) return date;
     }
 
     // Finally, try the generic Date constructor as a last resort
+    // This can be unpredictable but is a good fallback.
     date = new Date(dateString);
     if (!isNaN(date.getTime())) return date;
 
-    return null; // Return null if all parsing fails
+    return null; // Return null if all parsing attempts fail
 }
 
 
