@@ -11,8 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function EventDetailPage({ params: { id } }: { params: { id: string } }) {
   const { events } = useEvents();
   const event = events.find((e) => e.id === id);
 
