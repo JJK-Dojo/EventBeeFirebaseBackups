@@ -112,11 +112,12 @@ function EventListItem({ event }: { event: UserEvent }) {
 export default function ProfilePage() {
     const { events } = useEvents();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
-    const [totalBees, setTotalBees] = useState(0);
+    const [totalBees, setTotalBees] = useState<number | null>(null);
     const [sortOption, setSortOption] = useState('recent');
 
     useEffect(() => {
-        // Generate stats only on the client-side to avoid hydration errors
+        // Generate stats and calculate totalBees only on the client-side
+        // to avoid hydration errors from Math.random()
         const eventsWithStats = events.map((event) => ({
             ...event,
             views: Math.floor(Math.random() * 5000) + 200,
@@ -124,15 +125,11 @@ export default function ProfilePage() {
             bees: Math.floor(Math.random() * 50) + 5,
         }));
         setUserEvents(eventsWithStats);
+
+        const calculatedBees = eventsWithStats.reduce((acc, event) => acc + (event.bees || 0), 0) + 500;
+        setTotalBees(calculatedBees);
     }, [events]);
 
-    useEffect(() => {
-        // Calculate totalBees only on the client, based on the events with stats
-        if (userEvents.length > 0) {
-            const calculatedBees = userEvents.reduce((acc, event) => acc + (event.bees || 0), 0) + 500;
-            setTotalBees(calculatedBees);
-        }
-    }, [userEvents]);
 
     const sortedUserEvents = useMemo(() => {
         const now = new Date();
@@ -215,7 +212,7 @@ export default function ProfilePage() {
                   <div className="mt-4 flex items-center justify-center gap-2 sm:justify-start">
                     <BeeIcon className="h-6 w-6 text-primary" />
                     <span className="text-xl font-bold text-foreground">
-                      {totalBees.toLocaleString()} Bees
+                      {totalBees !== null ? totalBees.toLocaleString() : '...'} Bees
                     </span>
                     <Badge variant="secondary">Redeem for Vouchers</Badge>
                   </div>
