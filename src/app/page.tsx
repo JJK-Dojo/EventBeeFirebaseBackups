@@ -31,8 +31,20 @@ export default function Home() {
             case 'district':
                  return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
             case 'recent':
-            default:
-                return new Date(b.date).getTime() - new Date(a.date).getTime();
+            default: {
+                const now = new Date().getTime();
+                const aDate = new Date(a.date).getTime();
+                const bDate = new Date(b.date).getTime();
+                
+                const aIsFuture = aDate >= now;
+                const bIsFuture = bDate >= now;
+
+                if (aIsFuture && !bIsFuture) return -1; // a is future, b is past, so a comes first
+                if (!aIsFuture && bIsFuture) return 1;  // b is future, a is past, so b comes first
+
+                // Both are future or both are past, sort by most recent
+                return bDate - aDate;
+            }
         }
     }).filter(event => {
         const eventDate = new Date(event.date);
@@ -134,5 +146,4 @@ export default function Home() {
     </div>
   );
 }
-
     
