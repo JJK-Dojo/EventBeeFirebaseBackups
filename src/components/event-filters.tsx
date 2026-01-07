@@ -47,6 +47,7 @@ const eventTags = [
 
 const sortOptions = [
     { value: 'recent', label: 'Recent posts' },
+    { value: 'today', label: 'Posted Today' },
     { value: 'state', label: 'Location: State' },
     { value: 'district', label: 'Location: District' },
     { value: 'next3-5', label: 'For the next 3-5 days' },
@@ -326,5 +327,3 @@ export default function EventFilters({ onFilter, onSortChange }: EventFiltersPro
     </Card>
   );
 }
-
-    

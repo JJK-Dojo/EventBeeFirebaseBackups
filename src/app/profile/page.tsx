@@ -49,6 +49,7 @@ type UserEvent = Event & {
 
 const sortOptions = [
     { value: 'recent', label: 'Recent posts' },
+    { value: 'today', label: 'Posted Today' },
     { value: 'state', label: 'Location: State' },
     { value: 'district', label: 'Location: District' },
     { value: 'next3-5', label: 'For the next 3-5 days' },
@@ -127,6 +128,7 @@ export default function ProfilePage() {
 
     const sortedUserEvents = useMemo(() => {
         const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const threeDays = new Date(now);
         threeDays.setDate(now.getDate() + 3);
         const fiveDays = new Date(now);
@@ -160,6 +162,9 @@ export default function ProfilePage() {
         }).filter(event => {
             const eventDate = new Date(event.date);
             switch (sortOption) {
+                case 'today':
+                    const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+                    return eventDay.getTime() === today.getTime();
                 case 'next3-5':
                     return eventDate >= threeDays && eventDate <= fiveDays;
                 case 'next6-10':
@@ -278,5 +283,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-    
