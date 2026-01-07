@@ -90,17 +90,17 @@ function EventListItem({ event }: { event: UserEvent }) {
             <div className="grid grid-cols-3 gap-2 text-center text-sm">
                 <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
                 <BarChart2 className="h-5 w-5 text-muted-foreground" />
-                <span className="font-semibold">{event.views.toLocaleString()}</span>
+                <span className="font-semibold">{event.views?.toLocaleString() || 0}</span>
                 <span className="text-xs text-muted-foreground">Views</span>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
                 <MessageSquare className="h-5 w-5 text-muted-foreground" />
-                <span className="font-semibold">{event.comments}</span>
+                <span className="font-semibold">{event.comments || 0}</span>
                 <span className="text-xs text-muted-foreground">Comments</span>
                 </div>
                 <div className="flex flex-col items-center justify-center gap-1 rounded-md bg-muted/50 p-2">
                 <Award className="h-5 w-5 text-muted-foreground" />
-                <span className="font-semibold">{event.bees}</span>
+                <span className="font-semibold">{event.bees || 0}</span>
                 <span className="text-xs text-muted-foreground">Bees Earned</span>
                 </div>
             </div>
@@ -116,6 +116,7 @@ export default function ProfilePage() {
     const [sortOption, setSortOption] = useState('recent');
 
     useEffect(() => {
+        // Generate stats only on the client-side to avoid hydration errors
         const eventsWithStats = events.map((event) => ({
             ...event,
             views: Math.floor(Math.random() * 5000) + 200,
@@ -123,8 +124,15 @@ export default function ProfilePage() {
             bees: Math.floor(Math.random() * 50) + 5,
         }));
         setUserEvents(eventsWithStats);
-        setTotalBees(eventsWithStats.reduce((acc, event) => acc + event.bees, 0) + 500);
     }, [events]);
+
+    useEffect(() => {
+        // Calculate totalBees only on the client, based on the events with stats
+        if (userEvents.length > 0) {
+            const calculatedBees = userEvents.reduce((acc, event) => acc + (event.bees || 0), 0) + 500;
+            setTotalBees(calculatedBees);
+        }
+    }, [userEvents]);
 
     const sortedUserEvents = useMemo(() => {
         const now = new Date();
