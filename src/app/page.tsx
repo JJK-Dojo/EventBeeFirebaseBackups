@@ -25,34 +25,46 @@ export default function Home() {
     const tenDays = new Date(now);
     tenDays.setDate(now.getDate() + 10);
 
-    return [...allEvents].sort((a, b) => {
+    let eventsToSort = [...allEvents];
+
+    if (sortOption === 'today') {
+      eventsToSort = eventsToSort.filter(event => {
+        const eventCreationDate = new Date(event.createdAt);
+        const eventDay = new Date(eventCreationDate.getFullYear(), eventCreationDate.getMonth(), eventCreationDate.getDate());
+        return eventDay.getTime() === today.getTime();
+      });
+    }
+
+    return eventsToSort.sort((a, b) => {
         switch (sortOption) {
             case 'state':
                 return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
             case 'district':
                  return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
             case 'recent':
+            case 'today': // Also sort today's posts by time
             default: {
-                const now = new Date().getTime();
                 const aDate = new Date(a.date).getTime();
                 const bDate = new Date(b.date).getTime();
                 
+                // For "recent", we use creation date. For others, event date.
+                const timeA = sortOption === 'recent' ? new Date(a.createdAt).getTime() : aDate;
+                const timeB = sortOption === 'recent' ? new Date(b.createdAt).getTime() : bDate;
+                
+                const now = new Date().getTime();
                 const aIsFuture = aDate >= now;
                 const bIsFuture = bDate >= now;
 
-                if (aIsFuture && !bIsFuture) return -1; // a is future, b is past, so a comes first
-                if (!aIsFuture && bIsFuture) return 1;  // b is future, a is past, so b comes first
+                if (aIsFuture && !bIsFuture) return -1;
+                if (!aIsFuture && bIsFuture) return 1;
 
-                // Both are future or both are past, sort by most recent
-                return bDate - aDate;
+                return timeB - timeA;
             }
         }
     }).filter(event => {
+        // This filter is for date ranges, not for "today" which is handled above
         const eventDate = new Date(event.date);
         switch (sortOption) {
-            case 'today':
-                const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-                return eventDay.getTime() === today.getTime();
             case 'next3-5':
                 return eventDate >= threeDays && eventDate <= fiveDays;
             case 'next6-10':

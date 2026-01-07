@@ -351,6 +351,7 @@ export default function CreateEventPage() {
         title,
         description,
         date: date ? date.toISOString() : new Date().toISOString(),
+        createdAt: new Date().toISOString(),
         location: pincodeSearchInput,
         imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
         imageHint: 'event image',

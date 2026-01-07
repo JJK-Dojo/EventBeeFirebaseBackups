@@ -137,34 +137,36 @@ export default function ProfilePage() {
         sixDays.setDate(now.getDate() + 6);
         const tenDays = new Date(now);
         tenDays.setDate(now.getDate() + 10);
+        
+        let eventsToFilter = [...userEvents];
 
-        return [...userEvents].sort((a, b) => {
+        if (sortOption === 'today') {
+            eventsToFilter = eventsToFilter.filter(event => {
+                const eventCreationDate = new Date(event.createdAt);
+                const eventDay = new Date(eventCreationDate.getFullYear(), eventCreationDate.getMonth(), eventCreationDate.getDate());
+                return eventDay.getTime() === today.getTime();
+            });
+        }
+
+        return eventsToFilter.sort((a, b) => {
             switch (sortOption) {
                 case 'state':
                     return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
                 case 'district':
                      return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
                 case 'recent':
+                case 'today':
                 default: {
-                    const now = new Date().getTime();
-                    const aDate = new Date(a.date).getTime();
-                    const bDate = new Date(b.date).getTime();
-                    
-                    const aIsFuture = aDate >= now;
-                    const bIsFuture = bDate >= now;
-
-                    if (aIsFuture && !bIsFuture) return -1;
-                    if (!aIsFuture && bIsFuture) return 1;
-
-                    return bDate - aDate;
+                    const timeA = new Date(a.createdAt).getTime();
+                    const timeB = new Date(b.createdAt).getTime();
+                    return timeB - timeA;
                 }
             }
         }).filter(event => {
+            if (sortOption === 'today') return true; // Already filtered above
+
             const eventDate = new Date(event.date);
             switch (sortOption) {
-                case 'today':
-                    const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
-                    return eventDay.getTime() === today.getTime();
                 case 'next3-5':
                     return eventDate >= threeDays && eventDate <= fiveDays;
                 case 'next6-10':
