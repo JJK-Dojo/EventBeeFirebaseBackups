@@ -337,20 +337,11 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = (status: 'published' | 'draft') => {
-     if (!title || !description || !date || !selectedCategory) {
-      toast({
-        variant: 'destructive',
-        title: 'Missing Information',
-        description: 'Please fill out all required fields to create an event.',
-      });
-      return;
-    }
-
     const newEvent: Event = {
         id: new Date().getTime().toString(),
         title,
         description,
-        date: date.toISOString(),
+        date: date ? date.toISOString() : new Date().toISOString(),
         location: pincodeSearchInput,
         imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
         imageHint: 'event image',
@@ -384,19 +375,19 @@ export default function CreateEventPage() {
                 Create a New Event
               </CardTitle>
               <CardDescription>
-                Fill out the form below to add your event to EventBee.com. Fields marked with <span className="text-destructive">*</span> are required.
+                Fill out the form below to add your event to EventBee.com.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
                 <div className="space-y-2">
-                  <Label htmlFor="title" className="text-lg font-semibold">Event Title <span className="text-destructive">*</span></Label>
+                  <Label htmlFor="title" className="text-lg font-semibold">Event Title</Label>
                   <Input id="title" placeholder="What's your event called?" value={title} onChange={(e) => setTitle(e.target.value)} />
                 </div>
 
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                     <div className="space-y-2">
-                        <Label htmlFor="description" className="text-lg font-semibold">Description <span className="text-destructive">*</span></Label>
+                        <Label htmlFor="description" className="text-lg font-semibold">Description</Label>
                         <Textarea
                             id="description"
                             placeholder="Tell us more about your event..."
@@ -409,7 +400,7 @@ export default function CreateEventPage() {
                         <div className="space-y-2">
                              <Label htmlFor="date" className="text-lg font-semibold flex items-center">
                                 <CalendarIcon className="mr-2 h-5 w-5 text-primary"/>
-                                Date & Time <span className="text-destructive">*</span>
+                                Date & Time
                             </Label>
                             <Popover open={isDatePopoverOpen} onOpenChange={setIsDatePopoverOpen}>
                                 <PopoverTrigger asChild>
@@ -539,7 +530,7 @@ export default function CreateEventPage() {
                     <div className="space-y-2">
                         <Label className="text-lg font-semibold flex items-center">
                             <List className="mr-2 h-5 w-5 text-primary"/>
-                            Category <span className="text-destructive">*</span>
+                            Category
                         </Label>
                         <Combobox
                             items={categories}
@@ -699,7 +690,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    
 
     
