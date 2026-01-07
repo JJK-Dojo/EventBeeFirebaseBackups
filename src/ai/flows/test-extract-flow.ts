@@ -52,7 +52,8 @@ const testExtractFlow = ai.defineFlow(
   async (input) => {
     // This flow will return the raw output from the prompt for debugging.
     const { raw } = await testPrompt(input);
-    return raw.candidates[0].message.parts;
+    // Return the first candidate to inspect its contents (message, safety ratings, etc.)
+    return raw.candidates[0];
   }
 );
 
