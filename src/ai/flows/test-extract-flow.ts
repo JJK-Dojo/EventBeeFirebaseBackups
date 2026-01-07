@@ -31,7 +31,7 @@ const testPrompt = ai.definePrompt({
 });
 
 
-export const testExtractFlow = ai.defineFlow(
+const testExtractFlow = ai.defineFlow(
   {
     name: 'testExtractFlow',
     inputSchema: ExtractEventDetailsInputSchema,
