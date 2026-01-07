@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Image as ImageIcon,
@@ -126,37 +126,43 @@ const countries = [{ value: 'India', label: 'India' }];
 // Function to robustly parse date strings from AI
 const parseDateString = (dateString: string): Date | null => {
     if (!dateString) return null;
-
     // Try ISO format first, as it's the most reliable
     let date = parseISO(dateString);
     if (!isNaN(date.getTime())) return date;
     
-    // Define a list of common formats to try
     const formats = [
-        'MM/dd/yyyy',
-        'dd/MM/yyyy',
-        'yyyy-MM-dd',
-        'MM-dd-yyyy',
-        'dd-MM-yyyy',
-        'MMMM d, yyyy',
-        'd MMMM yyyy',
-        'yyyy, MMMM d',
-        'MMMM d yyyy',
+        'MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM-dd-yyyy',
+        'dd-MM-yyyy', 'MMMM d, yyyy', 'd MMMM yyyy', 'yyyy, MMMM d',
+        'MMMM d yyyy', 'M/d/yy', 'M/d/yyyy',
     ];
-
-    // Try parsing with different formats from date-fns
     for (const format of formats) {
         date = parse(dateString, format, new Date());
         if (!isNaN(date.getTime())) return date;
     }
-
-    // Finally, try the generic Date constructor as a last resort
-    // This can be unpredictable but is a good fallback.
     date = new Date(dateString);
     if (!isNaN(date.getTime())) return date;
-
-    return null; // Return null if all parsing attempts fail
+    return null;
 }
+
+// Function to convert an image to a JPEG data URI
+const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return reject(new Error('Could not get canvas context'));
+            }
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = (err) => reject(err);
+        img.src = dataUrl;
+    });
+};
 
 
 export default function CreateEventPage() {
@@ -206,7 +212,10 @@ export default function CreateEventPage() {
 
     setIsExtracting(true);
     try {
-      const result = await extractEventDetailsFromImage({ imageDataUri: imagePreview });
+      // Convert image to JPEG before sending to AI
+      const jpegDataUri = await toJpegDataURL(imagePreview);
+
+      const result = await extractEventDetailsFromImage({ imageDataUri: jpegDataUri });
       
       setTitle(result.title);
       setDescription(result.description);
@@ -690,5 +699,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    
