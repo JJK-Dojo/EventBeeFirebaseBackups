@@ -11,13 +11,42 @@ import type { FilterState } from '@/components/event-filters';
 
 export default function Home() {
   const { events: allEvents } = useEvents();
+  const [sortOption, setSortOption] = useState('recent');
   
-  // Memoize sorted events to avoid re-sorting on every render
   const sortedEvents = React.useMemo(() => {
-    return [...allEvents].sort(
-      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
-  }, [allEvents]);
+    const now = new Date();
+    const threeDays = new Date(now);
+    threeDays.setDate(now.getDate() + 3);
+    const fiveDays = new Date(now);
+    fiveDays.setDate(now.getDate() + 5);
+    const sixDays = new Date(now);
+    sixDays.setDate(now.getDate() + 6);
+    const tenDays = new Date(now);
+    tenDays.setDate(now.getDate() + 10);
+
+    return [...allEvents].sort((a, b) => {
+        switch (sortOption) {
+            case 'state':
+                return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
+            case 'district':
+                 return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
+            case 'recent':
+            default:
+                return new Date(b.date).getTime() - new Date(a.date).getTime();
+        }
+    }).filter(event => {
+        const eventDate = new Date(event.date);
+        switch (sortOption) {
+            case 'next3-5':
+                return eventDate >= threeDays && eventDate <= fiveDays;
+            case 'next6-10':
+                return eventDate >= sixDays && eventDate <= tenDays;
+            default:
+                return true;
+        }
+    });
+
+  }, [allEvents, sortOption]);
 
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
 
@@ -70,6 +99,10 @@ export default function Home() {
     setFilteredEvents(events);
   };
 
+  const handleSort = (sortValue: string) => {
+    setSortOption(sortValue);
+  }
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -83,7 +116,7 @@ export default function Home() {
               Hyperlocal events for your city, curated for students & young professionals.
             </p>
           </div>
-          <EventFilters onFilter={handleFilter} />
+          <EventFilters onFilter={handleFilter} onSortChange={handleSort} />
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {filteredEvents.map((event) => (
@@ -101,3 +134,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

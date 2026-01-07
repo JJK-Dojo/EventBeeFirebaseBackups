@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, ArrowUpDown } from 'lucide-react';
 import { Combobox } from '@/components/ui/combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
@@ -43,6 +43,14 @@ const eventTags = [
     { value: 'yoga', label: 'Yoga' },
     { value: 'book fair', label: 'Book Fair' },
     { value: 'trekking', label: 'Trekking' },
+];
+
+const sortOptions = [
+    { value: 'recent', label: 'Recent posts' },
+    { value: 'state', label: 'Location: State' },
+    { value: 'district', label: 'Location: District' },
+    { value: 'next3-5', label: 'For the next 3-5 days' },
+    { value: 'next6-10', label: 'For the next 6-10 days' },
 ];
 
 
@@ -103,10 +111,11 @@ export type FilterState = {
 }
 type EventFiltersProps = {
     onFilter?: (filters: FilterState) => void;
+    onSortChange?: (sortOption: string) => void;
 }
 
 
-export default function EventFilters({ onFilter }: EventFiltersProps) {
+export default function EventFilters({ onFilter, onSortChange }: EventFiltersProps) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedState, setSelectedState] = useState('');
@@ -115,6 +124,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
   const [searchInput, setSearchInput] = useState('');
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('recent');
 
   useEffect(() => {
     if (selectedState) {
@@ -126,6 +136,11 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
        setSelectedDistrict('');
     }
   }, [selectedState]);
+
+  useEffect(() => {
+    onSortChange?.(selectedSort);
+  }, [selectedSort, onSortChange]);
+
 
   const handleSearch = () => {
     onFilter?.({
@@ -203,7 +218,7 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
       <CardContent className="p-4 md:p-6">
         <div className="grid grid-cols-1 gap-6">
           <div className="flex flex-col gap-4">
-            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div className="grid w-full items-center gap-1.5">
                     <Label htmlFor="search">Search events</Label>
                     <MultiSelectCombobox 
@@ -226,6 +241,17 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
                         noResultsText="No categories found."
                         value={selectedCategory}
                         onValueChange={setSelectedCategory}
+                    />
+                </div>
+                <div className="grid w-full items-center gap-1.5">
+                    <Label>Sort by</Label>
+                     <Combobox 
+                        items={sortOptions} 
+                        placeholder="Sort by..."
+                        searchPlaceholder="Search sort options..."
+                        noResultsText="No options found."
+                        value={selectedSort}
+                        onValueChange={setSelectedSort}
                     />
                 </div>
             </div>
@@ -300,3 +326,5 @@ export default function EventFilters({ onFilter }: EventFiltersProps) {
     </Card>
   );
 }
+
+    
