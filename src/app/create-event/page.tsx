@@ -24,7 +24,7 @@ import {
   MessageCircle,
   Ghost
 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { format, parse, parseISO } from 'date-fns';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -123,6 +123,39 @@ const indianStatesAndDistricts: Record<string, string[]> = {
 const states = Object.keys(indianStatesAndDistricts).map(state => ({ value: state, label: state }));
 const countries = [{ value: 'India', label: 'India' }];
 
+// Function to robustly parse date strings from AI
+const parseDateString = (dateString: string): Date | null => {
+    // Try ISO format first (YYYY-MM-DD)
+    let date = parseISO(dateString);
+    if (!isNaN(date.getTime())) return date;
+    
+    // Define a list of common formats to try
+    const formats = [
+        'MM/dd/yyyy',
+        'dd/MM/yyyy',
+        'yyyy-MM-dd',
+        'MM-dd-yyyy',
+        'dd-MM-yyyy',
+        'MMMM d, yyyy',
+        'd MMMM yyyy',
+        'yyyy, MMMM d',
+        'MMMM d yyyy',
+    ];
+
+    // Try parsing with different formats
+    for (const format of formats) {
+        date = parse(dateString, format, new Date());
+        if (!isNaN(date.getTime())) return date;
+    }
+
+    // Finally, try the generic Date constructor as a last resort
+    date = new Date(dateString);
+    if (!isNaN(date.getTime())) return date;
+
+    return null; // Return null if all parsing fails
+}
+
+
 export default function CreateEventPage() {
   const router = useRouter();
   const { addEvent } = useEvents();
@@ -176,26 +209,16 @@ export default function CreateEventPage() {
       setDescription(result.description);
       
       if (result.date) {
-        try {
-          // Attempt to parse as ISO string first
-          let parsedDate = parseISO(result.date);
-          // Check if the parsed date is valid
-          if (isNaN(parsedDate.getTime())) {
-            // Fallback for other common date formats
-            parsedDate = new Date(result.date);
-          }
-
-          if (isNaN(parsedDate.getTime())) {
-             throw new Error(`Invalid date format: ${result.date}`);
-          }
-
+        const parsedDate = parseDateString(result.date);
+        
+        if (parsedDate) {
           handleDateSelect(parsedDate);
-        } catch (dateError) {
-          console.error("Could not parse date from AI:", result.date, dateError);
+        } else {
+           console.error("Could not parse date from AI:", result.date);
           toast({
             variant: "destructive",
-            title: "AI Error",
-            description: `The AI suggested an invalid date: ${result.date}. Please set it manually.`
+            title: "AI Error: Invalid Date",
+            description: `The AI suggested a date format that could not be understood: "${result.date}". Please set the date manually.`
           })
         }
       }
@@ -673,5 +696,7 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
 
     
