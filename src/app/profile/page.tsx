@@ -2,7 +2,7 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   User,
   Edit,
@@ -21,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Combobox } from '@/components/ui/combobox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useEvents } from '@/lib/event-store';
@@ -45,6 +46,14 @@ type UserEvent = Event & {
     comments: number;
     bees: number;
 }
+
+const sortOptions = [
+    { value: 'recent', label: 'Recent posts' },
+    { value: 'state', label: 'Location: State' },
+    { value: 'district', label: 'Location: District' },
+    { value: 'next3-5', label: 'For the next 3-5 days' },
+    { value: 'next6-10', label: 'For the next 6-10 days' },
+];
 
 
 function EventListItem({ event }: { event: UserEvent }) {
@@ -103,6 +112,7 @@ export default function ProfilePage() {
     const { events } = useEvents();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState(0);
+    const [sortOption, setSortOption] = useState('recent');
 
     useEffect(() => {
         const eventsWithStats = events.map((event) => ({
@@ -115,9 +125,54 @@ export default function ProfilePage() {
         setTotalBees(eventsWithStats.reduce((acc, event) => acc + event.bees, 0) + 500);
     }, [events]);
 
+    const sortedUserEvents = useMemo(() => {
+        const now = new Date();
+        const threeDays = new Date(now);
+        threeDays.setDate(now.getDate() + 3);
+        const fiveDays = new Date(now);
+        fiveDays.setDate(now.getDate() + 5);
+        const sixDays = new Date(now);
+        sixDays.setDate(now.getDate() + 6);
+        const tenDays = new Date(now);
+        tenDays.setDate(now.getDate() + 10);
 
-    const publishedEvents = userEvents.filter(e => e.status === 'published');
-    const draftEvents = userEvents.filter(e => e.status === 'draft');
+        return [...userEvents].sort((a, b) => {
+            switch (sortOption) {
+                case 'state':
+                    return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
+                case 'district':
+                     return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
+                case 'recent':
+                default: {
+                    const now = new Date().getTime();
+                    const aDate = new Date(a.date).getTime();
+                    const bDate = new Date(b.date).getTime();
+                    
+                    const aIsFuture = aDate >= now;
+                    const bIsFuture = bDate >= now;
+
+                    if (aIsFuture && !bIsFuture) return -1;
+                    if (!aIsFuture && bIsFuture) return 1;
+
+                    return bDate - aDate;
+                }
+            }
+        }).filter(event => {
+            const eventDate = new Date(event.date);
+            switch (sortOption) {
+                case 'next3-5':
+                    return eventDate >= threeDays && eventDate <= fiveDays;
+                case 'next6-10':
+                    return eventDate >= sixDays && eventDate <= tenDays;
+                default:
+                    return true;
+            }
+        });
+    }, [userEvents, sortOption]);
+
+
+    const publishedEvents = sortedUserEvents.filter(e => e.status === 'published');
+    const draftEvents = sortedUserEvents.filter(e => e.status === 'draft');
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -153,13 +208,25 @@ export default function ProfilePage() {
               </div>
             </CardHeader>
             <CardContent className="p-6">
-                <div className="mb-8">
-                    <div className="mb-6 flex items-center gap-3">
-                        <FileCheck className="h-6 w-6 text-primary" />
-                        <h2 className="text-2xl font-bold font-headline">
-                            Published Events
-                        </h2>
-                        <Badge variant="outline">{publishedEvents.length} Events</Badge>
+                 <div className="mb-8">
+                    <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                       <div className="flex items-center gap-3">
+                         <FileCheck className="h-6 w-6 text-primary" />
+                         <h2 className="text-2xl font-bold font-headline">
+                             Published Events
+                         </h2>
+                         <Badge variant="outline">{publishedEvents.length} Events</Badge>
+                       </div>
+                       <div className="w-full sm:w-auto sm:min-w-[200px]">
+                         <Combobox
+                            items={sortOptions}
+                            value={sortOption}
+                            onValueChange={setSortOption}
+                            placeholder="Sort by..."
+                            searchPlaceholder="Search options..."
+                            noResultsText="No options found."
+                         />
+                       </div>
                     </div>
 
                     {publishedEvents.length > 0 ? (
@@ -211,3 +278,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+    
