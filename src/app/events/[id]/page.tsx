@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
+import { use } from 'react';
 
-export default function EventDetailPage({ params: { id } }: { params: { id: string } }) {
+export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const { events } = useEvents();
   const event = events.find((e) => e.id === id);
 
