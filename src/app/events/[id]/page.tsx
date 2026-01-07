@@ -12,8 +12,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
 
 export default function EventDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const { events } = useEvents();
-  const event = events.find((e) => e.id === params.id);
+  const event = events.find((e) => e.id === id);
 
   if (!event) {
     notFound();
