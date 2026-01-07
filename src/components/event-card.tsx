@@ -22,7 +22,7 @@ export default function EventCard({ event }: { event: Event }) {
               src={event.imageUrl}
               alt={event.title}
               fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              className="object-contain transition-transform duration-300 group-hover:scale-105"
               data-ai-hint={event.imageHint}
             />
           </div>
