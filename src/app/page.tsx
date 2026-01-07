@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEvents } from '@/lib/event-store';
 import EventCard from '@/components/event-card';
 import EventFilters from '@/components/event-filters';
