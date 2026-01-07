@@ -77,6 +77,26 @@ export default function DashboardPage() {
       <Header />
       <main className="flex-1">
         <div className="container mx-auto max-w-5xl px-4 py-8">
+            <Card className="bg-muted/30 mb-8">
+                <CardHeader>
+                    <CardTitle>Get Started</CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-wrap gap-4">
+                   <Link href="/login" passHref>
+                        <Button variant="outline">
+                            <LogIn className="mr-2 h-4 w-4"/>
+                            Login as User
+                        </Button>
+                    </Link>
+                    <Link href="/signup" passHref>
+                        <Button variant="outline">
+                            <User className="mr-2 h-4 w-4"/>
+                            Sign Up
+                        </Button>
+                    </Link>
+                </CardContent>
+            </Card>
+
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
                     <Avatar className="h-16 w-16 border-2 border-primary">
@@ -102,58 +122,33 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <FileCheck className="h-6 w-6 text-primary"/>
-                                Your 10 Recent Posts
-                            </CardTitle>
-                             <CardDescription>
-                                A quick summary of the latest events you've created.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             {recentEvents.length > 0 ? (
-                                <div className="space-y-4">
-                                {recentEvents.map((event) => (
-                                <EventListItem key={event.id} event={event} />
-                                ))}
-                                </div>
-                            ) : (
-                                <div className="py-12 text-center rounded-lg border-2 border-dashed">
-                                <p className="text-lg font-semibold">No events created yet</p>
-                                <p className="text-muted-foreground">
-                                    Click "Create Event" to get started.
-                                </p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="space-y-4">
-                    <Card className="bg-muted/30">
-                        <CardHeader>
-                            <CardTitle>Get Started</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                           <Link href="/login" passHref>
-                                <Button className="w-full justify-start" variant="ghost">
-                                    <LogIn className="mr-3 h-5 w-5"/>
-                                    Login as User
-                                </Button>
-                            </Link>
-                            <Link href="/signup" passHref>
-                                <Button className="w-full justify-start" variant="ghost">
-                                    <User className="mr-3 h-5 w-5"/>
-                                    Sign Up
-                                </Button>
-                            </Link>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <FileCheck className="h-6 w-6 text-primary"/>
+                        Your 10 Recent Posts
+                    </CardTitle>
+                     <CardDescription>
+                        A quick summary of the latest events you've created.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                     {recentEvents.length > 0 ? (
+                        <div className="space-y-4">
+                        {recentEvents.map((event) => (
+                        <EventListItem key={event.id} event={event} />
+                        ))}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center rounded-lg border-2 border-dashed">
+                        <p className="text-lg font-semibold">No events created yet</p>
+                        <p className="text-muted-foreground">
+                            Click "Create Event" to get started.
+                        </p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
       </main>
     </div>
