@@ -1,8 +1,9 @@
 
 'use client';
 
+import { use } from 'react';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { format } from 'date-fns';
 import { CalendarDays, MapPin, Navigation, User, Clock } from 'lucide-react';
 import { useEvents } from '@/lib/event-store';
@@ -10,10 +11,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
-import { use } from 'react';
 
-export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EventDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { events } = useEvents();
   const event = events.find((e) => e.id === id);
 

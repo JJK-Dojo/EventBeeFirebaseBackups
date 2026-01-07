@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useEvents } from '@/lib/event-store';
 import EventCard from '@/components/event-card';
 import EventFilters from '@/components/event-filters';
@@ -11,11 +11,20 @@ import type { FilterState } from '@/components/event-filters';
 
 export default function Home() {
   const { events: allEvents } = useEvents();
-  const sortedEvents = [...allEvents].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  
+  // Memoize sorted events to avoid re-sorting on every render
+  const sortedEvents = React.useMemo(() => {
+    return [...allEvents].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [allEvents]);
 
   const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
+
+  // Update filtered events if the base sortedEvents list changes
+  useEffect(() => {
+    setFilteredEvents(sortedEvents);
+  }, [sortedEvents]);
 
   const handleFilter = (filters: FilterState) => {
     const {
