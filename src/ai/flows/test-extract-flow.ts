@@ -9,10 +9,22 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { 
-    ExtractEventDetailsInputSchema, 
-    ExtractEventDetailsOutputSchema 
-} from './extract-event-details';
+
+// Schemas are defined here because they cannot be exported from a 'use server' file.
+const ExtractEventDetailsInputSchema = z.object({
+  imageDataUri: z
+    .string()
+    .describe(
+      "A photo of an event flyer, poster, or screenshot, as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
+});
+
+const ExtractEventDetailsOutputSchema = z.object({
+  title: z.string().describe('The extracted title of the event. Should be concise.'),
+  description: z.string().describe('A detailed description extracted from the event flyer. It can be multi-paragraph.'),
+  date: z.string().optional().describe('The suggested date of the event in ISO 8601 format (YYYY-MM-DD), if found.'),
+});
+
 
 const testPrompt = ai.definePrompt({
     name: 'testExtractPrompt',

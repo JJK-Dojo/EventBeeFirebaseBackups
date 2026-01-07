@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const ExtractEventDetailsInputSchema = z.object({
+const ExtractEventDetailsInputSchema = z.object({
   imageDataUri: z
     .string()
     .describe(
@@ -21,7 +21,7 @@ export const ExtractEventDetailsInputSchema = z.object({
 });
 export type ExtractEventDetailsInput = z.infer<typeof ExtractEventDetailsInputSchema>;
 
-export const ExtractEventDetailsOutputSchema = z.object({
+const ExtractEventDetailsOutputSchema = z.object({
   title: z.string().describe('The extracted title of the event. Should be concise.'),
   description: z.string().describe('A detailed description extracted from the event flyer. It can be multi-paragraph.'),
   date: z.string().optional().describe('The suggested date of the event in ISO 8601 format (YYYY-MM-DD), if found.'),
