@@ -24,7 +24,7 @@ export type ExtractEventDetailsInput = z.infer<typeof ExtractEventDetailsInputSc
 const ExtractEventDetailsOutputSchema = z.object({
   title: z.string().describe('The extracted title of the event. Should be concise.'),
   description: z.string().describe('A detailed description extracted from the event flyer. It can be multi-paragraph.'),
-  date: z.string().optional().describe('The suggested date of the event in ISO 8601 format (YYYY-MM-DD), if found.'),
+  date: z.string().optional().describe('The suggested date of the event in ISO 8601 format (YYYY-MM-DD), if found.').transform(val => (val === 'null' || val === '') ? undefined : val),
 });
 export type ExtractEventDetailsOutput = z.infer<typeof ExtractEventDetailsOutputSchema>;
 
@@ -45,7 +45,7 @@ const prompt = ai.definePrompt({
     Analyze the image and extract the following details:
     1.  **Event Title**: The main title of the event.
     2.  **Description**: The full descriptive text about the event.
-    3.  **Date**: The date of the event. If you find a date, please format it as YYYY-MM-DD. If the year is not specified, assume the current year.
+    3.  **Date**: The date of the event. If you find a date, please format it as YYYY-MM-DD. If the year is not specified, assume the current year. If no date is found, return null.
 
     Return the information in the structured output format.
 
