@@ -142,6 +142,7 @@ function EventListItem({ event }: { event: UserEvent }) {
 export default function ProfilePage() {
     const { events } = useEvents();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
+    const [sortedUserEvents, setSortedUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);
     const [sortOption, setSortOption] = useState('today');
 
@@ -161,7 +162,7 @@ export default function ProfilePage() {
     }, [events]);
 
 
-    const sortedUserEvents = useMemo(() => {
+    useEffect(() => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const threeDays = new Date(now);
@@ -172,18 +173,28 @@ export default function ProfilePage() {
         sixDays.setDate(now.getDate() + 6);
         const tenDays = new Date(now);
         tenDays.setDate(now.getDate() + 10);
-        
-        let eventsToFilter = [...userEvents];
+
+        let filtered = [...userEvents];
 
         if (sortOption === 'today') {
-            eventsToFilter = eventsToFilter.filter(event => {
+            filtered = filtered.filter(event => {
                 const eventCreationDate = new Date(event.createdAt);
                 const eventDay = new Date(eventCreationDate.getFullYear(), eventCreationDate.getMonth(), eventCreationDate.getDate());
                 return eventDay.getTime() === today.getTime();
             });
+        } else if (sortOption === 'next3-5') {
+            filtered = filtered.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate >= threeDays && eventDate <= fiveDays;
+            });
+        } else if (sortOption === 'next6-10') {
+            filtered = filtered.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate >= sixDays && eventDate <= tenDays;
+            });
         }
-
-        return eventsToFilter.sort((a, b) => {
+        
+        filtered.sort((a, b) => {
             switch (sortOption) {
                 case 'state':
                     return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
@@ -197,19 +208,9 @@ export default function ProfilePage() {
                     return timeB - timeA;
                 }
             }
-        }).filter(event => {
-            if (sortOption === 'today') return true; // Already filtered above
-
-            const eventDate = new Date(event.date);
-            switch (sortOption) {
-                case 'next3-5':
-                    return eventDate >= threeDays && eventDate <= fiveDays;
-                case 'next6-10':
-                    return eventDate >= sixDays && eventDate <= tenDays;
-                default:
-                    return true;
-            }
         });
+
+        setSortedUserEvents(filtered);
     }, [userEvents, sortOption]);
 
     const eventsByStatus = (status: Event['status']) => sortedUserEvents.filter(e => e.status === status);
