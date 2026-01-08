@@ -7,7 +7,6 @@ import {
   FileCheck,
   CheckCircle,
   XCircle,
-  MessageSquare,
 } from 'lucide-react';
 import Header from '@/components/header';
 import {
@@ -34,6 +33,9 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, doc, query } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 
 const statusBadges: Record<Event['status'], React.ReactNode> = {
@@ -139,25 +141,37 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 }
 
 export default function AdminPage() {
-    const { events, updateEvent } = { events: [], updateEvent: (e: any) => {} };
+    const firestore = useFirestore();
     const { toast } = useToast();
+    
+    const eventsQuery = useMemoFirebase(() => {
+        return query(collection(firestore, 'events'));
+    }, [firestore]);
+
+    const { data: events, isLoading } = useCollection<Event>(eventsQuery);
+
 
     const sortedEvents = useMemo(() => {
+        if (!events) return [];
         return [...events].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [events]);
 
     const handleApprove = (eventId: string) => {
+        if (!events) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
-            updateEvent({ ...eventToUpdate, status: 'published' });
+            const eventRef = doc(firestore, 'events', eventId);
+            updateDocumentNonBlocking(eventRef, { status: 'published' });
             toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
         }
     };
 
     const handleDeny = (eventId: string, feedback: string) => {
+        if (!events) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
-            updateEvent({ ...eventToUpdate, status: 'denied', feedback });
+            const eventRef = doc(firestore, 'events', eventId);
+            updateDocumentNonBlocking(eventRef, { status: 'denied', feedback });
             toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
         }
     };

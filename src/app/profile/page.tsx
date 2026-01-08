@@ -32,6 +32,8 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 
 
 const BeeIcon = ({ className }: { className?: string }) => (
@@ -139,16 +141,22 @@ function EventListItem({ event }: { event: UserEvent }) {
 }
 
 export default function ProfilePage() {
-    const { events, isLoading } = { events: [], isLoading: false };
+    const firestore = useFirestore();
+    const { user, isUserLoading } = useUser();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [sortedUserEvents, setSortedUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);
     const [sortOption, setSortOption] = useState('today');
 
+    const userEventsQuery = useMemoFirebase(() => {
+        if (!user) return null;
+        return query(collection(firestore, 'events'), where('organizer.id', '==', user.uid));
+    }, [firestore, user]);
+
+    const { data: events, isLoading } = useCollection<Event>(userEventsQuery);
+
     useEffect(() => {
-        // Generate stats and calculate totalBees only on the client-side
-        // to avoid hydration errors from Math.random()
-        if (!isLoading) {
+        if (!isLoading && events) {
             const eventsWithStats = events.map((event) => ({
                 ...event,
                 views: Math.floor(Math.random() * 5000) + 200,
@@ -232,18 +240,18 @@ export default function ProfilePage() {
               <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
                 <Avatar className="h-24 w-24 border-4 border-background shadow-md">
                   <AvatarImage
-                    src="https://picsum.photos/seed/9/100/100"
-                    alt="@guest"
+                    src={user?.photoURL || "https://picsum.photos/seed/9/100/100"}
+                    alt={user?.displayName || "User"}
                     data-ai-hint="person portrait"
                   />
-                  <AvatarFallback>G</AvatarFallback>
+                  <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <CardTitle className="font-headline text-3xl">
-                    Guest User
+                    {user?.displayName || "Guest User"}
                   </CardTitle>
                   <CardDescription className="mt-1">
-                    guest@example.com
+                    {user?.email || "guest@example.com"}
                   </CardDescription>
                   <div className="mt-4 flex items-center justify-center gap-2 sm:justify-start">
                     <BeeIcon className="h-6 w-6 text-primary" />

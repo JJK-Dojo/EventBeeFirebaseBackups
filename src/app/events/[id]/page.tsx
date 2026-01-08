@@ -13,19 +13,38 @@ import {
   DialogContent,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import type { Event } from '@/lib/types';
+import { doc } from 'firebase/firestore';
 
 export default function EventDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { events } = { events: [] };
-  const event = events.find((e) => e.id === id);
+  const firestore = useFirestore();
+  
+  const eventRef = useMemoFirebase(() => {
+    if (!id) return null;
+    return doc(firestore, 'events', id);
+  }, [firestore, id]);
 
-  if (!event) {
-    // This will be handled differently once we have real data fetching
-    // notFound();
+  const { data: event, isLoading } = useDoc<Event>(eventRef);
+
+  if (isLoading) {
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-background">
+          <Header />
+          <main className="flex-1">
+            <div className="container mx-auto px-4 py-8 text-center">
+              <p>Loading event...</p>
+            </div>
+            </main>
+        </div>
+    )
   }
 
   if (!event) {
+    // In a real app, you might want to show a more descriptive "not found" page
+    // notFound(); 
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
           <Header />

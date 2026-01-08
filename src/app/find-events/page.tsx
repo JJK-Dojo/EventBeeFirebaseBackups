@@ -1,131 +1,109 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import EventCard from '@/components/event-card';
 import EventFilters from '@/components/event-filters';
 import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
 
 export default function FindEventsPage() {
-  const { events: allEvents, isLoading } = { events: [], isLoading: false };
+  const firestore = useFirestore();
   const [sortOption, setSortOption] = useState('recent');
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
-  useEffect(() => {
-    if (isLoading) return;
+  const eventsQuery = useMemoFirebase(() => {
+    const now = new Date();
+    let q = query(collection(firestore, 'events'), where('status', '==', 'published'));
+
+    if (activeFilters) {
+        const { category, state, district, searchText, tags } = activeFilters;
+        if (category) {
+            q = query(q, where('category', '==', category));
+        }
+        // Firestore does not support partial string matches ('contains' for location)
+        // Client-side filtering will be needed for state, district, and searchText
+        if (tags.length > 0) {
+            q = query(q, where('tags', 'array-contains-any', tags));
+        }
+    }
+    
+    // Sorting logic
+    switch (sortOption) {
+        case 'recent':
+            q = query(q, orderBy('createdAt', 'desc'));
+            break;
+        case 'today':
+            const todayStart = new Date(now.setHours(0, 0, 0, 0));
+            const todayEnd = new Date(now.setHours(23, 59, 59, 999));
+            q = query(q, where('createdAt', '>=', todayStart), where('createdAt', '<=', todayEnd), orderBy('createdAt', 'desc'));
+            break;
+        case 'next3-5':
+            const threeDays = new Date(now);
+            threeDays.setDate(now.getDate() + 3);
+            const fiveDays = new Date(now);
+            fiveDays.setDate(now.getDate() + 5);
+            q = query(q, where('date', '>=', threeDays), where('date', '<=', fiveDays), orderBy('date'));
+            break;
+        case 'next6-10':
+             const sixDays = new Date(now);
+            sixDays.setDate(now.getDate() + 6);
+            const tenDays = new Date(now);
+            tenDays.setDate(now.getDate() + 10);
+            q = query(q, where('date', '>=', sixDays), where('date', '<=', tenDays), orderBy('date'));
+            break;
+        // State and District sorting must be done client-side
+        default:
+            q = query(q, orderBy('date', 'desc'));
+    }
+
+    return q;
+  }, [firestore, activeFilters, sortOption]);
+
+  const { data: allEvents, isLoading } = useCollection<Event>(eventsQuery);
+
+  const filteredEvents = useMemo(() => {
+    if (!allEvents) return [];
 
     let eventsToDisplay = [...allEvents];
 
+    // Client-side filtering for location because Firestore doesn't support substring matches easily.
     if (activeFilters) {
-        const {
-            tags,
-            category,
-            state,
-            district,
-            searchText,
-        } = activeFilters;
-
-        if (tags.length > 0) {
-            eventsToDisplay = eventsToDisplay.filter(event => 
-                tags.some(tag => (event.title?.toLowerCase() || '').includes(tag) || (event.description?.toLowerCase() || '').includes(tag))
-            );
-        }
-        
-        if (category) {
-            eventsToDisplay = eventsToDisplay.filter(event => (event.category?.toLowerCase() || '') === category.toLowerCase());
-        }
-
-        if (state) {
-            eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
-        }
-
-        if (district) {
-            eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
-        }
-
-        if (searchText) {
-            const lowercasedSearch = searchText.toLowerCase();
-            const isPincode = /^\d{6}$/.test(lowercasedSearch);
-            
-            eventsToDisplay = eventsToDisplay.filter(event => {
-                if (isPincode) {
-                    return (event.location || '').includes(lowercasedSearch);
-                }
-                return (event.location?.toLowerCase() || '').includes(lowercasedSearch) || (event.title?.toLowerCase() || '').includes(lowercasedSearch)
-            });
-        }
-    }
-    
-    // Filter only published events
-    eventsToDisplay = eventsToDisplay.filter(event => event.status === 'published');
-
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const threeDays = new Date(now);
-    threeDays.setDate(now.getDate() + 3);
-    const fiveDays = new Date(now);
-    fiveDays.setDate(now.getDate() + 5);
-    const sixDays = new Date(now);
-    sixDays.setDate(now.getDate() + 6);
-    const tenDays = new Date(now);
-    tenDays.setDate(now.getDate() + 10);
-    
-    let eventsToSort = [...eventsToDisplay];
-
-    if (sortOption === 'today') {
-      eventsToSort = eventsToSort.filter(event => {
-        const eventCreationDate = new Date(event.createdAt);
-        const eventDay = new Date(eventCreationDate.getFullYear(), eventCreationDate.getMonth(), eventCreationDate.getDate());
-        return eventDay.getTime() === today.getTime();
-      });
+      const { state, district, searchText } = activeFilters;
+      if (state) {
+          eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
+      }
+      if (district) {
+          eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
+      }
+      if (searchText) {
+          const lowercasedSearch = searchText.toLowerCase();
+          eventsToDisplay = eventsToDisplay.filter(event => 
+              (event.location?.toLowerCase() || '').includes(lowercasedSearch) ||
+              (event.title?.toLowerCase() || '').includes(lowercasedSearch)
+          );
+      }
     }
 
-    const sorted = eventsToSort.sort((a, b) => {
-        switch (sortOption) {
-            case 'state':
-                return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
-            case 'district':
-                 return (a.location.split(',')[0] || '').localeCompare(b.location.split(',')[0] || '');
-            case 'recent':
-            case 'today': // Also sort today's posts by time
-            default: {
-                const aDate = new Date(a.date).getTime();
-                const bDate = new Date(b.date).getTime();
-                
-                // For "recent", we use creation date. For others, event date.
-                const timeA = sortOption === 'recent' ? new Date(a.createdAt).getTime() : aDate;
-                const timeB = sortOption === 'recent' ? new Date(b.createdAt).getTime() : bDate;
-                
-                const now = new Date().getTime();
-                const aIsFuture = aDate >= now;
-                const bIsFuture = bDate >= now;
-
-                if (aIsFuture && !bIsFuture) return -1;
-                if (!aIsFuture && bIsFuture) return 1;
-
-                return timeB - timeA;
+    // Client-side sorting for location
+    if (sortOption === 'state' || sortOption === 'district') {
+       eventsToDisplay.sort((a, b) => {
+            const aLocation = a.location.split(', ');
+            const bLocation = b.location.split(', ');
+            if (sortOption === 'state') {
+                return (aLocation[1] || '').localeCompare(bLocation[1] || '');
             }
-        }
-    }).filter(event => {
-        // This filter is for date ranges, not for "today" which is handled above
-        const eventDate = new Date(event.date);
-        switch (sortOption) {
-            case 'next3-5':
-                return eventDate >= threeDays && eventDate <= fiveDays;
-            case 'next6-10':
-                return eventDate >= sixDays && eventDate <= tenDays;
-            default:
-                return true;
-        }
-    });
+            return (aLocation[0] || '').localeCompare(bLocation[0] || '');
+        });
+    }
+    
+    return eventsToDisplay;
+  }, [allEvents, activeFilters, sortOption]);
 
-    setFilteredEvents(sorted);
-
-  }, [allEvents, sortOption, activeFilters, isLoading]);
 
   const handleFilter = (filters: FilterState) => {
     setActiveFilters(filters);
