@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { PlusCircle, LogOut, User, Search } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from './logo';
 import dynamic from 'next/dynamic';
@@ -19,9 +19,19 @@ export default function Header() {
         <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/find-events" passHref>
              <Button
+                variant="ghost"
+                className="hidden sm:flex hover:opacity-90"
+                aria-label="Find Event"
+              >
+                <Search className="mr-2 h-5 w-5" />
+                Find Event
+              </Button>
+          </Link>
+          <Link href="/find-events" passHref>
+             <Button
                 size="icon"
                 variant="ghost"
-                className="flex hover:opacity-90"
+                className="flex sm:hidden hover:opacity-90"
                 aria-label="Find Event"
               >
                 <Search className="h-5 w-5" />
