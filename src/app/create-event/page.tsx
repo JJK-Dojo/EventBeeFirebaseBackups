@@ -8,7 +8,7 @@ import {
   Link as LinkIcon,
   MapPin,
   Youtube,
-  Calendar as CalendarIcon,
+  CalendarIcon,
   Tag,
   List,
   Clapperboard,
