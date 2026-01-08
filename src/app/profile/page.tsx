@@ -53,8 +53,8 @@ type UserEvent = Event & {
 }
 
 const sortOptions = [
-    { value: 'recent', label: 'Recent posts' },
     { value: 'today', label: 'Posted Today' },
+    { value: 'recent', label: 'Recent posts' },
     { value: 'state', label: 'Location: State' },
     { value: 'district', label: 'Location: District' },
     { value: 'next3-5', label: 'For the next 3-5 days' },
@@ -143,7 +143,7 @@ export default function ProfilePage() {
     const { events } = useEvents();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);
-    const [sortOption, setSortOption] = useState('recent');
+    const [sortOption, setSortOption] = useState('today');
 
     useEffect(() => {
         // Generate stats and calculate totalBees only on the client-side
