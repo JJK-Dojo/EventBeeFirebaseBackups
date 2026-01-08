@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Image as ImageIcon,
   Link as LinkIcon,
@@ -22,7 +22,9 @@ import {
   Twitter,
   Linkedin,
   MessageCircle,
-  Ghost
+  Ghost,
+  FileUp,
+  AlertCircle,
 } from 'lucide-react';
 import { format, parse, parseISO } from 'date-fns';
 import Header from '@/components/header';
@@ -37,6 +39,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Combobox } from '@/components/ui/combobox';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -167,8 +170,12 @@ const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
 
 export default function CreateEventPage() {
   const router = useRouter();
-  const { addEvent } = useEvents();
+  const searchParams = useSearchParams();
+  const { events, addEvent, updateEvent } = useEvents();
   const { toast } = useToast();
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
 
   // Form State
   const [title, setTitle] = useState('');
@@ -188,6 +195,25 @@ export default function CreateEventPage() {
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+
+  useEffect(() => {
+    const eventId = searchParams.get('edit');
+    if (eventId) {
+      const foundEvent = events.find(e => e.id === eventId);
+      if (foundEvent) {
+        setIsEditing(true);
+        setEventToEdit(foundEvent);
+        setTitle(foundEvent.title);
+        setDescription(foundEvent.description);
+        setDate(new Date(foundEvent.date));
+        setSelectedCategory(foundEvent.category);
+        setImagePreview(foundEvent.imageUrl);
+        // Note: Tags, location details might need more complex parsing if they are stored differently.
+        // For simplicity, we are not pre-filling tags and location.
+        setPincodeSearchInput(foundEvent.location);
+      }
+    }
+  }, [searchParams, events]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -212,9 +238,7 @@ export default function CreateEventPage() {
 
     setIsExtracting(true);
     try {
-      // Convert image to JPEG before sending to AI
       const jpegDataUri = await toJpegDataURL(imagePreview);
-
       const result = await extractEventDetailsFromImage({ imageDataUri: jpegDataUri });
       
       setTitle(result.title);
@@ -304,7 +328,6 @@ export default function CreateEventPage() {
   
   const handlePincodeLocationSelect = (postOffice: PostOffice) => {
     if (postOffice.State && !indianStatesAndDistricts[postOffice.State]) {
-      // Data from API is sometimes inconsistent, handle gracefully
       setSelectedState('');
       setSelectedDistrict('');
     } else {
@@ -345,32 +368,69 @@ export default function CreateEventPage() {
     }
   }
 
-  const handleSubmit = (status: 'published' | 'draft') => {
-    const newEvent: Event = {
-        id: new Date().getTime().toString(),
+  const handleSubmit = (status: 'pending' | 'draft') => {
+    if (isEditing && eventToEdit) {
+      // Logic for updating an existing event
+      const updatedEvent: Event = {
+        ...eventToEdit,
         title,
         description,
         date: date ? date.toISOString() : new Date().toISOString(),
-        createdAt: new Date().toISOString(),
         location: pincodeSearchInput,
         imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
-        imageHint: 'event image',
-        organizer: {
-            name: 'Guest User', // Replace with actual user data later
-            avatarUrl: 'https://picsum.photos/seed/9/40/40',
-        },
         category: categories.find(c => c.value === selectedCategory)?.label || 'General',
-        status,
-    };
+        status: status === 'pending' ? 'pending' : 'draft', // Resubmit as pending or save as draft
+        editCount: status === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
+        feedback: undefined, // Clear feedback on resubmission
+      };
 
-    addEvent(newEvent);
+      if (updatedEvent.editCount > 5 && status === 'pending') {
+        toast({
+            variant: "destructive",
+            title: "Edit Limit Reached",
+            description: "You have reached the maximum number of edits for this event.",
+        });
+        return;
+      }
+      
+      updateEvent(updatedEvent);
+      
+      toast({
+        title: `Event ${status === 'pending' ? 'Resubmitted' : 'Updated'}!`,
+        description: `${title} has been successfully updated.`,
+      });
 
-    toast({
-      title: `Event ${status === 'published' ? 'Published' : 'Saved'}!`,
-      description: `${title} has been successfully ${status === 'published' ? 'created' : 'saved as a draft'}.`,
-    });
+      router.push('/profile');
 
-    router.push(status === 'published' ? `/events/${newEvent.id}` : '/profile');
+    } else {
+      // Logic for creating a new event
+      const newEvent: Event = {
+          id: new Date().getTime().toString(),
+          title,
+          description,
+          date: date ? date.toISOString() : new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+          location: pincodeSearchInput,
+          imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
+          imageHint: 'event image',
+          organizer: {
+              name: 'Guest User', // Replace with actual user data later
+              avatarUrl: 'https://picsum.photos/seed/9/40/40',
+          },
+          category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+          status,
+          editCount: 0,
+      };
+
+      addEvent(newEvent);
+
+      toast({
+        title: `Event ${status === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
+        description: `${title} has been successfully ${status === 'pending' ? 'submitted' : 'saved'}.`,
+      });
+
+      router.push(status === 'pending' ? '/dashboard' : '/profile');
+    }
   }
 
 
@@ -382,14 +442,28 @@ export default function CreateEventPage() {
           <Card className="w-full">
             <CardHeader>
               <CardTitle className="font-headline text-2xl md:text-3xl">
-                Create a New Event
+                {isEditing ? 'Edit Your Event' : 'Create a New Event'}
               </CardTitle>
               <CardDescription>
-                Fill out the form below to add your event to EventBee.com.
+                {isEditing ? 'Update the details for your event below.' : 'Fill out the form below to submit your event for review.'}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+                
+                 {isEditing && eventToEdit?.status === 'denied' && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Event Denied</AlertTitle>
+                    <AlertDescription>
+                      Your event was denied for the following reason: <br/>
+                      <span className="font-medium">"{eventToEdit.feedback || 'No feedback provided.'}"</span>
+                      <br/> Please make the necessary changes and resubmit.
+                      ({eventToEdit.editCount}/5 edits used)
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-lg font-semibold">Event Title</Label>
                   <Input id="title" placeholder="What's your event called?" value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -687,9 +761,9 @@ export default function CreateEventPage() {
                     <Save className="mr-2 h-5 w-5" />
                     Save as Draft
                   </Button>
-                  <Button size="lg" className="w-full sm:w-auto" onClick={() => handleSubmit('published')}>
-                    <Clapperboard className="mr-2 h-5 w-5" />
-                    Create & Publish Event
+                  <Button size="lg" className="w-full sm:w-auto" onClick={() => handleSubmit('pending')}>
+                    <FileUp className="mr-2 h-5 w-5" />
+                    {isEditing ? 'Resubmit for Review' : 'Submit for Review'}
                   </Button>
                 </div>
               </form>

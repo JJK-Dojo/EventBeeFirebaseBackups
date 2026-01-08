@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -15,6 +15,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export default function UserMenu() {
+  // In a real app, you'd have logic to determine if the user is an admin
+  const isAdmin = true; 
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -45,6 +48,14 @@ export default function UserMenu() {
             <span>Profile</span>
           </DropdownMenuItem>
         </Link>
+        {isAdmin && (
+           <Link href="/admin">
+            <DropdownMenuItem>
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                <span>Admin Panel</span>
+            </DropdownMenuItem>
+           </Link>
+        )}
         <DropdownMenuSeparator />
         <Link href="/login">
           <DropdownMenuItem>

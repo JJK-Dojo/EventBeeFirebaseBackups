@@ -8,11 +8,13 @@ export type Event = {
   imageUrl: string;
   imageHint: string;
   organizer: {
-    name: string;
+    name:string;
     avatarUrl: string;
   };
   category: string;
-  status: 'published' | 'draft';
+  status: 'published' | 'draft' | 'pending' | 'denied';
+  editCount: number;
+  feedback?: string;
 };
 
 // Add this to your types file if it's not already there

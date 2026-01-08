@@ -3,6 +3,7 @@
 
 import Image from 'next/image';
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import {
   User,
   Edit,
@@ -11,6 +12,9 @@ import {
   BarChart2,
   MessageSquare,
   Award,
+  AlertCircle,
+  FileX,
+  History
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,6 +32,7 @@ import { useEvents } from '@/lib/event-store';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 
 const BeeIcon = ({ className }: { className?: string }) => (
@@ -56,6 +61,20 @@ const sortOptions = [
     { value: 'next6-10', label: 'For the next 6-10 days' },
 ];
 
+const statusIcons = {
+    published: <FileCheck className="h-6 w-6 text-green-500" />,
+    draft: <FileText className="h-6 w-6 text-gray-500" />,
+    pending: <History className="h-6 w-6 text-yellow-500" />,
+    denied: <FileX className="h-6 w-6 text-red-500" />,
+};
+
+const statusBadges: Record<Event['status'], React.ReactNode> = {
+    published: <Badge variant="secondary" className="bg-green-100 text-green-800">Published</Badge>,
+    draft: <Badge variant="outline">Draft</Badge>,
+    pending: <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Pending</Badge>,
+    denied: <Badge variant="destructive">Denied</Badge>,
+};
+
 
 function EventListItem({ event }: { event: UserEvent }) {
     return (
@@ -72,19 +91,30 @@ function EventListItem({ event }: { event: UserEvent }) {
             <div className="flex flex-1 flex-col p-4">
             <div className="flex-1">
                 <div className="flex justify-between items-start">
-                    <Badge variant="secondary" className="mb-2">{event.category}</Badge>
-                    {event.status === 'draft' && (
-                        <Button variant="ghost" size="icon">
-                            <Edit className="h-4 w-4 text-muted-foreground" />
-                        </Button>
+                    {statusBadges[event.status]}
+                    {(event.status === 'draft' || event.status === 'denied') && event.editCount < 5 && (
+                        <Link href={`/create-event?edit=${event.id}`}>
+                            <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                        </Link>
                     )}
                 </div>
-                <h3 className="text-xl font-bold font-headline">
+                <h3 className="text-xl font-bold font-headline mt-2">
                 {event.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                 {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
                 </p>
+
+                {event.status === 'denied' && event.feedback && (
+                  <Alert variant="destructive" className="mt-3">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Admin Feedback</AlertTitle>
+                    <AlertDescription>{event.feedback}</AlertDescription>
+                  </Alert>
+                )}
+
             </div>
             <Separator className="my-3" />
             <div className="grid grid-cols-3 gap-2 text-center text-sm">
@@ -182,9 +212,13 @@ export default function ProfilePage() {
         });
     }, [userEvents, sortOption]);
 
+    const eventsByStatus = (status: Event['status']) => sortedUserEvents.filter(e => e.status === status);
 
-    const publishedEvents = sortedUserEvents.filter(e => e.status === 'published');
-    const draftEvents = sortedUserEvents.filter(e => e.status === 'draft');
+    const publishedEvents = eventsByStatus('published');
+    const draftEvents = eventsByStatus('draft');
+    const pendingEvents = eventsByStatus('pending');
+    const deniedEvents = eventsByStatus('denied');
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -223,7 +257,7 @@ export default function ProfilePage() {
                  <div className="mb-8">
                     <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
                        <div className="flex items-center gap-3">
-                         <FileCheck className="h-6 w-6 text-primary" />
+                         {statusIcons.published}
                          <h2 className="text-2xl font-bold font-headline">
                              Published Events
                          </h2>
@@ -259,9 +293,61 @@ export default function ProfilePage() {
                 
                 <Separator className="my-12"/>
 
+                <div className="mb-8">
+                    <div className="mb-6 flex items-center gap-3">
+                        {statusIcons.pending}
+                        <h2 className="text-2xl font-bold font-headline">
+                            Pending Review
+                        </h2>
+                        <Badge variant="outline">{pendingEvents.length} Events</Badge>
+                    </div>
+                    {pendingEvents.length > 0 ? (
+                        <div className="space-y-6">
+                        {pendingEvents.map((event) => (
+                            <EventListItem key={event.id} event={event} />
+                        ))}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center rounded-lg border-2 border-dashed">
+                        <p className="text-lg font-semibold">No events pending review</p>
+                        <p className="text-muted-foreground">
+                            Submit an event for review to see it here.
+                        </p>
+                        </div>
+                    )}
+                </div>
+
+                <Separator className="my-12"/>
+                
+                <div className="mb-8">
+                    <div className="mb-6 flex items-center gap-3">
+                        {statusIcons.denied}
+                        <h2 className="text-2xl font-bold font-headline">
+                            Denied Events
+                        </h2>
+                        <Badge variant="outline">{deniedEvents.length} Events</Badge>
+                    </div>
+                    {deniedEvents.length > 0 ? (
+                        <div className="space-y-6">
+                        {deniedEvents.map((event) => (
+                            <EventListItem key={event.id} event={event} />
+                        ))}
+                        </div>
+                    ) : (
+                        <div className="py-12 text-center rounded-lg border-2 border-dashed">
+                        <p className="text-lg font-semibold">No denied events</p>
+                        <p className="text-muted-foreground">
+                            You have no events that require changes.
+                        </p>
+                        </div>
+                    )}
+                </div>
+
+                <Separator className="my-12"/>
+
                 <div>
                     <div className="mb-6 flex items-center gap-3">
-                        <FileText className="h-6 w-6 text-primary" />
+                        {statusIcons.draft}
                         <h2 className="text-2xl font-bold font-headline">
                             Drafts
                         </h2>
