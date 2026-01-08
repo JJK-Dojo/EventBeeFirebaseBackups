@@ -47,12 +47,6 @@ export function Combobox({
   const value = isControlled ? controlledValue : internalValue;
   const setValue = isControlled ? onValueChange! : setInternalValue;
 
-  React.useEffect(() => {
-    if (isControlled) {
-      setInternalValue(controlledValue || '');
-    }
-  }, [controlledValue, isControlled]);
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' || e.key === 'Tab') {
       const commandElement = e.currentTarget as HTMLDivElement;
