@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useEvents } from '@/lib/event-store';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
@@ -64,7 +63,7 @@ function EventListItem({ event }: { event: Event }) {
 }
 
 export default function DashboardPage() {
-    const { events } = useEvents();
+    const { events } = { events: [] };
     
     const recentEvents = useMemo(() => {
         return [...events]

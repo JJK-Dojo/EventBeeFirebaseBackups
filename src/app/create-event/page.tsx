@@ -45,7 +45,6 @@ import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { useEvents } from '@/lib/event-store';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
@@ -171,7 +170,7 @@ const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
 export default function CreateEventPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { events, addEvent, updateEvent } = useEvents();
+  const { events, addEvent, updateEvent } = { events: [], addEvent: (e: any) => {}, updateEvent: (e: any) => {} };
   const { toast } = useToast();
 
   const [isEditing, setIsEditing] = useState(false);

@@ -24,12 +24,11 @@ import {
   Legend,
   CartesianGrid
 } from "recharts";
-import { useEvents } from '@/lib/event-store';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AnalyticsPage() {
-  const { events } = useEvents();
+  const { events } = { events: [] };
 
   const eventsByCategory = useMemo(() => {
     const counts: { [key: string]: number } = {};

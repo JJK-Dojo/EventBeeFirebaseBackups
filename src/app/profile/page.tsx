@@ -28,7 +28,6 @@ import {
 import { Combobox } from '@/components/ui/combobox';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useEvents } from '@/lib/event-store';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
@@ -140,7 +139,7 @@ function EventListItem({ event }: { event: UserEvent }) {
 }
 
 export default function ProfilePage() {
-    const { events, isLoading } = useEvents();
+    const { events, isLoading } = { events: [], isLoading: false };
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [sortedUserEvents, setSortedUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);

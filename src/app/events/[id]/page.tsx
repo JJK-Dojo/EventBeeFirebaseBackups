@@ -5,7 +5,6 @@ import { useParams, notFound } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { CalendarDays, MapPin, Navigation, User, Clock } from 'lucide-react';
-import { useEvents } from '@/lib/event-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
@@ -18,12 +17,27 @@ import {
 export default function EventDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const { events } = useEvents();
+  const { events } = { events: [] };
   const event = events.find((e) => e.id === id);
 
   if (!event) {
-    notFound();
+    // This will be handled differently once we have real data fetching
+    // notFound();
   }
+
+  if (!event) {
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-background">
+          <Header />
+          <main className="flex-1">
+            <div className="container mx-auto px-4 py-8 text-center">
+              <p>Event not found.</p>
+            </div>
+            </main>
+        </div>
+    )
+  }
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

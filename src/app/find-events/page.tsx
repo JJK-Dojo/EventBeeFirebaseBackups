@@ -2,7 +2,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useEvents } from '@/lib/event-store';
 import EventCard from '@/components/event-card';
 import EventFilters from '@/components/event-filters';
 import Header from '@/components/header';
@@ -11,7 +10,7 @@ import type { FilterState } from '@/components/event-filters';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FindEventsPage() {
-  const { events: allEvents, isLoading } = useEvents();
+  const { events: allEvents, isLoading } = { events: [], isLoading: false };
   const [sortOption, setSortOption] = useState('recent');
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);

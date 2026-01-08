@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { useEvents } from '@/lib/event-store';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -140,7 +139,7 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 }
 
 export default function AdminPage() {
-    const { events, updateEvent } = useEvents();
+    const { events, updateEvent } = { events: [], updateEvent: (e: any) => {} };
     const { toast } = useToast();
 
     const sortedEvents = useMemo(() => {
