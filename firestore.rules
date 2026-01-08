@@ -1,0 +1,161 @@
+/**
+ * LocalLooms Firestore Security Rules
+ * Version: 1.0
+ *
+ * ## Core Philosophy
+ * This ruleset enforces a strict security model based on user ownership and role-based access control.
+ * The primary goal is to ensure that users can only access and manage their own data, while a
+ * designated group of administrators has elevated privileges to manage application-wide content,
+ * specifically archived events.
+ *
+ * ## Data Structure
+ * - `/users/{userId}`: Stores private user profile data, accessible only by the owning user.
+ * - `/users/{userId}/events/{eventId}`: A subcollection containing events created by the user. This
+ *   structure ensures that a user's events are directly and securely tied to their identity.
+ * - `/archived_events/{eventId}`: A top-level collection for events that have been archived.
+ *   Access to this collection is restricted to administrators.
+ * - `/roles_admin/{userId}`: A lookup collection where the existence of a document signifies
+ *   that the user is an administrator. This provides a fast and scalable way to check for admin roles.
+ *
+ * ## Key Security Decisions
+ * - **Strict Ownership**: All user-generated content (profiles, events) is nested under a path
+ *   containing the user's ID, making ownership checks simple and performant.
+ * - **Admin Role Management**: Admin privileges are granted via a lookup in the `/roles_admin`
+ *   collection. For security, this collection is read-only from client applications; managing
+ *   admin roles must be done through a trusted environment (e.g., Firebase Console or Admin SDK).
+ * - **Structural Segregation**: Active events are kept entirely separate from archived events. This
+ *   prevents complex filtering rules and ensures that security policies for active vs. archived
+ *   content are clear and cannot interfere with each other.
+ * - **Disallowed User Listing**: To protect user privacy, the rules explicitly prevent querying
+ *   the top-level `/users` collection to get a list of all application users.
+ *
+ * ## Denormalization for Authorization
+ * To create simpler, more performant rules, we denormalize data critical for authorization:
+ * - **Event Ownership**: Each `Event` document under `/users/{userId}/events/{eventId}` contains a `userId`
+ *   field. This allows rules to verify ownership directly from the document during creation and updates
+ *   without needing to read other documents, following the "Authorization Independence" principle.
+ *
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --------------------------------------------------------------------
+    // Helper Functions
+    // --------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the authenticated user's ID matches the provided userId.
+     * This is the foundation for the ownership model.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks for ownership on an existing document.
+     * Ensures that update/delete operations target real documents.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * Checks if the user has an admin role by looking for their UID
+     * in the roles_admin collection. This is a fast, single-document read.
+     */
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+
+    /**
+     * Validates that the user ID within a document matches the path ID upon creation.
+     * This establishes the ownership link at the data level.
+     */
+    function hasCorrectUserIdOnCreate(userId) {
+      return request.resource.data.userId == userId;
+    }
+
+    /**
+     * Validates that the user ID within a document cannot be changed during an update.
+     * This prevents re-assigning ownership of a document.
+     */
+    function userIdIsImmutable() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    // --------------------------------------------------------------------
+    // Collection Rules
+    // --------------------------------------------------------------------
+
+    /**
+     * @description Manages user profile data. A user can create, read, update, and delete their own profile.
+     * @path /users/{userId}
+     * @allow (get) A signed-in user ('user_abc') reading their own profile at `/users/user_abc`.
+     * @deny (get) A signed-in user ('user_xyz') attempting to read another user's profile at `/users/user_abc`.
+     * @deny (list) Any user attempting to list all documents in the `/users` collection.
+     * @principle Restricts access to a user's own private data tree.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Manages events created by a user. A user can perform all operations on their own events.
+       * @path /users/{userId}/events/{eventId}
+       * @allow (create) User 'user_abc' creating a new event at `/users/user_abc/events/event_123`.
+       * @deny (get) User 'user_xyz' trying to read an event at `/users/user_abc/events/event_123`.
+       * @deny (update) User 'user_abc' trying to change the `userId` field on an existing event.
+       * @principle Enforces document ownership within a user's private data tree and ensures relational integrity.
+       */
+      match /events/{eventId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && hasCorrectUserIdOnCreate(userId);
+        allow update: if isExistingOwner(userId) && userIdIsImmutable();
+        allow delete: if isExistingOwner(userId);
+      }
+    }
+
+    /**
+     * @description Stores archived events. Only users with an admin role can read or manage these documents.
+     * @path /archived_events/{eventId}
+     * @allow (get) An admin user reading an archived event.
+     * @deny (get) A non-admin user attempting to read any archived event.
+     * @deny (create) A non-admin user attempting to create an archived event.
+     * @principle Segregates sensitive or historical data into a separate collection with stricter, role-based access.
+     */
+    match /archived_events/{eventId} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if isAdmin() && resource != null;
+      allow delete: if isAdmin() && resource != null;
+    }
+
+    /**
+     * @description A lookup collection to identify administrators. For security, this collection is read-only.
+     * @path /roles_admin/{userId}
+     * @allow (get) Any signed-in user checking if another user ('user_admin') is an admin at `/roles_admin/user_admin`.
+     * @deny (create) Any user trying to add a document to make themselves an admin.
+     * @principle Provides a secure, read-only mechanism for role checking. Admin promotion must be handled by a trusted backend.
+     */
+    match /roles_admin/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}

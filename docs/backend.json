@@ -1,0 +1,193 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the LocalLooms platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "User's email address.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "User's phone number."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User's display name."
+        },
+        "location": {
+          "type": "string",
+          "description": "User's current location, could be city, or address."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "displayName"
+      ]
+    },
+    "Event": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Event",
+      "type": "object",
+      "description": "Represents an event posted on the LocalLooms platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the event."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Event)",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the event."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the event."
+        },
+        "locationName": {
+          "type": "string",
+          "description": "Name of the event location."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "Latitude of the event location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitude of the event location."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Start date and time of the event.",
+          "format": "date-time"
+        },
+        "durationDays": {
+          "type": "number",
+          "description": "Duration of the event in days (up to 30)."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the event."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the event image.",
+          "format": "uri"
+        },
+        "creationTimestamp": {
+          "type": "string",
+          "description": "Timestamp when the event was created.",
+          "format": "date-time"
+        },
+        "archived": {
+          "type": "boolean",
+          "description": "Indicates if the event is archived."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "title",
+        "description",
+        "latitude",
+        "longitude",
+        "startTime",
+        "durationDays",
+        "category",
+        "creationTimestamp"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. The 'userId' parameter identifies the user.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/events/{eventId}",
+        "definition": {
+          "entityName": "Event",
+          "schema": {
+            "$ref": "#/backend/entities/Event"
+          },
+          "description": "Stores events created by users. Includes 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user who created the event."
+            },
+            {
+              "name": "eventId",
+              "description": "Unique identifier for the event."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/archived_events/{eventId}",
+        "definition": {
+          "entityName": "Event",
+          "schema": {
+            "$ref": "#/backend/entities/Event"
+          },
+          "description": "Stores archived events accessible only by admins.",
+          "params": [
+            {
+              "name": "eventId",
+              "description": "Unique identifier for the archived event."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Indicates admin privileges based on user ID. Existence of document grants admin role.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The ID of the user with admin privileges."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This design prioritizes security, scalability, and ease of debugging by adhering to Authorization Independence. Events are stored under user-specific paths, enforcing clear ownership. Archived events are segregated into an `archived_events` collection, ensuring only admins can access them. Timestamps are used for event archival after 45 days, and the `archived` flag explicitly marks the event's state.\n\n*   **Authorization Independence:** Event documents include the `userId` to ensure that authorization rules can validate the owner of the event without needing to perform `get()` operations on parent documents. This enables atomic operations and simplifies security rules.\n*   **Structural Segregation:** Events are divided into `events` and `archived_events` collections based on their state. This segregation allows for different security rules to be applied to active versus archived events.\n*   **Access Modeling:** Path-Based Ownership is used for active events (`/users/{userId}/events/{eventId}`), and a dedicated `roles_admin` collection is used to determine admin privileges, avoiding custom claims.\n*   **QAPs (Rules Are Not Filters):** The structure supports secure `list` operations because the security rules can be applied directly to each collection without needing to filter based on document data.\n*   **Invariants:** The `userId` and `creationTimestamp` fields enforce integrity of ownership and timestamping."
+  }
+}
