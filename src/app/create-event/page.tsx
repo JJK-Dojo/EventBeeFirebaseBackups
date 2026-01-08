@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Image as ImageIcon,
@@ -170,7 +170,6 @@ const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
 export default function CreateEventPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { events, addEvent, updateEvent } = { events: [], addEvent: (e: any) => {}, updateEvent: (e: any) => {} };
   const { toast } = useToast();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -189,16 +188,26 @@ export default function CreateEventPage() {
   const [pincodeSearchInput, setPincodeSearchInput] = useState('');
   
   // UI State
-  const [districts, setDistricts] = useState<{ value: string; label: string }[]>([]);
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
-
+  
+  const districts = useMemo(() => {
+    if (selectedState) {
+      const districtsForState = indianStatesAndDistricts[selectedState] || [];
+      return districtsForState.map(d => ({ value: d, label: d }));
+    }
+    return [];
+  }, [selectedState]);
+  
   useEffect(() => {
     const eventId = searchParams.get('edit');
     if (eventId) {
-      const foundEvent = events.find(e => e.id === eventId);
+      // In a real app, you would fetch the event data from your backend
+      // For now, we simulate this by finding it in a dummy list if it exists.
+      // const foundEvent = events.find(e => e.id === eventId);
+      const foundEvent: Event | undefined = undefined; // Placeholder
       if (foundEvent) {
         setIsEditing(true);
         setEventToEdit(foundEvent);
@@ -212,7 +221,12 @@ export default function CreateEventPage() {
         setPincodeSearchInput(foundEvent.location);
       }
     }
-  }, [searchParams, events]);
+  }, [searchParams]);
+
+  useEffect(() => {
+    // When the state changes, we should reset the selected district.
+    setSelectedDistrict('');
+  }, [selectedState]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -275,18 +289,6 @@ export default function CreateEventPage() {
     }
   };
 
-
-  useEffect(() => {
-    if (selectedState) {
-      const districtsForState = indianStatesAndDistricts[selectedState] || [];
-      setDistricts(districtsForState.map(d => ({ value: d, label: d })));
-      setSelectedDistrict(''); 
-    } else {
-       setDistricts([]);
-       setSelectedDistrict('');
-    }
-  }, [selectedState]);
-
   const handlePincodeSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setPincodeSearchInput(value);
@@ -331,8 +333,6 @@ export default function CreateEventPage() {
       setSelectedDistrict('');
     } else {
       setSelectedState(postOffice.State);
-      const districtsForState = indianStatesAndDistricts[postOffice.State] || [];
-      setDistricts(districtsForState.map(d => ({ value: d, label: d })));
       setSelectedDistrict(postOffice.District);
     }
     setPincodeSearchInput(`${postOffice.Name}, ${postOffice.Pincode}`);
@@ -371,7 +371,6 @@ export default function CreateEventPage() {
     
     const getBrandedImageUrl = () => {
         // Use a unique seed for each image to avoid showing the same placeholder.
-        // A simple way is to use the current timestamp.
         const seed = new Date().getTime();
         return `https://picsum.photos/seed/${seed}/600/400`;
     };
@@ -403,7 +402,7 @@ export default function CreateEventPage() {
         return;
       }
       
-      updateEvent(updatedEvent);
+      // updateEvent(updatedEvent); // To be replaced with Firestore logic
       
       toast({
         title: `Event ${status === 'pending' ? 'Resubmitted' : 'Updated'}!`,
@@ -414,8 +413,7 @@ export default function CreateEventPage() {
 
     } else {
       // Logic for creating a new event
-      const newEvent: Event = {
-          id: new Date().getTime().toString(),
+      const newEvent: Omit<Event, 'id'> = {
           title,
           description,
           date: date ? date.toISOString() : new Date().toISOString(),
@@ -432,7 +430,7 @@ export default function CreateEventPage() {
           editCount: 0,
       };
 
-      addEvent(newEvent);
+      // addEvent(newEvent); // To be replaced with Firestore logic
 
       toast({
         title: `Event ${status === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
