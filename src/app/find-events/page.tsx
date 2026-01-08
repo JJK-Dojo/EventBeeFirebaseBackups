@@ -8,14 +8,17 @@ import EventFilters from '@/components/event-filters';
 import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FindEventsPage() {
-  const { events: allEvents } = useEvents();
+  const { events: allEvents, isLoading } = useEvents();
   const [sortOption, setSortOption] = useState('recent');
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
   useEffect(() => {
+    if (isLoading) return;
+
     let eventsToDisplay = [...allEvents];
 
     if (activeFilters) {
@@ -57,6 +60,9 @@ export default function FindEventsPage() {
             });
         }
     }
+    
+    // Filter only published events
+    eventsToDisplay = eventsToDisplay.filter(event => event.status === 'published');
 
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -120,7 +126,7 @@ export default function FindEventsPage() {
 
     setFilteredEvents(sorted);
 
-  }, [allEvents, sortOption, activeFilters]);
+  }, [allEvents, sortOption, activeFilters, isLoading]);
 
   const handleFilter = (filters: FilterState) => {
     setActiveFilters(filters);
@@ -144,7 +150,18 @@ export default function FindEventsPage() {
             </p>
           </div>
           <EventFilters onFilter={handleFilter} onSortChange={handleSort} />
-          {filteredEvents.length > 0 ? (
+          {isLoading ? (
+             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="space-y-4">
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-6 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </div>
+                ))}
+             </div>
+          ) : filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {filteredEvents.map((event) => (
                 <EventCard key={event.id} event={event} />
