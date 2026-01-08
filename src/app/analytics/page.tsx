@@ -10,20 +10,20 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { BarChart, PieChart, TrendingUp } from 'lucide-react';
+import { BarChart, PieChartIcon, TrendingUp } from 'lucide-react';
 import {
-  BarChart as RechartsBarChart,
   Bar,
+  BarChart as RechartsBarChart,
+  Pie,
+  PieChart as RechartsPieChart,
+  Cell,
+  ResponsiveContainer,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
-  ResponsiveContainer,
-  PieChart as RechartsPieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+  CartesianGrid
+} from "recharts";
 import { useEvents } from '@/lib/event-store';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -116,7 +116,7 @@ export default function AnalyticsPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <PieChart className="h-6 w-6 text-primary"/>
+                    <PieChartIcon className="h-6 w-6 text-primary"/>
                     Events by Status
                 </CardTitle>
                  <CardDescription>
