@@ -36,34 +36,18 @@ export function Combobox({
   searchPlaceholder = "Search items...", 
   noResultsText = "No item found.",
   className,
-  value: controlledValue,
+  value,
   onValueChange,
   disabled = false,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
-  const [internalValue, setInternalValue] = React.useState(controlledValue || "")
-
-  const isControlled = controlledValue !== undefined;
-  const value = isControlled ? controlledValue : internalValue;
-  const setValue = isControlled ? onValueChange! : setInternalValue;
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter' || e.key === 'Tab') {
-      const commandElement = e.currentTarget as HTMLDivElement;
-      const selectedItem = commandElement.querySelector('[aria-selected="true"]');
-      if (selectedItem) {
-        const itemValue = selectedItem.getAttribute('data-value');
-        if (itemValue) {
-            setValue(itemValue === value ? "" : itemValue);
-            setOpen(false);
-            e.preventDefault(); // Prevent default Tab behavior to allow custom focus management if needed
-        }
-      } else if (e.key === 'Tab') {
-          setOpen(false);
-      }
+  
+  const handleSelect = (currentValue: string) => {
+    if (onValueChange) {
+      onValueChange(currentValue.toLowerCase() === value?.toLowerCase() ? "" : currentValue);
     }
-  }
-
+    setOpen(false);
+  };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -83,14 +67,13 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
         <Command
-          filter={(value, search) => {
-            const item = items.find(i => i.value === value);
+          filter={(itemValue, search) => {
+            const item = items.find(i => i.value === itemValue);
             if (item) {
               return item.label.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
             }
             return 0;
           }}
-          onKeyDown={handleKeyDown}
         >
           <CommandInput placeholder={searchPlaceholder} disabled={disabled} />
           <CommandEmpty>{noResultsText}</CommandEmpty>
@@ -100,16 +83,13 @@ export function Combobox({
                 <CommandItem
                   key={item.value}
                   value={item.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
+                  onSelect={handleSelect}
                   disabled={disabled}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === item.value ? "opacity-100" : "opacity-0"
+                      value?.toLowerCase() === item.value.toLowerCase() ? "opacity-100" : "opacity-0"
                     )}
                   />
                   {item.label}
