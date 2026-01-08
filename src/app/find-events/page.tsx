@@ -13,6 +13,7 @@ export default function FindEventsPage() {
   const { events: allEvents } = useEvents();
   const [sortOption, setSortOption] = useState('recent');
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
   useEffect(() => {
     const now = new Date();
@@ -75,52 +76,55 @@ export default function FindEventsPage() {
         }
     });
 
-    setFilteredEvents(sorted);
+    let eventsToDisplay = sorted;
 
-  }, [allEvents, sortOption]);
+    if (activeFilters) {
+        const {
+            tags,
+            category,
+            state,
+            district,
+            searchText,
+        } = activeFilters;
+
+        if (tags.length > 0) {
+            eventsToDisplay = eventsToDisplay.filter(event => 
+                tags.some(tag => (event.title?.toLowerCase() || '').includes(tag) || (event.description?.toLowerCase() || '').includes(tag))
+            );
+        }
+        
+        if (category) {
+            eventsToDisplay = eventsToDisplay.filter(event => (event.category?.toLowerCase() || '') === category.toLowerCase());
+        }
+
+        if (state) {
+            eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
+        }
+
+        if (district) {
+            eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
+        }
+
+        if (searchText) {
+            const lowercasedSearch = searchText.toLowerCase();
+            const isPincode = /^\d{6}$/.test(lowercasedSearch);
+            
+            eventsToDisplay = eventsToDisplay.filter(event => {
+                if (isPincode) {
+                    return (event.location || '').includes(lowercasedSearch);
+                }
+                return (event.location?.toLowerCase() || '').includes(lowercasedSearch) || (event.title?.toLowerCase() || '').includes(lowercasedSearch)
+            });
+        }
+    }
+
+
+    setFilteredEvents(eventsToDisplay);
+
+  }, [allEvents, sortOption, activeFilters]);
 
   const handleFilter = (filters: FilterState) => {
-    const {
-      tags,
-      category,
-      state,
-      district,
-      searchText,
-    } = filters;
-
-    let events = filteredEvents; // Start with the already sorted and date-filtered list
-
-    if (tags.length > 0) {
-        events = events.filter(event => 
-            tags.some(tag => (event.title?.toLowerCase() || '').includes(tag) || (event.description?.toLowerCase() || '').includes(tag))
-        );
-    }
-    
-    if (category) {
-        events = events.filter(event => (event.category?.toLowerCase() || '') === category.toLowerCase());
-    }
-
-    if (state) {
-        events = events.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
-    }
-
-    if (district) {
-        events = events.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
-    }
-
-    if (searchText) {
-        const lowercasedSearch = searchText.toLowerCase();
-        const isPincode = /^\d{6}$/.test(lowercasedSearch);
-        
-        events = events.filter(event => {
-            if (isPincode) {
-                return (event.location || '').includes(lowercasedSearch);
-            }
-            return (event.location?.toLowerCase() || '').includes(lowercasedSearch) || (event.title?.toLowerCase() || '').includes(lowercasedSearch)
-        });
-    }
-
-    setFilteredEvents(events);
+    setActiveFilters(filters);
   };
 
   const handleSort = (sortValue: string) => {
