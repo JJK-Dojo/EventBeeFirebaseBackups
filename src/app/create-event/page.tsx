@@ -371,12 +371,10 @@ export default function CreateEventPage() {
   const handleSubmit = (status: 'pending' | 'draft') => {
     
     const getBrandedImageUrl = () => {
-        // Base URL for the image service
-        const baseUrl = 'https://placehold.co/600x400/F5F5F5/4CAF50';
-        // URL-encode the event title
-        const encodedTitle = encodeURIComponent(title || 'My Awesome Event');
-        // Construct the final URL with the event title as text
-        return `${baseUrl}?text=${encodedTitle}&font=pt-sans`;
+        // Use a unique seed for each image to avoid showing the same placeholder.
+        // A simple way is to use the current timestamp.
+        const seed = new Date().getTime();
+        return `https://picsum.photos/seed/${seed}/600/400`;
     };
     
     const finalImageUrl = imagePreview || getBrandedImageUrl();
