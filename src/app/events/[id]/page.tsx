@@ -1,7 +1,6 @@
 
 'use client';
 
-import { use } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -16,8 +15,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-export default function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EventDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { events } = useEvents();
   const event = events.find((e) => e.id === id);
 
