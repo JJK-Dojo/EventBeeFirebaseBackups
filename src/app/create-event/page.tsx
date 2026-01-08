@@ -369,6 +369,19 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = (status: 'pending' | 'draft') => {
+    
+    const getBrandedImageUrl = () => {
+        // Base URL for the image service
+        const baseUrl = 'https://placehold.co/600x400/F5F5F5/4CAF50';
+        // URL-encode the event title
+        const encodedTitle = encodeURIComponent(title || 'My Awesome Event');
+        // Construct the final URL with the event title as text
+        return `${baseUrl}?text=${encodedTitle}&font=pt-sans`;
+    };
+    
+    const finalImageUrl = imagePreview || getBrandedImageUrl();
+
+
     if (isEditing && eventToEdit) {
       // Logic for updating an existing event
       const updatedEvent: Event = {
@@ -377,7 +390,7 @@ export default function CreateEventPage() {
         description,
         date: date ? date.toISOString() : new Date().toISOString(),
         location: pincodeSearchInput,
-        imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
+        imageUrl: finalImageUrl,
         category: categories.find(c => c.value === selectedCategory)?.label || 'General',
         status: status === 'pending' ? 'pending' : 'draft', // Resubmit as pending or save as draft
         editCount: status === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
@@ -411,7 +424,7 @@ export default function CreateEventPage() {
           date: date ? date.toISOString() : new Date().toISOString(),
           createdAt: new Date().toISOString(),
           location: pincodeSearchInput,
-          imageUrl: imagePreview || 'https://picsum.photos/seed/default/600/400',
+          imageUrl: finalImageUrl,
           imageHint: 'event image',
           organizer: {
               name: 'Guest User', // Replace with actual user data later
@@ -774,3 +787,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
