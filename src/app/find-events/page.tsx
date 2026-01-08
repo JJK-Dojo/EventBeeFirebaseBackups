@@ -12,8 +12,9 @@ import type { FilterState } from '@/components/event-filters';
 export default function FindEventsPage() {
   const { events: allEvents } = useEvents();
   const [sortOption, setSortOption] = useState('recent');
-  
-  const sortedEvents = React.useMemo(() => {
+  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const threeDays = new Date(now);
@@ -35,7 +36,7 @@ export default function FindEventsPage() {
       });
     }
 
-    return eventsToSort.sort((a, b) => {
+    const sorted = eventsToSort.sort((a, b) => {
         switch (sortOption) {
             case 'state':
                 return (a.location.split(',')[1] || '').localeCompare(b.location.split(',')[1] || '');
@@ -74,14 +75,9 @@ export default function FindEventsPage() {
         }
     });
 
+    setFilteredEvents(sorted);
+
   }, [allEvents, sortOption]);
-
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>(sortedEvents);
-
-  // Update filtered events if the base sortedEvents list changes
-  useEffect(() => {
-    setFilteredEvents(sortedEvents);
-  }, [sortedEvents]);
 
   const handleFilter = (filters: FilterState) => {
     const {
@@ -92,7 +88,7 @@ export default function FindEventsPage() {
       searchText,
     } = filters;
 
-    let events = sortedEvents;
+    let events = filteredEvents; // Start with the already sorted and date-filtered list
 
     if (tags.length > 0) {
         events = events.filter(event => 
