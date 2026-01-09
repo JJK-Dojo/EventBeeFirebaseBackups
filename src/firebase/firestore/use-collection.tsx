@@ -8,6 +8,7 @@ import {
   FirestoreError,
   QuerySnapshot,
   CollectionReference,
+  getFirestore,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
@@ -89,6 +90,15 @@ export function useCollection<T = any>(
     // Developer check: ensure the passed ref/query is memoized.
     if (!memoizedTargetRefOrQuery.__memo) {
       throw new Error('The query or reference passed to useCollection must be memoized with useMemoFirebase.');
+    }
+
+    // Guard: Ensure firestore instance is available before creating listener.
+    // This helps prevent race conditions on initial load.
+    try {
+      getFirestore();
+    } catch (e) {
+      setIsLoading(true);
+      return; // Firestore not ready, wait for next render.
     }
 
 
