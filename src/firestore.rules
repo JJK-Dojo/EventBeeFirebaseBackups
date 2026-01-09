@@ -47,8 +47,8 @@ service cloud.firestore {
         // Public read access for published events.
         // Signed-in users can read their own non-published events.
         // Admins can read any event.
-        allow get: if (resource.data.status == 'published') || 
-                    (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
+        allow get: if resource.data.status == 'published'
+                    || (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
         
         // Anyone can query/list the events collection.
         // The client-side query MUST filter by `status == 'published'` for public access.
