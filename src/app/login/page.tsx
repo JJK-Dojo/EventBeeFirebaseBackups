@@ -14,8 +14,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
-import { useAuth } from '@/firebase';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { useAuth, initiateEmailSignIn } from '@/firebase';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 
@@ -44,7 +44,6 @@ export default function LoginPage() {
             if (error.code === 'auth/popup-closed-by-user') {
                 return;
             }
-            console.error("Google Sign-In Error: ", error);
             toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
         }
     };
@@ -52,7 +51,7 @@ export default function LoginPage() {
     const handleEmailSignIn = async () => {
         if (!auth) return;
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            initiateEmailSignIn(auth, email, password);
             toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
             router.push('/dashboard');
         } catch (error: any) {
