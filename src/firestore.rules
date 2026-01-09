@@ -44,24 +44,24 @@ service cloud.firestore {
     }
     
     match /events/{eventId} {
-        // Public read access for published events.
-        // Signed-in users can read their own non-published events.
+        // READ: Anyone can read a published event.
+        // Signed-in users can also read their own non-published events.
         // Admins can read any event.
-        allow get: if resource.data.status == 'published'
-                    || (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
-        
-        // Anyone can query/list the events collection.
-        // The client-side query MUST filter by `status == 'published'` for public access.
+        allow get: if (
+          (resource == null || resource.data.status == 'published') ||
+          (isSignedIn() && (isEventOwner(resource.data) || isAdmin()))
+        );
+
+        // LIST: Anyone can list events. Client-side queries are responsible
+        // for filtering to only show 'published' events to the public.
         allow list: if true;
-        
-        // Users can create new events.
-        allow create: if isSignedIn() && isOwner(request.resource.data.organizer.id);
 
-        // Users can update their own events, admins can update any.
-        allow update: if isSignedIn() && (isEventOwner(resource.data) || isAdmin());
-
-        // Users can delete their own events, admins can delete any.
-        allow delete: if isSignedIn() && (isEventOwner(resource.data) || isAdmin());
+        // WRITE: Users can create, and can update/delete their own events.
+        // Admins can update/delete any event.
+        allow write: if isSignedIn() && (
+          (request.method == 'create' && isOwner(request.resource.data.organizer.id)) ||
+          ((request.method == 'update' || request.method == 'delete') && (isEventOwner(resource.data) || isAdmin()))
+        );
     }
 
     match /roles_admin/{userId} {
