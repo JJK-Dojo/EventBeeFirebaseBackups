@@ -52,7 +52,7 @@ service cloud.firestore {
     
     match /events/{eventId} {
         // Anyone can read a published event
-        allow get: if resource.data.status == 'published' || isEventOwner(resource.data) || isAdmin();
+        allow get: if resource.data.status == 'published' || (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
         
         // Anyone can list published events
         allow list: if true;
