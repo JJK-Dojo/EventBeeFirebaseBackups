@@ -22,8 +22,8 @@ export default function Header() {
                 className="hidden sm:flex hover:opacity-90"
                 aria-label="Find Event"
                  style={{
-                    backgroundColor: 'hsl(var(--accent))',
-                    color: 'hsl(var(--accent-foreground))',
+                    backgroundColor: 'hsl(var(--primary))',
+                    color: 'hsl(var(--primary-foreground))',
                 }}
               >
                 <Search className="mr-2 h-5 w-5" />
@@ -36,8 +36,8 @@ export default function Header() {
                 className="flex sm:hidden hover:opacity-90"
                 aria-label="Find Event"
                  style={{
-                    backgroundColor: 'hsl(var(--accent))',
-                    color: 'hsl(var(--accent-foreground))',
+                    backgroundColor: 'hsl(var(--primary))',
+                    color: 'hsl(var(--primary-foreground))',
                 }}
               >
                 <Search className="h-5 w-5" />
