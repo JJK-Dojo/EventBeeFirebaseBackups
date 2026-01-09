@@ -1,4 +1,7 @@
+
+'use client';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -11,6 +14,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
+import { useAuth } from '@/firebase';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { useState, useEffect } from 'react';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -19,6 +26,38 @@ const GoogleIcon = () => (
 )
 
 export default function LoginPage() {
+    const auth = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleGoogleSignIn = async () => {
+        if (!auth) return;
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+            toast({ title: 'Logged In!', description: 'You have successfully signed in with Google.' });
+            router.push('/dashboard');
+        } catch (error: any) {
+            console.error("Google Sign-In Error: ", error);
+            toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
+        }
+    };
+    
+    const handleEmailSignIn = async () => {
+        if (!auth) return;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
+            router.push('/dashboard');
+        } catch (error: any) {
+            console.error("Email Sign-In Error: ", error);
+            toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
+        }
+    };
+
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-sm">
@@ -32,7 +71,7 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
             <GoogleIcon />
             Sign in with Google
           </Button>
@@ -47,10 +86,14 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="john.doe@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-          <Button className="w-full">Sign in with Phone</Button>
+          <div className="grid gap-2">
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          </div>
+          <Button className="w-full" onClick={handleEmailSignIn}>Sign in with Email</Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">

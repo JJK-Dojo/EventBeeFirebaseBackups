@@ -1,5 +1,9 @@
 
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,6 +17,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { Facebook, Instagram, Twitter, Linkedin, MessageCircle, Ghost } from 'lucide-react';
+import { useAuth } from '@/firebase';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 
 const GoogleIcon = () => (
@@ -22,6 +29,48 @@ const GoogleIcon = () => (
 )
 
 export default function SignupPage() {
+  const auth = useAuth();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleGoogleSignUp = async () => {
+    if (!auth) return;
+    const provider = new GoogleAuthProvider();
+    try {
+        await signInWithPopup(auth, provider);
+        toast({ title: 'Account Created!', description: 'You have successfully signed up with Google.' });
+        router.push('/dashboard');
+    } catch (error: any) {
+        console.error("Google Sign-Up Error: ", error);
+        toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
+    }
+  };
+
+  const handleEmailSignUp = async () => {
+    if (!auth) return;
+    if (!firstName || !lastName) {
+      toast({ variant: 'destructive', title: 'Missing Name', description: 'Please enter your first and last name.' });
+      return;
+    }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`
+      });
+      toast({ title: 'Account Created!', description: 'You have successfully signed up with email.' });
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Email Sign-Up Error: ", error);
+      toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
+    }
+  };
+
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md">
@@ -35,7 +84,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
             <GoogleIcon />
             Sign up with Google
           </Button>
@@ -52,24 +101,24 @@ export default function SignupPage() {
           <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="first-name">First Name</Label>
-                <Input id="first-name" placeholder="John" required />
+                <Input id="first-name" placeholder="John" required value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="last-name">Last Name</Label>
-                <Input id="last-name" placeholder="Doe" required />
+                <Input id="last-name" placeholder="Doe" required value={lastName} onChange={(e) => setLastName(e.target.value)} />
               </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="john.doe@example.com" required />
+            <Input id="email" type="email" placeholder="john.doe@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
            <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" placeholder="+91 98765 43210" required />
+            <Label htmlFor="phone">Phone Number (Optional)</Label>
+            <Input id="phone" type="tel" placeholder="+91 98765 43210" />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
 
           <div className="space-y-4 pt-4">
@@ -123,7 +172,7 @@ export default function SignupPage() {
           </div>
 
 
-          <Button className="w-full mt-4">Create account</Button>
+          <Button className="w-full mt-4" onClick={handleEmailSignUp}>Create account</Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">
