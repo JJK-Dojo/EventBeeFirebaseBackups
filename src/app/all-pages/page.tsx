@@ -7,19 +7,84 @@ import { List } from 'lucide-react';
 import Link from 'next/link';
 
 const pages = [
-  { href: '/admin', title: 'Admin Panel', description: 'Review and approve user-submitted events.' },
-  { href: '/analytics', title: 'Analytics Dashboard', description: 'View insights into event trends and engagement.' },
-  { href: '/create-event', title: 'Create Event', description: 'A form for users to create and submit new events.' },
-  { href: '/dashboard', title: 'User Dashboard', description: 'A landing page for authenticated users.' },
-  { href: '/events/1', title: 'Event Detail Page', description: 'Displays the full details for a single event. (Example link)' },
-  { href: '/find-events', title: 'Find Events', description: 'Search, filter, and discover all published events.' },
-  { href: '/login', title: 'Login Page', description: 'Page for users to sign in to their account.' },
-  { href: '/profile', title: 'User Profile', description: 'Shows a user\'s created events, drafts, and stats.' },
-  { href: '/share', title: 'Share Page', description: 'Generates a QR code and link to share the application.' },
-  { href: '/signup', title: 'Signup Page', description: 'Page for new users to create an account.' },
-  { href: '/test-ai', title: 'AI Test Page', description: 'A utility page for testing AI image extraction.' },
-  { href: '/test-ui', title: 'UI Showcase', description: 'A utility page for previewing UI components.' },
-  { href: '/', title: 'Home (Redirect)', description: 'The root page, which currently redirects to the admin panel.' },
+  { 
+    href: '/admin', 
+    title: 'Admin Panel', 
+    description: 'Review and approve user-submitted events.',
+    fields: ['Event Title', 'Status', 'Organizer', 'Date', 'Location', 'Description', 'Approval/Denial Feedback']
+  },
+  { 
+    href: '/analytics', 
+    title: 'Analytics Dashboard', 
+    description: 'View insights into event trends and engagement.',
+    fields: ['Events by Category Chart', 'Events by Status Chart', 'Top Locations Chart', 'Tag Popularity Chart']
+  },
+  { 
+    href: '/create-event', 
+    title: 'Create Event', 
+    description: 'A form for users to create and submit new events.',
+    fields: ['Title', 'Description', 'Date & Time', 'Location (Country, State, District, Pincode)', 'Category', 'Tags', 'Image Upload', 'Optional Links (Social Media)']
+  },
+  { 
+    href: '/dashboard', 
+    title: 'User Dashboard', 
+    description: 'A landing page for authenticated users.',
+    fields: ['User Avatar & Name', 'List of Recent Posts', 'Event Status', 'Post Date']
+  },
+  { 
+    href: '/events/1', 
+    title: 'Event Detail Page', 
+    description: 'Displays the full details for a single event. (Example link)',
+    fields: ['Event Image', 'Title', 'Description', 'Date', 'Time', 'Location', 'Organizer Name', 'Map']
+  },
+  { 
+    href: '/find-events', 
+    title: 'Find Events', 
+    description: 'Search, filter, and discover all published events.',
+    fields: ['Search by Tags/Keywords', 'Category Filter', 'Sort Options', 'Location Filters (State, District)', 'Event Cards Grid']
+  },
+  { 
+    href: '/login', 
+    title: 'Login Page', 
+    description: 'Page for users to sign in to their account.',
+    fields: ['Sign in with Google', 'Phone Number Input', 'Sign in with Phone Button']
+  },
+  { 
+    href: '/profile', 
+    title: 'User Profile', 
+    description: 'Shows a user\'s created events, drafts, and stats.',
+    fields: ['User Avatar & Name', 'Total "Bees"', 'Sortable Lists (Published, Pending, Denied, Drafts)', 'Event Stats (Views, Comments, Bees)', 'Edit Button']
+  },
+  { 
+    href: '/share', 
+    title: 'Share Page', 
+    description: 'Generates a QR code and link to share the application.',
+    fields: ['QR Code', 'Shareable Link']
+  },
+  { 
+    href: '/signup', 
+    title: 'Signup Page', 
+    description: 'Page for new users to create an account.',
+    fields: ['Sign up with Google', 'First/Last Name', 'Email', 'Phone Number', 'Password', 'Optional Social Links']
+  },
+  { 
+    href: '/test-ai', 
+    title: 'AI Test Page', 
+    description: 'A utility page for testing AI image extraction.',
+    fields: ['Image Upload', 'Raw AI JSON Response']
+  },
+  { 
+    href: '/test-ui', 
+    title: 'UI Showcase', 
+    description: 'A utility page for previewing UI components.',
+    fields: ['Event Card Preview', 'Event Filters Preview', 'Buttons', 'Inputs', 'Badges']
+  },
+  { 
+    href: '/', 
+    title: 'Home (Redirect)', 
+    description: 'The root page, which currently redirects to the admin panel.',
+    fields: ['Redirect Logic']
+  },
 ];
 
 export default function AllPages() {
@@ -35,7 +100,7 @@ export default function AllPages() {
                 Application Pages
               </CardTitle>
               <CardDescription>
-                Here is a complete list of all the pages available in your portal.
+                Here is a complete list of all the pages available in your portal, along with their key fields.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -53,6 +118,14 @@ export default function AllPages() {
                          <p className="text-xs font-mono text-muted-foreground/70 mt-1">
                           {page.href}
                         </p>
+                        {page.fields && (
+                            <div className="mt-3">
+                                <h4 className="text-xs font-semibold uppercase text-muted-foreground">Key Fields:</h4>
+                                <p className="text-xs text-muted-foreground/80">
+                                    {page.fields.join(' • ')}
+                                </p>
+                            </div>
+                        )}
                       </div>
                     </Link>
                   </li>
