@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Image as ImageIcon,
@@ -48,6 +48,8 @@ import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
+import { useFirestore, useUser, addDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 
 
 type PostOffice = {
@@ -171,6 +173,8 @@ export default function CreateEventPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
 
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
@@ -216,8 +220,7 @@ export default function CreateEventPage() {
         setDate(new Date(foundEvent.date));
         setSelectedCategory(foundEvent.category);
         setImagePreview(foundEvent.imageUrl);
-        // Note: Tags, location details might need more complex parsing if they are stored differently.
-        // For simplicity, we are not pre-filling tags and location.
+        setSelectedTags(foundEvent.tags || []);
         setPincodeSearchInput(foundEvent.location);
       }
     }
@@ -368,32 +371,39 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = (status: 'pending' | 'draft') => {
-    
+    if (isUserLoading) {
+      toast({ title: "Please wait", description: "Still identifying user..." });
+      return;
+    }
+    if (!user) {
+      toast({ variant: "destructive", title: "Not Authenticated", description: "You must be logged in to create an event." });
+      router.push('/login');
+      return;
+    }
+
     const getBrandedImageUrl = () => {
-        // Use a unique seed for each image to avoid showing the same placeholder.
         const seed = new Date().getTime();
         return `https://picsum.photos/seed/${seed}/600/400`;
     };
     
     const finalImageUrl = imagePreview || getBrandedImageUrl();
 
-
     if (isEditing && eventToEdit) {
-      // Logic for updating an existing event
-      const updatedEvent: Event = {
-        ...eventToEdit,
+      const eventRef = doc(firestore, 'events', eventToEdit.id);
+      const updatedEvent: Partial<Event> = {
         title,
         description,
         date: date ? date.toISOString() : new Date().toISOString(),
         location: pincodeSearchInput,
         imageUrl: finalImageUrl,
         category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+        tags: selectedTags,
         status: status === 'pending' ? 'pending' : 'draft', // Resubmit as pending or save as draft
         editCount: status === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
         feedback: undefined, // Clear feedback on resubmission
       };
 
-      if (updatedEvent.editCount > 5 && status === 'pending') {
+      if (updatedEvent.editCount && updatedEvent.editCount > 5 && status === 'pending') {
         toast({
             variant: "destructive",
             title: "Edit Limit Reached",
@@ -402,7 +412,7 @@ export default function CreateEventPage() {
         return;
       }
       
-      // updateEvent(updatedEvent); // To be replaced with Firestore logic
+      setDocumentNonBlocking(eventRef, updatedEvent, { merge: true });
       
       toast({
         title: `Event ${status === 'pending' ? 'Resubmitted' : 'Updated'}!`,
@@ -412,7 +422,6 @@ export default function CreateEventPage() {
       router.push('/profile');
 
     } else {
-      // Logic for creating a new event
       const newEvent: Omit<Event, 'id'> = {
           title,
           description,
@@ -422,15 +431,17 @@ export default function CreateEventPage() {
           imageUrl: finalImageUrl,
           imageHint: 'event image',
           organizer: {
-              name: 'Guest User', // Replace with actual user data later
-              avatarUrl: 'https://picsum.photos/seed/9/40/40',
+              id: user.uid,
+              name: user.displayName || 'Anonymous User',
+              avatarUrl: user.photoURL || 'https://picsum.photos/seed/9/40/40',
           },
           category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+          tags: selectedTags,
           status,
           editCount: 0,
       };
 
-      // addEvent(newEvent); // To be replaced with Firestore logic
+      addDocumentNonBlocking(collection(firestore, 'events'), newEvent);
 
       toast({
         title: `Event ${status === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,

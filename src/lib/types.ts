@@ -8,10 +8,12 @@ export type Event = {
   imageUrl: string;
   imageHint: string;
   organizer: {
+    id: string;
     name:string;
     avatarUrl: string;
   };
   category: string;
+  tags: string[];
   status: 'published' | 'draft' | 'pending' | 'denied';
   editCount: number;
   feedback?: string;

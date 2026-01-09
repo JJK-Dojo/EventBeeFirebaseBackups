@@ -17,52 +17,22 @@ export default function FindEventsPage() {
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
   const eventsQuery = useMemoFirebase(() => {
-    const now = new Date();
     let q = query(collection(firestore, 'events'), where('status', '==', 'published'));
-
-    if (activeFilters) {
-        const { category, state, district, searchText, tags } = activeFilters;
-        if (category) {
-            q = query(q, where('category', '==', category));
-        }
-        // Firestore does not support partial string matches ('contains' for location)
-        // Client-side filtering will be needed for state, district, and searchText
-        if (tags.length > 0) {
-            q = query(q, where('tags', 'array-contains-any', tags));
-        }
-    }
     
-    // Sorting logic
+    // Sorting logic that can be done on the server
     switch (sortOption) {
         case 'recent':
             q = query(q, orderBy('createdAt', 'desc'));
             break;
-        case 'today':
-            const todayStart = new Date(now.setHours(0, 0, 0, 0));
-            const todayEnd = new Date(now.setHours(23, 59, 59, 999));
-            q = query(q, where('createdAt', '>=', todayStart), where('createdAt', '<=', todayEnd), orderBy('createdAt', 'desc'));
+        case 'date':
+             q = query(q, orderBy('date', 'asc'));
             break;
-        case 'next3-5':
-            const threeDays = new Date(now);
-            threeDays.setDate(now.getDate() + 3);
-            const fiveDays = new Date(now);
-            fiveDays.setDate(now.getDate() + 5);
-            q = query(q, where('date', '>=', threeDays), where('date', '<=', fiveDays), orderBy('date'));
-            break;
-        case 'next6-10':
-             const sixDays = new Date(now);
-            sixDays.setDate(now.getDate() + 6);
-            const tenDays = new Date(now);
-            tenDays.setDate(now.getDate() + 10);
-            q = query(q, where('date', '>=', sixDays), where('date', '<=', tenDays), orderBy('date'));
-            break;
-        // State and District sorting must be done client-side
         default:
-            q = query(q, orderBy('date', 'desc'));
+             q = query(q, orderBy('createdAt', 'desc'));
     }
 
     return q;
-  }, [firestore, activeFilters, sortOption]);
+  }, [firestore, sortOption]);
 
   const { data: allEvents, isLoading } = useCollection<Event>(eventsQuery);
 
@@ -71,38 +41,35 @@ export default function FindEventsPage() {
 
     let eventsToDisplay = [...allEvents];
 
-    // Client-side filtering for location because Firestore doesn't support substring matches easily.
     if (activeFilters) {
-      const { state, district, searchText } = activeFilters;
+      const { category, state, district, searchText, tags } = activeFilters;
+      
+      if (category) {
+          eventsToDisplay = eventsToDisplay.filter(event => event.category.toLowerCase() === category.toLowerCase());
+      }
       if (state) {
           eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
       }
       if (district) {
           eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
       }
+      if (tags.length > 0) {
+        eventsToDisplay = eventsToDisplay.filter(event => 
+            tags.some(tag => (event.tags || []).includes(tag))
+        );
+      }
       if (searchText) {
           const lowercasedSearch = searchText.toLowerCase();
           eventsToDisplay = eventsToDisplay.filter(event => 
               (event.location?.toLowerCase() || '').includes(lowercasedSearch) ||
-              (event.title?.toLowerCase() || '').includes(lowercasedSearch)
+              (event.title?.toLowerCase() || '').includes(lowercasedSearch) ||
+              (event.description?.toLowerCase() || '').includes(lowercasedSearch)
           );
       }
     }
-
-    // Client-side sorting for location
-    if (sortOption === 'state' || sortOption === 'district') {
-       eventsToDisplay.sort((a, b) => {
-            const aLocation = a.location.split(', ');
-            const bLocation = b.location.split(', ');
-            if (sortOption === 'state') {
-                return (aLocation[1] || '').localeCompare(bLocation[1] || '');
-            }
-            return (aLocation[0] || '').localeCompare(bLocation[0] || '');
-        });
-    }
     
     return eventsToDisplay;
-  }, [allEvents, activeFilters, sortOption]);
+  }, [allEvents, activeFilters]);
 
 
   const handleFilter = (filters: FilterState) => {

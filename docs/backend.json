@@ -44,11 +44,6 @@
           "type": "string",
           "description": "Unique identifier for the event."
         },
-        "userId": {
-          "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Event)",
-          "format": "uuid"
-        },
         "title": {
           "type": "string",
           "description": "Title of the event."
@@ -69,7 +64,7 @@
           "type": "number",
           "description": "Longitude of the event location."
         },
-        "startTime": {
+        "date": {
           "type": "string",
           "description": "Start date and time of the event.",
           "format": "date-time"
@@ -87,27 +82,54 @@
           "description": "URL of the event image.",
           "format": "uri"
         },
-        "creationTimestamp": {
+        "createdAt": {
           "type": "string",
           "description": "Timestamp when the event was created.",
           "format": "date-time"
         },
-        "archived": {
-          "type": "boolean",
-          "description": "Indicates if the event is archived."
+        "organizer": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The UID of the user who created the event."
+            },
+            "name": {
+              "type": "string",
+              "description": "The display name of the organizer."
+            },
+            "avatarUrl": {
+              "type": "string",
+              "description": "URL of the organizer's avatar."
+            }
+          },
+          "required": ["id", "name"]
+        },
+        "status": {
+            "type": "string",
+            "enum": ["published", "draft", "pending", "denied"],
+            "description": "The current status of the event."
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "A list of tags associated with the event."
         }
       },
       "required": [
         "id",
-        "userId",
         "title",
         "description",
         "latitude",
         "longitude",
-        "startTime",
+        "date",
         "durationDays",
         "category",
-        "creationTimestamp"
+        "createdAt",
+        "organizer",
+        "status"
       ]
     }
   },
@@ -136,37 +158,17 @@
         }
       },
       {
-        "path": "/users/{userId}/events/{eventId}",
+        "path": "/events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
             "$ref": "#/backend/entities/Event"
           },
-          "description": "Stores events created by users. Includes 'userId' for authorization independence.",
+          "description": "Central collection for all events.",
           "params": [
-            {
-              "name": "userId",
-              "description": "The ID of the user who created the event."
-            },
             {
               "name": "eventId",
               "description": "Unique identifier for the event."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/archived_events/{eventId}",
-        "definition": {
-          "entityName": "Event",
-          "schema": {
-            "$ref": "#/backend/entities/Event"
-          },
-          "description": "Stores archived events accessible only by admins.",
-          "params": [
-            {
-              "name": "eventId",
-              "description": "Unique identifier for the archived event."
             }
           ]
         }
@@ -188,6 +190,6 @@
         }
       }
     ],
-    "reasoning": "This design prioritizes security, scalability, and ease of debugging by adhering to Authorization Independence. Events are stored under user-specific paths, enforcing clear ownership. Archived events are segregated into an `archived_events` collection, ensuring only admins can access them. Timestamps are used for event archival after 45 days, and the `archived` flag explicitly marks the event's state.\n\n*   **Authorization Independence:** Event documents include the `userId` to ensure that authorization rules can validate the owner of the event without needing to perform `get()` operations on parent documents. This enables atomic operations and simplifies security rules.\n*   **Structural Segregation:** Events are divided into `events` and `archived_events` collections based on their state. This segregation allows for different security rules to be applied to active versus archived events.\n*   **Access Modeling:** Path-Based Ownership is used for active events (`/users/{userId}/events/{eventId}`), and a dedicated `roles_admin` collection is used to determine admin privileges, avoiding custom claims.\n*   **QAPs (Rules Are Not Filters):** The structure supports secure `list` operations because the security rules can be applied directly to each collection without needing to filter based on document data.\n*   **Invariants:** The `userId` and `creationTimestamp` fields enforce integrity of ownership and timestamping."
+    "reasoning": "This design uses a top-level 'events' collection for easier querying of public data, while maintaining a secure 'users' collection for private profiles. The 'roles_admin' collection provides a scalable way to manage admin privileges. Security rules enforce that users can only manage their own events, while admins have broader access. The 'organizer.id' field in each event is critical for enforcing ownership rules."
   }
 }
