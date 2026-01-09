@@ -1,6 +1,6 @@
 /**
  * LocalLooms Firestore Security Rules
- * Version: 2.3
+ * Version: 2.4
  *
  * ## Core Philosophy
  * This ruleset enforces a strict security model based on user ownership and role-based access control.
