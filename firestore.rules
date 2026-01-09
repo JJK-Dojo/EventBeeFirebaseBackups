@@ -51,20 +51,23 @@ service cloud.firestore {
     }
     
     match /events/{eventId} {
-        // Anyone can read a published event
-        allow get: if resource.data.status == 'published' || (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
+        // Anyone can read a published event.
+        // Users can read their own non-published events.
+        // Admins can read any event.
+        allow get: if (resource.data.status == 'published') || 
+                    (isSignedIn() && (isEventOwner(resource.data) || isAdmin()));
         
-        // Anyone can list published events
+        // Anyone can list events, but the query must filter for status == 'published' on the client.
         allow list: if true;
         
-        // Users can create new events
-        allow create: if isOwner(request.resource.data.organizer.id);
+        // Users can create new events.
+        allow create: if isSignedIn() && isOwner(request.resource.data.organizer.id);
 
-        // Users can update their own events, admins can update any
-        allow update: if isEventOwner(resource.data) || isAdmin();
+        // Users can update their own events, admins can update any.
+        allow update: if isSignedIn() && (isEventOwner(resource.data) || isAdmin());
 
-        // Users can delete their own events, admins can delete any
-        allow delete: if isEventOwner(resource.data) || isAdmin();
+        // Users can delete their own events, admins can delete any.
+        allow delete: if isSignedIn() && (isEventOwner(resource.data) || isAdmin());
     }
 
     match /roles_admin/{userId} {
