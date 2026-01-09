@@ -55,7 +55,7 @@ service cloud.firestore {
         allow get: if resource.data.status == 'published' || isEventOwner(resource.data) || isAdmin();
         
         // Anyone can list published events
-        allow list: if isSignedIn();
+        allow list: if true;
         
         // Users can create new events
         allow create: if isOwner(request.resource.data.organizer.id);
