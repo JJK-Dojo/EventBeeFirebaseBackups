@@ -44,10 +44,11 @@ export function useDoc<T = any>(
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Default to true
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
+    // Guard: If the document ref is not ready, stop and clear data.
     if (!memoizedDocRef) {
       setData(null);
       setIsLoading(false);
@@ -55,6 +56,7 @@ export function useDoc<T = any>(
       return;
     }
     
+    // Developer check: ensure the passed ref is memoized.
     if (!memoizedDocRef.__memo) {
       throw new Error('The document reference passed to useDoc must be memoized with useMemoFirebase.');
     }

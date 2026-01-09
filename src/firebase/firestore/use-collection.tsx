@@ -60,22 +60,25 @@ export function useCollection<T = any>(
   type StateDataType = ResultItemType[] | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Default to true
   const [error, setError] = useState<FirestoreError | Error | null>(null);
   const { user, isUserLoading } = useUser();
 
   useEffect(() => {
+    // Guard: If auth is required, wait until user state is resolved.
     if (options?.requireAuth && isUserLoading) {
       setIsLoading(true);
       return;
     }
 
+    // Guard: If auth is required and there is no user, stop and clear data.
     if (options?.requireAuth && !user) {
       setData(null);
       setIsLoading(false);
       return;
     }
     
+    // Guard: If the query/ref is not ready, stop and clear data.
     if (!memoizedTargetRefOrQuery) {
       setData(null);
       setIsLoading(false);
@@ -83,6 +86,7 @@ export function useCollection<T = any>(
       return;
     }
     
+    // Developer check: ensure the passed ref/query is memoized.
     if (!memoizedTargetRefOrQuery.__memo) {
       throw new Error('The query or reference passed to useCollection must be memoized with useMemoFirebase.');
     }

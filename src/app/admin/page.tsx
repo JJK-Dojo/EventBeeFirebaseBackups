@@ -145,6 +145,7 @@ export default function AdminPage() {
     const { toast } = useToast();
     
     const eventsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
         return query(collection(firestore, 'events'));
     }, [firestore]);
 
@@ -157,7 +158,7 @@ export default function AdminPage() {
     }, [events]);
 
     const handleApprove = (eventId: string) => {
-        if (!events) return;
+        if (!events || !firestore) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
             const eventRef = doc(firestore, 'events', eventId);
@@ -167,7 +168,7 @@ export default function AdminPage() {
     };
 
     const handleDeny = (eventId: string, feedback: string) => {
-        if (!events) return;
+        if (!events || !firestore) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
             const eventRef = doc(firestore, 'events', eventId);
