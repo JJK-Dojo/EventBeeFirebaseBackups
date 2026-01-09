@@ -34,7 +34,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query } from 'firebase/firestore';
+import { collection, doc, query, where } from 'firebase/firestore';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 
@@ -146,7 +146,8 @@ export default function AdminPage() {
     
     const eventsQuery = useMemoFirebase(() => {
         if (!firestore) return null;
-        return query(collection(firestore, 'events'));
+        // Only query for events that are pending review.
+        return query(collection(firestore, 'events'), where('status', '==', 'pending'));
     }, [firestore]);
 
     const { data: events, isLoading } = useCollection<Event>(eventsQuery);
@@ -189,7 +190,7 @@ export default function AdminPage() {
                         Admin Review Panel
                     </CardTitle>
                      <CardDescription>
-                        Review, approve, or deny user-submitted events. Events are sorted from newest to oldest.
+                        Review and approve user-submitted events that are pending review.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -203,7 +204,7 @@ export default function AdminPage() {
                         <div className="py-24 text-center rounded-lg border-2 border-dashed">
                         <p className="text-lg font-semibold">No Events to Review</p>
                         <p className="text-muted-foreground">
-                           As users submit events, they will appear here.
+                           When users submit events for review, they will appear here.
                         </p>
                         </div>
                     )}
