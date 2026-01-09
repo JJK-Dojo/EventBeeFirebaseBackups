@@ -25,6 +25,7 @@ import {
   Ghost,
   FileUp,
   AlertCircle,
+  Eye,
 } from 'lucide-react';
 import { format, parse, parseISO } from 'date-fns';
 import Header from '@/components/header';
@@ -58,6 +59,11 @@ type PostOffice = {
   State: string;
   Pincode: string;
 };
+
+const visibilityOptions = [
+    { value: 'public', label: 'Public (Submitted for Review)' },
+    { value: 'private', label: 'Private (Saved as Draft)' }
+];
 
 const categories = [
     { value: 'music', label: 'Music' },
@@ -180,6 +186,7 @@ export default function CreateEventPage() {
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
 
   // Form State
+  const [visibility, setVisibility] = useState('public');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState<Date | undefined>();
@@ -215,6 +222,7 @@ export default function CreateEventPage() {
       if (foundEvent) {
         setIsEditing(true);
         setEventToEdit(foundEvent);
+        setVisibility(foundEvent.status === 'draft' ? 'private' : 'public');
         setTitle(foundEvent.title);
         setDescription(foundEvent.description);
         setDate(new Date(foundEvent.date));
@@ -370,7 +378,7 @@ export default function CreateEventPage() {
     }
   }
 
-  const handleSubmit = (status: 'pending' | 'draft') => {
+  const handleSubmit = () => {
     if (isUserLoading) {
       toast({ title: "Please wait", description: "Still identifying user..." });
       return;
@@ -380,6 +388,8 @@ export default function CreateEventPage() {
       router.push('/login');
       return;
     }
+    
+    const newStatus = visibility === 'public' ? 'pending' : 'draft';
 
     const getBrandedImageUrl = () => {
         const seed = new Date().getTime();
@@ -398,12 +408,12 @@ export default function CreateEventPage() {
         imageUrl: finalImageUrl,
         category: categories.find(c => c.value === selectedCategory)?.label || 'General',
         tags: selectedTags,
-        status: status === 'pending' ? 'pending' : 'draft', // Resubmit as pending or save as draft
-        editCount: status === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
+        status: newStatus,
+        editCount: newStatus === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
         feedback: undefined, // Clear feedback on resubmission
       };
 
-      if (updatedEvent.editCount && updatedEvent.editCount > 5 && status === 'pending') {
+      if (updatedEvent.editCount && updatedEvent.editCount > 5 && newStatus === 'pending') {
         toast({
             variant: "destructive",
             title: "Edit Limit Reached",
@@ -415,7 +425,7 @@ export default function CreateEventPage() {
       setDocumentNonBlocking(eventRef, updatedEvent, { merge: true });
       
       toast({
-        title: `Event ${status === 'pending' ? 'Resubmitted' : 'Updated'}!`,
+        title: `Event ${newStatus === 'pending' ? 'Resubmitted' : 'Updated'}!`,
         description: `${title} has been successfully updated.`,
       });
 
@@ -437,18 +447,18 @@ export default function CreateEventPage() {
           },
           category: categories.find(c => c.value === selectedCategory)?.label || 'General',
           tags: selectedTags,
-          status,
+          status: newStatus,
           editCount: 0,
       };
 
       addDocumentNonBlocking(collection(firestore, 'events'), newEvent);
 
       toast({
-        title: `Event ${status === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
-        description: `${title} has been successfully ${status === 'pending' ? 'submitted' : 'saved'}.`,
+        title: `Event ${newStatus === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
+        description: `${title} has been successfully ${newStatus === 'pending' ? 'submitted' : 'saved'}.`,
       });
 
-      router.push(status === 'pending' ? '/dashboard' : '/profile');
+      router.push(newStatus === 'pending' ? '/dashboard' : '/profile');
     }
   }
 
@@ -482,6 +492,18 @@ export default function CreateEventPage() {
                     </AlertDescription>
                   </Alert>
                 )}
+
+                <div className="space-y-2">
+                    <Label className="text-lg font-semibold flex items-center">
+                        <Eye className="mr-2 h-5 w-5 text-primary"/>
+                        Event Visibility
+                    </Label>
+                    <Combobox
+                        items={visibilityOptions}
+                        value={visibility}
+                        onValueChange={setVisibility}
+                    />
+                </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="title" className="text-lg font-semibold">Event Title</Label>
@@ -776,13 +798,9 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="flex flex-wrap justify-end gap-4 pt-4">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={() => handleSubmit('draft')}>
+                  <Button size="lg" className="w-full sm:w-auto" onClick={handleSubmit}>
                     <Save className="mr-2 h-5 w-5" />
-                    Save as Draft
-                  </Button>
-                  <Button size="lg" className="w-full sm:w-auto" onClick={() => handleSubmit('pending')}>
-                    <FileUp className="mr-2 h-5 w-5" />
-                    {isEditing ? 'Resubmit for Review' : 'Submit for Review'}
+                    {isEditing ? 'Save Changes' : 'Save Event'}
                   </Button>
                 </div>
               </form>

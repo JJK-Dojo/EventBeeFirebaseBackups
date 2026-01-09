@@ -19,9 +19,12 @@ export default function Header() {
         <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/find-events" passHref>
              <Button
-                variant="ghost"
                 className="hidden sm:flex hover:opacity-90"
                 aria-label="Find Event"
+                 style={{
+                    backgroundColor: 'hsl(var(--accent))',
+                    color: 'hsl(var(--accent-foreground))',
+                }}
               >
                 <Search className="mr-2 h-5 w-5" />
                 Find Event
@@ -30,9 +33,12 @@ export default function Header() {
           <Link href="/find-events" passHref>
              <Button
                 size="icon"
-                variant="ghost"
                 className="flex sm:hidden hover:opacity-90"
                 aria-label="Find Event"
+                 style={{
+                    backgroundColor: 'hsl(var(--accent))',
+                    color: 'hsl(var(--accent-foreground))',
+                }}
               >
                 <Search className="h-5 w-5" />
               </Button>
