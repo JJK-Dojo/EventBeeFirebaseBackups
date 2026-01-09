@@ -81,9 +81,9 @@ const pages = [
   },
   { 
     href: '/', 
-    title: 'Home (Redirect)', 
-    description: 'The root page, which currently redirects to the admin panel.',
-    fields: ['Redirect Logic']
+    title: 'Home (Website Preview)', 
+    description: 'The root page, which serves as the public-facing website preview.',
+    fields: ['Event Filters', 'Event Card Grid']
   },
 ];
 
