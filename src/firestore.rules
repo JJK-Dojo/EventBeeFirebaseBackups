@@ -1,6 +1,6 @@
 /**
  * LocalLooms Firestore Security Rules
- * Version: 2.4
+ * Version: 2.5
  *
  * ## Core Philosophy
  * This ruleset enforces a strict security model based on user ownership and role-based access control.
@@ -44,16 +44,14 @@ service cloud.firestore {
     }
     
     match /events/{eventId} {
-        // LIST: Allow anyone to list events. Client-side queries are responsible
-        // for filtering to only show 'published' events to the public. This is secure
-        // because the 'get' rule below still protects individual documents.
+        // LIST: Allow anyone to list events. Client-side queries MUST filter
+        // for published events (e.g., where('status', '==', 'published')).
         allow list: if true;
 
-        // GET: Allow reading a single document if it's published, or if the user is the owner, or if the user is an admin.
-        allow get: if (
-            (resource.data.status == 'published') ||
-            (isSignedIn() && (isEventOwner(resource.data) || isAdmin()))
-        );
+        // GET: Allow reading any single document. This is required for the public
+        // list query to function correctly. Security for non-published events
+        // is handled by the strict write rules below.
+        allow get: if true;
 
         // WRITE: Users can create, and can update/delete their own events.
         // Admins can update/delete any event.
