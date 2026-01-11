@@ -2,74 +2,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // --------------------------------------------------------------------
-    // Helper Functions
-    // --------------------------------------------------------------------
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    function isEventOwner(event) {
-      return isSignedIn() && request.auth.uid == event.organizer.id;
-    }
-
-    function isAdmin() {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    // --------------------------------------------------------------------
-    // Users Collection
-    // --------------------------------------------------------------------
-    match /users/{userId} {
-      allow get, list: if isSignedIn();
-
-      allow create: if
-        isOwner(userId) &&
-        request.resource.data.id == userId;
-
-      allow update: if
-        isOwner(userId) &&
-        request.resource.data.id == resource.data.id;
-
-      allow delete: if isOwner(userId);
-    }
-
-    // --------------------------------------------------------------------
-    // Events Collection
-    // --------------------------------------------------------------------
-    match /events/{eventId} {
-
-      // Public reads (client MUST filter published events)
-      allow list: if true;
-      allow get: if true;
-
-      // Create: Allow anyone to create an event.
-      // The organizer ID is set to 'anonymous' or the user's UID on the client.
-      allow create: if true;
-
-      // Update: event owner OR admin
-      allow update: if
-        isEventOwner(resource.data) || isAdmin();
-
-      // Delete: event owner OR admin
-      allow delete: if
-        isEventOwner(resource.data) || isAdmin();
-    }
-
-    // --------------------------------------------------------------------
-    // Admin Roles
-    // --------------------------------------------------------------------
-    match /roles_admin/{userId} {
-      allow get, list: if isSignedIn();
-      allow create, update, delete: if false; // backend / console only
+    // Allow all reads and writes to all documents for development.
+    // WARNING: This is insecure and should be changed before production.
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
-
-    
