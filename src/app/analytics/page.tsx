@@ -24,13 +24,25 @@ import {
   Legend,
   CartesianGrid
 } from "recharts";
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
+import type { Event } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AnalyticsPage() {
-  const { events } = { events: [] };
+  const firestore = useFirestore();
+  
+  const eventsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'events'), where('status', '==', 'published'));
+  }, [firestore]);
+
+  const { data: events, isLoading } = useCollection<Event>(eventsQuery);
 
   const eventsByCategory = useMemo(() => {
+    if (!events) return [];
     const counts: { [key: string]: number } = {};
     events.forEach(event => {
       counts[event.category] = (counts[event.category] || 0) + 1;
@@ -39,6 +51,7 @@ export default function AnalyticsPage() {
   }, [events]);
 
   const eventsByStatus = useMemo(() => {
+    if (!events) return [];
     const counts: { [key: string]: number } = {};
     events.forEach(event => {
       counts[event.status] = (counts[event.status] || 0) + 1;
@@ -47,9 +60,9 @@ export default function AnalyticsPage() {
   }, [events]);
 
   const eventsByState = useMemo(() => {
+    if (!events) return [];
     const counts: { [key: string]: number } = {};
     events.forEach(event => {
-        // Assuming location is "City, State, Pincode"
         const parts = event.location.split(', ');
         if (parts.length > 1) {
             const state = parts[1];
@@ -63,13 +76,17 @@ export default function AnalyticsPage() {
   }, [events]);
 
   const tagsPopularity = useMemo(() => {
+    if (!events) return [];
     const counts: { [key: string]: number } = {};
     events.forEach(event => {
-        // This is a placeholder as tags are not stored in the event object yet.
-        // We'll use categories as a proxy for now.
-        counts[event.category] = (counts[event.category] || 0) + 1;
+        (event.tags || []).forEach(tag => {
+            counts[tag] = (counts[tag] || 0) + 1;
+        });
     });
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+    return Object.entries(counts)
+        .map(([name, value]) => ({ name, value }))
+        .sort((a,b) => b.value - a.value)
+        .slice(0, 10);
   }, [events]);
 
 
@@ -84,9 +101,40 @@ export default function AnalyticsPage() {
               Analytics Dashboard
             </h1>
             <p className="text-lg text-muted-foreground">
-              Insights into event trends and user engagement.
+              Insights into event trends and user engagement on published events.
             </p>
           </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-[300px] w-full" />
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-[300px] w-full" />
+                    </CardContent>
+                </Card>
+                <Card className="lg:col-span-2">
+                    <CardHeader>
+                        <Skeleton className="h-6 w-1/2" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-[400px] w-full" />
+                    </CardContent>
+                </Card>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
@@ -161,7 +209,7 @@ export default function AnalyticsPage() {
                   <RechartsBarChart layout="vertical" data={eventsByState}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
-                    <YAxis dataKey="name" type="category" width={100} />
+                    <YAxis dataKey="name" type="category" width={100} tick={{fontSize: 12}} />
                     <Tooltip />
                     <Legend />
                     <Bar dataKey="value" fill="hsl(var(--accent))" name="Events" />
@@ -170,14 +218,14 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
 
-             <Card>
+             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <BarChart className="h-6 w-6 text-primary"/>
-                    Tag Popularity (by Category)
+                    Top 10 Tag Popularity
                 </CardTitle>
                 <CardDescription>
-                    Most popular tags used for events. (Using category as a proxy)
+                    Most popular tags used for events.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -195,6 +243,7 @@ export default function AnalyticsPage() {
             </Card>
 
           </div>
+          )}
         </div>
       </main>
     </div>
