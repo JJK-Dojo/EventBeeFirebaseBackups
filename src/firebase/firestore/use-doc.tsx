@@ -7,9 +7,11 @@ import {
   DocumentData,
   FirestoreError,
   DocumentSnapshot,
+  getFirestore,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { useUser } from '@/firebase/provider';
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
@@ -40,14 +42,29 @@ export interface UseDocResult<T> {
  */
 export function useDoc<T = any>(
   memoizedDocRef: (DocumentReference<DocumentData> & {__memo?: boolean}) | null | undefined,
+  options?: { requireAuth?: boolean }
 ): UseDocResult<T> {
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Default to true
   const [error, setError] = useState<FirestoreError | Error | null>(null);
+  const { user, isUserLoading } = useUser();
 
   useEffect(() => {
+    // Guard: If auth is required, wait until user state is resolved.
+    if (options?.requireAuth && isUserLoading) {
+      setIsLoading(true);
+      return;
+    }
+
+    // Guard: If auth is required and there is no user, stop and clear data.
+    if (options?.requireAuth && !user) {
+      setData(null);
+      setIsLoading(false);
+      return;
+    }
+
     // Guard: If the document ref is not ready, stop and clear data.
     if (!memoizedDocRef) {
       setData(null);
@@ -60,6 +77,15 @@ export function useDoc<T = any>(
     if (!memoizedDocRef.__memo) {
       throw new Error('The document reference passed to useDoc must be memoized with useMemoFirebase.');
     }
+    
+    // Guard: Ensure firestore instance is available before creating listener.
+    try {
+      getFirestore();
+    } catch (e) {
+      setIsLoading(true);
+      return; // Firestore not ready, wait for next render.
+    }
+
 
     setIsLoading(true);
     setError(null);
@@ -92,7 +118,7 @@ export function useDoc<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
+  }, [memoizedDocRef, options?.requireAuth, user, isUserLoading]); // Re-run if the memoizedDocRef changes.
 
   return { data, isLoading, error };
 }
