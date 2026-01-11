@@ -17,6 +17,8 @@ export default function FindEventsPage() {
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
   const eventsQuery = useMemoFirebase(() => {
+    if (!firestore) return null; // Wait for firestore to be initialized
+
     let q = query(collection(firestore, 'events'), where('status', '==', 'published'));
     
     // Sorting logic that can be done on the server
