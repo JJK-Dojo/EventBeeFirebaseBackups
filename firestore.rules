@@ -1,3 +1,4 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -48,10 +49,9 @@ service cloud.firestore {
       allow list: if true;
       allow get: if true;
 
-      // Create: signed-in user creating their own event
-      allow create: if
-        isSignedIn() &&
-        isOwner(request.resource.data.organizer.id);
+      // Create: Allow anyone to create an event.
+      // The organizer ID is set to 'anonymous' or the user's UID on the client.
+      allow create: if true;
 
       // Update: event owner OR admin
       allow update: if
@@ -71,3 +71,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
