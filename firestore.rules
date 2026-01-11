@@ -1,14 +1,3 @@
-/**
- * LocalLooms Firestore Security Rules
- * Version: 2.4
- *
- * ## Core Philosophy
- * This ruleset enforces a strict security model based on user ownership and role-based access control.
- * The primary goal is to ensure that users can only manage their own data, while a
- * designated group of administrators has elevated privileges. Publicly viewable data is explicitly
- * marked as 'published' and filtered on the client-side.
- *
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -23,49 +12,62 @@ service cloud.firestore {
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
-    
+
     function isEventOwner(event) {
-        return isOwner(event.organizer.id);
+      return isSignedIn() && request.auth.uid == event.organizer.id;
     }
 
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
 
     // --------------------------------------------------------------------
-    // Collection Rules
+    // Users Collection
     // --------------------------------------------------------------------
-
     match /users/{userId} {
       allow get, list: if isSignedIn();
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isOwner(userId) && request.resource.data.id == resource.data.id;
+
+      allow create: if
+        isOwner(userId) &&
+        request.resource.data.id == userId;
+
+      allow update: if
+        isOwner(userId) &&
+        request.resource.data.id == resource.data.id;
+
       allow delete: if isOwner(userId);
     }
-    
+
+    // --------------------------------------------------------------------
+    // Events Collection
+    // --------------------------------------------------------------------
     match /events/{eventId} {
-        // LIST: Allow anyone to list events. Client-side queries are responsible
-        // for filtering to only show 'published' events to the public. This is secure
-        // because the 'get' rule below still protects individual documents.
-        allow list: if true;
 
-        // GET: Allow reading a single document if it's published, or if the user is the owner, or if the user is an admin.
-        allow get: if (
-            (resource.data.status == 'published') ||
-            (isSignedIn() && (isEventOwner(resource.data) || isAdmin()))
-        );
+      // Public reads (client MUST filter published events)
+      allow list: if true;
+      allow get: if true;
 
-        // WRITE: Users can create, and can update/delete their own events.
-        // Admins can update/delete any event.
-        allow write: if isSignedIn() && (
-          (request.method == 'create' && isOwner(request.resource.data.organizer.id)) ||
-          ((request.method == 'update' || request.method == 'delete') && (isEventOwner(resource.data) || isAdmin()))
-        );
+      // Create: signed-in user creating their own event
+      allow create: if
+        isSignedIn() &&
+        isOwner(request.resource.data.organizer.id);
+
+      // Update: event owner OR admin
+      allow update: if
+        isEventOwner(resource.data) || isAdmin();
+
+      // Delete: event owner OR admin
+      allow delete: if
+        isEventOwner(resource.data) || isAdmin();
     }
 
+    // --------------------------------------------------------------------
+    // Admin Roles
+    // --------------------------------------------------------------------
     match /roles_admin/{userId} {
       allow get, list: if isSignedIn();
-      allow create, update, delete: if false; // Must be managed via backend/console
+      allow create, update, delete: if false; // backend / console only
     }
   }
 }
