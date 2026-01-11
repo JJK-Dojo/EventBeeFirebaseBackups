@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, doc, query, where } from 'firebase/firestore';
 import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -143,12 +143,13 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 export default function AdminPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { user } = useUser();
     
     const eventsQuery = useMemoFirebase(() => {
-        if (!firestore) return null;
+        if (!firestore || !user) return null;
         // Only query for events that are pending review.
         return query(collection(firestore, 'events'), where('status', '==', 'pending'));
-    }, [firestore]);
+    }, [firestore, user]);
 
     const { data: events, isLoading } = useCollection<Event>(eventsQuery);
 
