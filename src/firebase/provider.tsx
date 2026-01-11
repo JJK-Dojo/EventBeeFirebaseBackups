@@ -102,6 +102,11 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       userError: userAuthState.userError,
     };
   }, [firebaseApp, firestore, auth, userAuthState]);
+  
+  // Do not render children until Firebase is ready
+  if (!contextValue.areServicesAvailable) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <FirebaseContext.Provider value={contextValue}>
