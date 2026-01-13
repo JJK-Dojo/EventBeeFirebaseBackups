@@ -50,6 +50,8 @@ import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
 import { DUMMY_EVENTS } from '@/lib/data';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 type PostOffice = {
   Name: string;
@@ -177,6 +179,7 @@ export default function CreateEventPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
@@ -199,6 +202,7 @@ export default function CreateEventPage() {
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const districts = useMemo(() => {
     if (selectedState) {
@@ -371,57 +375,73 @@ export default function CreateEventPage() {
     }
   }
 
-  const handleSubmit = () => {
-    const newStatus = visibility === 'public' ? 'pending' : 'draft';
+  const handleSubmit = async () => {
+    if (!firestore) {
+        toast({
+            variant: "destructive",
+            title: "Database Error",
+            description: "Firestore is not initialized. Please try again later.",
+        });
+        return;
+    }
+    setIsSubmitting(true);
+    try {
+        const newStatus = visibility === 'public' ? 'pending' : 'draft';
 
-    const getBrandedImageUrl = () => {
-        const seed = '12345'; // Static seed
-        return `https://picsum.photos/seed/${seed}/600/400`;
-    };
-    
-    const finalImageUrl = imagePreview || getBrandedImageUrl();
+        const getBrandedImageUrl = () => {
+            const seed = '12345'; // Static seed
+            return `https://picsum.photos/seed/${seed}/600/400`;
+        };
+        
+        const finalImageUrl = imagePreview || getBrandedImageUrl();
 
-    if (isEditing && eventToEdit) {
-      console.log('Simulating update for event:', eventToEdit.id);
-      // In a real app, you would update the event in your state management
-      toast({
-        title: `Event ${newStatus === 'pending' ? 'Resubmitted' : 'Updated'}!`,
-        description: `${title} has been successfully updated (simulation).`,
-      });
-      router.push('/profile');
-    } else {
-      console.log('Simulating creation of new event');
-       const newEvent: Omit<Event, 'id'> = {
-          title,
-          description,
-          date: date ? date.toISOString() : new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          location: pincodeSearchInput,
-          imageUrl: finalImageUrl,
-          imageHint: 'event image',
-          organizer: {
-              id: 'anonymous',
-              name: 'Anonymous Contributor',
-              avatarUrl: `https://picsum.photos/seed/anon/40/40`,
-          },
-          category: categories.find(c => c.value === selectedCategory)?.label || 'General',
-          tags: selectedTags,
-          status: newStatus,
-          editCount: 0,
-      };
-      console.log(newEvent);
+        const eventData = {
+            title,
+            description,
+            date: date ? date.toISOString() : new Date().toISOString(),
+            location: pincodeSearchInput,
+            imageUrl: finalImageUrl,
+            imageHint: 'event image', // Consider generating this with AI or from tags
+            organizer: {
+                id: 'anonymous', // For now, all events are anonymous
+                name: 'Anonymous Contributor',
+                avatarUrl: `https://picsum.photos/seed/anon/40/40`,
+            },
+            category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+            tags: selectedTags,
+            status: newStatus,
+            editCount: 0,
+            createdAt: serverTimestamp(),
+            // Remove user specific fields for now
+        };
 
-      toast({
-        title: `Event ${newStatus === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
-        description: `${title} has been successfully ${newStatus === 'pending' ? 'submitted' : 'saved'} (simulation).`,
-      });
-
-      // Redirect based on whether they are logged in and what they chose.
-      if (newStatus === 'draft') {
-        router.push('/profile');
-      } else {
-        router.push('/find-events');
-      }
+        if (isEditing && eventToEdit) {
+          // Update logic will go here
+          console.log('Simulating update for event:', eventToEdit.id);
+          toast({
+            title: `Event ${newStatus === 'pending' ? 'Resubmitted' : 'Updated'}!`,
+            description: `${title} has been successfully updated.`,
+          });
+          router.push('/profile');
+        } else {
+          const docRef = await addDoc(collection(firestore, 'events'), eventData);
+          console.log("Document written with ID: ", docRef.id);
+          
+          toast({
+            title: `Event ${newStatus === 'pending' ? 'Submitted' : 'Saved'}!`,
+            description: `${title} has been successfully saved.`,
+          });
+          router.push(newStatus === 'draft' ? '/profile' : '/find-events');
+        }
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        toast({
+            variant: "destructive",
+            title: "Submission Failed",
+            description: "Could not save the event. Please try again.",
+        });
+    } finally {
+        setIsSubmitting(false);
     }
   }
 
@@ -761,8 +781,8 @@ export default function CreateEventPage() {
                 </div>
 
                 <div className="flex flex-wrap justify-end gap-4 pt-4">
-                  <Button size="lg" className="w-full sm:w-auto" onClick={handleSubmit}>
-                    <Save className="mr-2 h-5 w-5" />
+                  <Button size="lg" className="w-full sm:w-auto" onClick={handleSubmit} disabled={isSubmitting}>
+                    {isSubmitting ? <LoaderCircle className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
                     {isEditing ? 'Save Changes' : 'Save Event'}
                   </Button>
                 </div>
