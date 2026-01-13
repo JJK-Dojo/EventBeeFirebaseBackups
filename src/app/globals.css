@@ -61,12 +61,13 @@
 }
 
 @keyframes bee-fly {
-  0%, 100% { transform: translate(0, 0); }
-  12.5% { transform: translate(-30px, -30px); } /* Top-left */
-  25% { transform: translate(-30px, -30px); }   /* Halt */
-  37.5% { transform: translate(30px, -30px); }  /* Top-right */
-  50% { transform: translate(30px, -30px); }    /* Halt */
+  0% { transform: translate(0, 0); }
+  12.5% { transform: translate(-30px, -30px); }  /* Top-left */
+  25% { transform: translate(-30px, -30px); }    /* Halt */
+  37.5% { transform: translate(-30px, 30px); }   /* Bottom-left */
+  50% { transform: translate(-30px, 30px); }     /* Halt */
   62.5% { transform: translate(30px, 30px); }   /* Bottom-right */
   75% { transform: translate(30px, 30px); }     /* Halt */
-  87.5% { transform: translate(-30px, 30px); }  /* Bottom-left */
+  87.5% { transform: translate(30px, -30px); }  /* Top-right */
+  100% { transform: translate(0, 0); }
 }
