@@ -16,9 +16,9 @@ export default function Logo({ className }: { className?: string }) {
       <div className="flex h-16 w-24 items-center justify-center rounded-[50%] bg-primary shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/50">
         <BeeIcon className="h-8 w-8 animate-[bee-fly_4s_ease-in-out_infinite]" />
       </div>
-       <div className="bg-accent text-white p-2 rounded-md">
+       <div className="bg-accent text-accent-foreground p-2 rounded-md">
         <span
-          className="text-2xl font-bold font-headline transition-colors duration-300 group-hover:text-primary"
+          className="text-2xl font-bold font-headline transition-colors duration-300"
         >
           EventBee
         </span>
