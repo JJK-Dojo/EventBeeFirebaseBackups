@@ -10,10 +10,13 @@ import { UserMenu } from './user-menu';
 
 export default function Header() {
   const { user, isLoading } = useUser();
+  
+  const logoHref = user ? '/dashboard' : '/login';
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/">
+        <Link href={logoHref}>
           <Logo />
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
