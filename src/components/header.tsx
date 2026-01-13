@@ -26,7 +26,7 @@ export default function Header() {
                 aria-label="Find Event"
                  style={{
                     backgroundColor: 'hsl(var(--primary))',
-                    color: 'hsl(var(--accent))',
+                    color: 'hsl(var(--primary-foreground))',
                 }}
               >
                 <Search className="mr-2 h-5 w-5" />
@@ -40,7 +40,7 @@ export default function Header() {
                 aria-label="Find Event"
                  style={{
                     backgroundColor: 'hsl(var(--primary))',
-                    color: 'hsl(var(--accent))',
+                    color: 'hsl(var(--primary-foreground))',
                 }}
               >
                 <Search className="h-5 w-5" />
