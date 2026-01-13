@@ -5,7 +5,7 @@ const BeeIcon = ({ className }: { className?: string }) => (
       className={className}
       fill="currentColor"
     >
-      <g transform="translate(50 50) scale(0.4) translate(-50 -50)">
+      <g transform="translate(50 50) scale(0.3) translate(-50 -50)">
         <g transform="scale(-1, 1) translate(-100, 0)">
         {/* Body */}
         <ellipse cx="50" cy="60" rx="25" ry="20" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
@@ -54,11 +54,33 @@ export default function Logo({ className }: { className?: string }) {
           viewBox="0 0 100 100"
           className="absolute inset-0 h-full w-full transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] filter"
         >
+             <defs>
+                <pattern
+                id="honeycomb"
+                width="28"
+                height="48.5"
+                patternUnits="userSpaceOnUse"
+                patternTransform="scale(1.5)"
+                >
+                <path
+                    d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
+                    stroke="hsla(var(--accent), 0.2)"
+                    strokeWidth="1.5"
+                />
+                </pattern>
+            </defs>
             <circle 
                 cx="50" 
                 cy="50" 
                 r="45" 
-                fill="hsl(var(--primary))" 
+                fill="url(#honeycomb)" 
+            />
+            <circle 
+                cx="50" 
+                cy="50" 
+                r="45" 
+                fill="hsl(var(--primary))"
+                fillOpacity="0.8"
                 stroke="hsl(var(--accent))"
                 strokeWidth="2"
             />
@@ -74,7 +96,7 @@ export default function Logo({ className }: { className?: string }) {
           {/* Honeycomb watermark */}
           <defs>
             <pattern
-              id="honeycomb"
+              id="honeycomb-text"
               width="28"
               height="48.5"
               patternUnits="userSpaceOnUse"
@@ -90,7 +112,7 @@ export default function Logo({ className }: { className?: string }) {
           <rect
             width="100%"
             height="100%"
-            fill="url(#honeycomb)"
+            fill="url(#honeycomb-text)"
             rx="6"
             ry="6"
           />
