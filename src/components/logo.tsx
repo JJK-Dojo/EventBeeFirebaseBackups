@@ -5,7 +5,8 @@ const BeeIcon = ({ className }: { className?: string }) => (
       className={className}
       fill="currentColor"
     >
-      <g transform="translate(5, 5) scale(0.9)">
+      <g transform="translate(50 50) scale(0.7) translate(-50 -50)">
+        <g transform="scale(-1, 1) translate(-100, 0)">
         {/* Body */}
         <ellipse cx="50" cy="60" rx="25" ry="20" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
         
@@ -21,7 +22,7 @@ const BeeIcon = ({ className }: { className?: string }) => (
         <path d="M68 52 Q 72 56, 76 52" stroke="black" strokeWidth="2" fill="none" />
 
         {/* Smile */}
-        <path d="M62 62 Q 65 66, 68 64" stroke="black" strokeWidth="2" fill="none" />
+        <path d="M62 62 Q 67 70, 72 62" stroke="black" strokeWidth="2" fill="none" />
         
         {/* Stinger */}
         <path d="M25 60 L 15 60" stroke="black" strokeWidth="3" strokeLinecap="round" />
@@ -39,6 +40,7 @@ const BeeIcon = ({ className }: { className?: string }) => (
           stroke="black"
           strokeWidth="2"
         />
+        </g>
       </g>
     </svg>
 );
@@ -52,17 +54,16 @@ export default function Logo({ className }: { className?: string }) {
           viewBox="0 0 100 100"
           className="absolute inset-0 h-full w-full transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] filter"
         >
-          <path
-            d="M 50,5 L 93.3,27.5 V 72.5 L 50,95 L 6.7,72.5 V 27.5 Z"
-            fill="hsl(var(--primary))"
-            stroke="white"
-            strokeWidth="4"
-            strokeLinejoin="round"
-          />
+            <circle 
+                cx="50" 
+                cy="50" 
+                r="45" 
+                fill="hsl(var(--primary))" 
+            />
         </svg>
         <BeeIcon className="h-full w-full text-accent animate-[bee-fly_8s_ease-in-out_infinite] relative" />
       </div>
-       <div className="bg-accent p-2 rounded-md border-2 border-black">
+       <div className="bg-accent p-2 rounded-md border-2 border-dotted border-black">
         <span
           className="text-2xl font-bold font-headline transition-colors duration-300 text-black"
         >
