@@ -4,19 +4,19 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96.1%; /* #F5F5F5 */
+    --background: 220 13% 96.1%; /* #F5F5F5 */
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 356 83% 65%; /* #ED5D66 */
+    --primary: 198 70% 50%; /* #29ABE2 */
     --primary-foreground: 210 40% 98%;
     --secondary: 220 13% 91%;
     --secondary-foreground: 220 14.3% 9.1%;
     --muted: 220 13% 91%;
     --muted-foreground: 220 8.9% 43.1%;
-    --accent: 51 100% 50%; /* #ffd700 */
+    --accent: 120 80% 75%; /* #90EE90 */
     --accent-foreground: 224 71.4% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -35,13 +35,13 @@
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-    --primary: 356 83% 65%;
+    --primary: 198 70% 50%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 51 100% 50%;
+    --accent: 120 80% 75%;
     --accent-foreground: 0 0% 9%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -61,13 +61,13 @@
 }
 
 @keyframes bee-fly {
-  0% { transform: translate(0, 0); }
-  12.5% { transform: translate(-30px, -30px); }  /* Top-left */
-  25% { transform: translate(-30px, -30px); }    /* Halt */
-  37.5% { transform: translate(-30px, 30px); }   /* Bottom-left */
-  50% { transform: translate(-30px, 30px); }     /* Halt */
-  62.5% { transform: translate(30px, 30px); }   /* Bottom-right */
-  75% { transform: translate(30px, 30px); }     /* Halt */
-  87.5% { transform: translate(30px, -30px); }  /* Top-right */
-  100% { transform: translate(0, 0); }
+  0% { transform: translate(0, 0) rotate(0deg); }
+  12.5% { transform: translate(-30px, -30px) rotate(-15deg); }
+  25% { transform: translate(-30px, -30px) rotate(0deg); }
+  37.5% { transform: translate(-30px, 30px) rotate(15deg); }
+  50% { transform: translate(-30px, 30px) rotate(0deg); }
+  62.5% { transform: translate(30px, 30px) rotate(-15deg); }
+  75% { transform: translate(30px, 30px) rotate(0deg); }
+  87.5% { transform: translate(30px, -30px) rotate(15deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }

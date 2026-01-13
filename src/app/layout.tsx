@@ -1,29 +1,24 @@
 import type { Metadata } from 'next';
-import { Inter, Lexend } from 'next/font/google';
+import { PT_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import FirebaseErrorListener from '@/components/FirebaseErrorListener';
 
-const inter = Inter({
+const ptSans = PT_Sans({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-inter',
-});
-
-const lexend = Lexend({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-lexend',
+  variable: '--font-pt-sans',
+  weight: ['400', '700'],
 });
 
 
 export const metadata: Metadata = {
   title: {
-    default: 'EB-Home',
-    template: '%s | EventBee',
+    default: 'LocalLooms',
+    template: '%s | LocalLooms',
   },
-  description: 'EventBee - Your Hive for Local Events.',
+  description: 'LocalLooms - Weaving Your Community Together.',
 };
 
 export default function RootLayout({
@@ -32,10 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${lexend.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${ptSans.variable}`}>
        <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Font links are now handled by next/font */}
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
