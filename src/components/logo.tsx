@@ -104,7 +104,7 @@ export default function Logo({ className }: { className?: string }) {
             >
               <path
                 d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
-                stroke="hsla(var(--golden), 0.7)"
+                stroke="hsl(var(--golden))"
                 strokeWidth="1.5"
               />
             </pattern>
