@@ -7,11 +7,9 @@ import {
   DocumentData,
   FirestoreError,
   DocumentSnapshot,
-  getFirestore,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { useUser } from '@/firebase/provider';
 
 /** Utility type to add an 'id' field to a given type T. */
 type WithId<T> = T & { id: string };
@@ -30,8 +28,8 @@ export interface UseDocResult<T> {
  * React hook to subscribe to a single Firestore document in real-time.
  * Handles nullable references.
  * 
- * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedDocRef or BAD THINGS WILL HAPPEN
- * use useMemoFirebase to memoize it per React guidence.  Also make sure that it's dependencies are stable
+ * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedTargetRefOrQuery or BAD THINGS WILL HAPPEN
+ * use useMemo to memoize it per React guidence.  Also make sure that it's dependencies are stable
  * references
  *
  *
@@ -41,54 +39,25 @@ export interface UseDocResult<T> {
  * @returns {UseDocResult<T>} Object with data, isLoading, error.
  */
 export function useDoc<T = any>(
-  memoizedDocRef: (DocumentReference<DocumentData> & {__memo?: boolean}) | null | undefined,
-  options?: { requireAuth?: boolean }
+  memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
 ): UseDocResult<T> {
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Default to true
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
-  const { user, isUserLoading } = useUser();
 
   useEffect(() => {
-    // Guard: If auth is required, wait until user state is resolved.
-    if (options?.requireAuth && isUserLoading) {
-      setIsLoading(true);
-      return;
-    }
-
-    // Guard: If auth is required and there is no user, stop and clear data.
-    if (options?.requireAuth && !user) {
-      setData(null);
-      setIsLoading(false);
-      return;
-    }
-
-    // Guard: If the document ref is not ready, stop and clear data.
     if (!memoizedDocRef) {
       setData(null);
       setIsLoading(false);
       setError(null);
       return;
     }
-    
-    // Developer check: ensure the passed ref is memoized.
-    if (!memoizedDocRef.__memo) {
-      throw new Error('The document reference passed to useDoc must be memoized with useMemoFirebase.');
-    }
-    
-    // Guard: Ensure firestore instance is available before creating listener.
-    try {
-      getFirestore();
-    } catch (e) {
-      setIsLoading(true);
-      return; // Firestore not ready, wait for next render.
-    }
-
 
     setIsLoading(true);
     setError(null);
+    // Optional: setData(null); // Clear previous data instantly
 
     const unsubscribe = onSnapshot(
       memoizedDocRef,
@@ -118,7 +87,7 @@ export function useDoc<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedDocRef, options?.requireAuth, user, isUserLoading]); // Re-run if the memoizedDocRef changes.
+  }, [memoizedDocRef]); // Re-run if the memoizedDocRef changes.
 
   return { data, isLoading, error };
 }

@@ -8,7 +8,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user."
+          "description": "Unique identifier for the user entity."
         },
         "email": {
           "type": "string",
@@ -22,27 +22,25 @@
         "displayName": {
           "type": "string",
           "description": "User's display name."
-        },
-        "location": {
-          "type": "string",
-          "description": "User's current location, could be city, or address."
         }
       },
       "required": [
-        "id",
-        "email",
-        "displayName"
+        "id"
       ]
     },
     "Event": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Event",
       "type": "object",
-      "description": "Represents an event posted on the LocalLooms platform.",
+      "description": "Represents a local event posted on the LocalLooms platform.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the event."
+          "description": "Unique identifier for the event entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who created the event. (Relationship: User 1:N Event)"
         },
         "title": {
           "type": "string",
@@ -50,7 +48,16 @@
         },
         "description": {
           "type": "string",
-          "description": "Description of the event."
+          "description": "Detailed description of the event."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "The start date and time of the event.",
+          "format": "date-time"
+        },
+        "durationDays": {
+          "type": "number",
+          "description": "Duration of the event in days (up to 30)."
         },
         "locationName": {
           "type": "string",
@@ -63,81 +70,24 @@
         "longitude": {
           "type": "number",
           "description": "Longitude of the event location."
-        },
-        "date": {
-          "type": "string",
-          "description": "Start date and time of the event.",
-          "format": "date-time"
-        },
-        "durationDays": {
-          "type": "number",
-          "description": "Duration of the event in days (up to 30)."
-        },
-        "category": {
-          "type": "string",
-          "description": "Category of the event."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL of the event image.",
-          "format": "uri"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp when the event was created.",
-          "format": "date-time"
-        },
-        "organizer": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string",
-              "description": "The UID of the user who created the event."
-            },
-            "name": {
-              "type": "string",
-              "description": "The display name of the organizer."
-            },
-            "avatarUrl": {
-              "type": "string",
-              "description": "URL of the organizer's avatar."
-            }
-          },
-          "required": ["id", "name"]
-        },
-        "status": {
-            "type": "string",
-            "enum": ["published", "draft", "pending", "denied"],
-            "description": "The current status of the event."
-        },
-        "tags": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            },
-            "description": "A list of tags associated with the event."
         }
       },
       "required": [
         "id",
+        "userId",
         "title",
         "description",
-        "latitude",
-        "longitude",
-        "date",
+        "startTime",
         "durationDays",
-        "category",
-        "createdAt",
-        "organizer",
-        "status"
+        "latitude",
+        "longitude"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -149,48 +99,36 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles. The 'userId' parameter identifies the user.",
+          "description": "Stores user profiles. The 'userId' parameter corresponds to the Firebase Auth UID.",
           "params": [
             {
               "name": "userId",
-              "description": "Unique identifier for the user."
+              "description": "The unique identifier of the user (Firebase Auth UID)."
             }
           ]
         }
       },
       {
-        "path": "/events/{eventId}",
+        "path": "/users/{userId}/events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
             "$ref": "#/backend/entities/Event"
           },
-          "description": "Central collection for all events.",
-          "params": [
-            {
-              "name": "eventId",
-              "description": "Unique identifier for the event."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Indicates admin privileges based on user ID. Existence of document grants admin role.",
+          "description": "Stores events created by a specific user. Path based ownership enables simple and robust security rules based on the user ID. Includes event details such as title, description, and location.",
           "params": [
             {
               "name": "userId",
-              "description": "The ID of the user with admin privileges."
+              "description": "The unique identifier of the user who created the event."
+            },
+            {
+              "name": "eventId",
+              "description": "The unique identifier of the event."
             }
           ]
         }
       }
     ],
-    "reasoning": "This design uses a top-level 'events' collection for easier querying of public data, while maintaining a secure 'users' collection for private profiles. The 'roles_admin' collection provides a scalable way to manage admin privileges. Security rules enforce that users can only manage their own events, while admins have broader access. The 'organizer.id' field in each event is critical for enforcing ownership rules."
+    "reasoning": "The Firestore data structure is designed to support the LocalLooms application, prioritizing security, scalability, and debuggability, especially concerning authorization. The structure is designed around path-based ownership for user-generated content (events) and leverages structural segregation to maintain a homogeneous security posture within collections.\n\n*   **Users Collection:** Stores user profiles with basic information (email, display name, etc.).\n*   **Events Collection:**  Events are stored under the respective user's document, following a path-based ownership model (`/users/{userId}/events/{eventId}`). This structure simplifies security rules, as access control is directly tied to the user ID.\n\n**Authorization Independence:**\n\n*   The structure inherently enforces authorization independence because access control is based solely on the user ID derived from `request.auth.uid`. No `get()` calls are required to check parent document attributes, ensuring atomic operations and easier debugging.\n\n**QAPs (Rules are not Filters):**\n\n*   The path-based ownership (`/users/{userId}/events/{eventId}`) inherently supports secure `list` operations.  Rules can easily restrict listing events to those owned by the authenticated user, ensuring that only authorized events are retrieved.\n\n**Denormalization Strategy:**\n*   For this particular structure, denormalization is not explicitly needed, because the User owns the event. Thus, the rule can infer this from the `request.auth.uid == userId`.\n\n**Scalability and Geo-Location considerations:**\n*   The use of Firestore allows for horizontal scalability, and the integration with Google Maps enables efficient geo-location based event searches."
   }
 }

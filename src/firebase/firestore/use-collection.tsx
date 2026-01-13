@@ -8,11 +8,9 @@ import {
   FirestoreError,
   QuerySnapshot,
   CollectionReference,
-  getFirestore,
 } from 'firebase/firestore';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { useUser } from '@/firebase/provider';
 
 /** Utility type to add an 'id' field to a given type T. */
 export type WithId<T> = T & { id: string };
@@ -45,7 +43,7 @@ export interface InternalQuery extends Query<DocumentData> {
  * 
  *
  * IMPORTANT! YOU MUST MEMOIZE the inputted memoizedTargetRefOrQuery or BAD THINGS WILL HAPPEN
- * use useMemoFirebase to memoize it per React guidence.  Also make sure that it's dependencies are stable
+ * use useMemo to memoize it per React guidence.  Also make sure that it's dependencies are stable
  * references
  *  
  * @template T Optional type for document data. Defaults to any.
@@ -55,52 +53,21 @@ export interface InternalQuery extends Query<DocumentData> {
  */
 export function useCollection<T = any>(
     memoizedTargetRefOrQuery: ((CollectionReference<DocumentData> | Query<DocumentData>) & {__memo?: boolean})  | null | undefined,
-    options?: { requireAuth?: boolean }
 ): UseCollectionResult<T> {
   type ResultItemType = WithId<T>;
   type StateDataType = ResultItemType[] | null;
 
   const [data, setData] = useState<StateDataType>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<FirestoreError | Error | null>(null);
-  const { user, isUserLoading } = useUser();
 
   useEffect(() => {
-    // Guard: If auth is required, wait until user state is resolved.
-    if (options?.requireAuth && isUserLoading) {
-      setIsLoading(true);
-      return;
-    }
-
-    // Guard: If auth is required and there is no user, stop and clear data.
-    if (options?.requireAuth && !user) {
-      setData(null);
-      setIsLoading(false);
-      return;
-    }
-    
-    // Guard: If the query/ref is not ready, stop and clear data.
     if (!memoizedTargetRefOrQuery) {
       setData(null);
       setIsLoading(false);
       setError(null);
       return;
     }
-    
-    // Developer check: ensure the passed ref/query is memoized.
-    if (!memoizedTargetRefOrQuery.__memo) {
-      throw new Error('The query or reference passed to useCollection must be memoized with useMemoFirebase.');
-    }
-
-    // Guard: Ensure firestore instance is available before creating listener.
-    // This helps prevent race conditions on initial load.
-    try {
-      getFirestore();
-    } catch (e) {
-      setIsLoading(true);
-      return; // Firestore not ready, wait for next render.
-    }
-
 
     setIsLoading(true);
     setError(null);
@@ -139,7 +106,9 @@ export function useCollection<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedTargetRefOrQuery, options?.requireAuth, user, isUserLoading]); // Re-run if the target query/reference changes.
-  
+  }, [memoizedTargetRefOrQuery]); // Re-run if the target query/reference changes.
+  if(memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
+    throw new Error(memoizedTargetRefOrQuery + ' was not properly memoized using useMemoFirebase');
+  }
   return { data, isLoading, error };
 }

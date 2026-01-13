@@ -102,11 +102,6 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
       userError: userAuthState.userError,
     };
   }, [firebaseApp, firestore, auth, userAuthState]);
-  
-  // Do not render children until Firebase is ready
-  if (!contextValue.areServicesAvailable) {
-    return null; // Or a loading spinner
-  }
 
   return (
     <FirebaseContext.Provider value={contextValue}>
@@ -161,8 +156,7 @@ export const useFirebaseApp = (): FirebaseApp => {
 
 type MemoFirebase <T> = T & {__memo?: boolean};
 
-export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | (MemoFirebase<T>) {
   const memoized = useMemo(factory, deps);
   
   if(typeof memoized !== 'object' || memoized === null) return memoized;
@@ -170,7 +164,6 @@ export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T {
   
   return memoized;
 }
-
 
 /**
  * Hook specifically for accessing the authenticated user's state.
