@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   collection,
   onSnapshot,
@@ -37,21 +37,19 @@ export function useCollection<T>(path: string, opts?: Options) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<FirestoreError | null>(null);
 
-  // useRef to store the query to avoid re-creating it on every render
-  const queryRef = useRef<Query | null>(null);
-  if (!queryRef.current) {
-    let q = query(collection(firestore, path));
-    if (opts?.where) {
-      q = query(q, where(opts.where[0], opts.where[1], opts.where[2]));
-    }
-    queryRef.current = q;
-  }
-
   useEffect(() => {
-    if (!queryRef.current) return;
+    let q = query(collection(firestore, path));
+    if (opts?.where && opts.where[2] !== undefined) {
+      q = query(q, where(opts.where[0], opts.where[1], opts.where[2]));
+    } else if (opts?.where && opts.where[2] === undefined) {
+      // If where clause is provided but the value is undefined, it means we should not fetch yet.
+      setIsLoading(false);
+      setData([]); // No user, no events
+      return;
+    }
 
     const unsubscribe = onSnapshot(
-      queryRef.current,
+      q,
       (snapshot) => {
         const items = snapshot.docs.map(processDoc) as T[];
         setData(items);
@@ -69,7 +67,7 @@ export function useCollection<T>(path: string, opts?: Options) {
     );
 
     return () => unsubscribe();
-  }, [path]); // Re-run effect if path changes
+  }, [firestore, path, opts?.where?.[0], opts?.where?.[1], opts?.where?.[2]]); // Re-run effect if query params change
 
   return { data, isLoading, error };
 }
