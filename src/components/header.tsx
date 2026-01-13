@@ -22,7 +22,7 @@ export default function Header() {
         <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/find-events" passHref>
              <Button
-                className="hidden sm:flex hover:opacity-90"
+                className="hidden sm:flex hover:opacity-90 font-bold"
                 aria-label="Find Event"
                  style={{
                     backgroundColor: 'hsl(var(--primary))',
@@ -48,7 +48,7 @@ export default function Header() {
           </Link>
            <Link href="/create-event" passHref>
               <Button
-                className="hidden sm:flex hover:opacity-90"
+                className="hidden sm:flex hover:opacity-90 font-bold"
                  style={{
                     backgroundColor: 'hsl(var(--accent))',
                     color: 'hsl(var(--accent-foreground))',

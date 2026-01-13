@@ -10,6 +10,7 @@ import type { Event } from '@/lib/types';
 import Logo from '@/components/logo';
 import EventCardMini from '@/components/event-card-mini';
 import type { Metadata } from 'next';
+import { LogIn, UserPlus, Search, PlusCircle, Users } from 'lucide-react';
 
 export default function LandingPage() {
   const { data: allEvents, isLoading } = useCollection<Event>('events', {
@@ -75,13 +76,19 @@ export default function LandingPage() {
                     <Button
                      className="font-bold"
                      style={{ color: 'hsl(var(--accent))' }}
-                    >Sign In</Button>
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Sign In
+                    </Button>
                 </Link>
                 <Link href="/signup" passHref>
                     <Button
                      className="font-bold"
                      style={{ color: 'hsl(var(--accent))' }}
-                    >Sign Up</Button>
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Sign Up
+                    </Button>
                 </Link>
              </div>
           </div>
@@ -97,13 +104,22 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>Find an Event</Button>
+                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                          <Search className="mr-2 h-5 w-5" />
+                          Find an Event
+                        </Button>
                     </Link>
                     <Link href="/create-event" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>Create an Event</Button>
+                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                          <PlusCircle className="mr-2 h-5 w-5" />
+                          Create an Event
+                        </Button>
                     </Link>
                     <Link href="/find-events" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>Continue as Guest</Button>
+                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                          <Users className="mr-2 h-5 w-5" />
+                          Continue as Guest
+                        </Button>
                     </Link>
                 </div>
             </div>
