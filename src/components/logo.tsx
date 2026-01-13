@@ -127,7 +127,7 @@ ry="6"
           />
         </svg>
         <div className="relative z-10 bg-transparent text-center px-4">
-            <span className="text-2xl font-bold font-headline transition-colors duration-300 text-black">
+            <span className="text-2xl font-bold font-headline transition-colors duration-300 text-black tracking-wider">
             EventBee
             </span>
             <p className="text-xs -mt-1 text-black">
