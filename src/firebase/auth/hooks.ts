@@ -91,6 +91,10 @@ export function useSignInWithGoogle() {
             setError(null);
             return true;
         } catch (e: any) {
+            // Don't show an error if the user closes the popup.
+            if (e.code === 'auth/popup-closed-by-user') {
+                return false;
+            }
             setError(e.message);
             return false;
         }
@@ -113,4 +117,3 @@ export function useSignOut() {
 
   return { signOut, error };
 }
-
