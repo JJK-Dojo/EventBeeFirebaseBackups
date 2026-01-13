@@ -375,7 +375,7 @@ export default function CreateEventPage() {
     const newStatus = visibility === 'public' ? 'pending' : 'draft';
 
     const getBrandedImageUrl = () => {
-        const seed = new Date().getTime();
+        const seed = '12345'; // Static seed
         return `https://picsum.photos/seed/${seed}/600/400`;
     };
     
