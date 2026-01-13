@@ -14,7 +14,7 @@ export default function Logo({ className }: { className?: string }) {
   return (
     <div className={`group flex items-center gap-3 text-foreground ${className}`}>
       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/50">
-        <BeeIcon className="h-6 w-6 text-primary-foreground animate-[logo-spin_2s_ease-in-out_infinite]" />
+        <BeeIcon className="h-6 w-6 text-primary-foreground animate-[bee-fly_3s_ease-in-out_infinite]" />
       </div>
       <div>
         <span
