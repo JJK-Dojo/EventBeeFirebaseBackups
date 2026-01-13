@@ -10,13 +10,13 @@
     --card-foreground: 224 71.4% 4.1%;
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 48 96% 88%; /* Pastel Yellow */
+    --primary: 45 95% 55%; /* Vibrant Yellow */
     --primary-foreground: 224 71.4% 10%;
     --secondary: 220 13% 91%;
     --secondary-foreground: 220 14.3% 9.1%;
     --muted: 220 13% 91%;
     --muted-foreground: 220 8.9% 43.1%;
-    --accent: 130 50% 85%; /* Pastel Green */
+    --accent: 140 75% 50%; /* Vibrant Green */
     --accent-foreground: 224 71.4% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -37,13 +37,13 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 48 96% 88%;
+    --primary: 45 95% 55%;
     --primary-foreground: 0 0% 9%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 130 50% 85%;
+    --accent: 140 75% 50%;
     --accent-foreground: 0 0% 9%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -51,6 +51,14 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 48 96% 88%;
   }
+}
+
+@keyframes logo-spin {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(15deg); }
+  100% { transform: rotate(0deg); }
 }
 
 @layer base {
