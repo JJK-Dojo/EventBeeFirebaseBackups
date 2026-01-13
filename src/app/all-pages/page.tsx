@@ -31,6 +31,12 @@ const pages = [
     description: 'A landing page for authenticated users.',
     fields: ['User Avatar & Name', 'List of Recent Posts', 'Event Status', 'Post Date']
   },
+  {
+    href: '/db-view',
+    title: 'DB View',
+    description: 'A simple page to view the contents of the Firestore database.',
+    fields: ['Event ID', 'Title', 'Date', 'Location', 'Status']
+  },
   { 
     href: '/events/1', 
     title: 'Event Detail Page', 
@@ -105,7 +111,7 @@ export default function AllPages() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {pages.map((page) => (
+                {pages.sort((a, b) => a.title.localeCompare(b.title)).map((page) => (
                   <li key={page.href}>
                     <Link href={page.href}>
                       <div className="block rounded-lg border p-4 transition-all hover:bg-muted hover:shadow-md">
