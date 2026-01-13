@@ -52,6 +52,7 @@ import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
 import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useUser } from '@/firebase/auth/use-user';
 
 type PostOffice = {
   Name: string;
@@ -180,6 +181,7 @@ export default function CreateEventPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const firestore = useFirestore();
+  const { user, isLoading: isUserLoading } = useUser();
 
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
@@ -211,6 +213,13 @@ export default function CreateEventPage() {
     }
     return [];
   }, [selectedState]);
+
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
   
   useEffect(() => {
     const eventId = searchParams.get('edit');
@@ -376,11 +385,11 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = async () => {
-    if (!firestore) {
+    if (!firestore || !user) {
         toast({
             variant: "destructive",
-            title: "Database Error",
-            description: "Firestore is not initialized. Please try again later.",
+            title: "Authentication Error",
+            description: "You must be logged in to create an event.",
         });
         return;
     }
@@ -403,16 +412,15 @@ export default function CreateEventPage() {
             imageUrl: finalImageUrl,
             imageHint: 'event image', // Consider generating this with AI or from tags
             organizer: {
-                id: 'anonymous', // For now, all events are anonymous
-                name: 'Anonymous Contributor',
-                avatarUrl: `https://picsum.photos/seed/anon/40/40`,
+                id: user.uid,
+                name: user.displayName || 'Anonymous Contributor',
+                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/40/40`,
             },
             category: categories.find(c => c.value === selectedCategory)?.label || 'General',
             tags: selectedTags,
             status: newStatus,
             editCount: 0,
             createdAt: serverTimestamp(),
-            // Remove user specific fields for now
         };
 
         if (isEditing && eventToEdit) {
@@ -445,6 +453,17 @@ export default function CreateEventPage() {
     }
   }
 
+
+  if (isUserLoading) {
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-background">
+            <Header />
+            <main className="flex-1 flex items-center justify-center">
+                <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+            </main>
+        </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -794,3 +813,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
