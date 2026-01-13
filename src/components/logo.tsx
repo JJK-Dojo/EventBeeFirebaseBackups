@@ -14,15 +14,15 @@ export default function Logo({ className }: { className?: string }) {
   return (
     <div className={`group flex items-center gap-3 text-foreground ${className}`}>
       <div className="flex h-16 w-24 items-center justify-center rounded-[50%] bg-primary shadow-md transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/50">
-        <BeeIcon className="h-8 w-8 text-primary-foreground animate-[bee-fly_4s_ease-in-out_infinite]" />
+        <BeeIcon className="h-8 w-8 animate-[bee-fly_4s_ease-in-out_infinite]" />
       </div>
-      <div>
+       <div className="bg-accent text-white p-2 rounded-md">
         <span
           className="text-2xl font-bold font-headline transition-colors duration-300 group-hover:text-primary"
         >
           EventBee
         </span>
-        <p className="text-xs text-muted-foreground -mt-1">
+        <p className="text-xs -mt-1">
           Your Hive for Local Events
         </p>
       </div>
