@@ -62,7 +62,7 @@ export default function Logo({ className }: { className?: string }) {
         </svg>
         <BeeIcon className="h-full w-full text-accent animate-[bee-fly_8s_ease-in-out_infinite] relative" />
       </div>
-       <div className="bg-accent p-2 rounded-md border-2 border-dashed border-black">
+       <div className="bg-accent p-2 rounded-md border-2 border-black">
         <span
           className="text-2xl font-bold font-headline transition-colors duration-300 text-black"
         >
