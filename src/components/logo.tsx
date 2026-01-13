@@ -23,10 +23,10 @@ const BeeIcon = ({ className }: { className?: string }) => (
         {/* Body */}
         <ellipse cx="50" cy="60" rx="25" ry="20" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
 
-        {/* Stripes (Vertical) */}
-        <path d="M42 50 v 20" stroke="black" strokeWidth="4" fill="none" />
-        <path d="M50 48 v 24" stroke="black" strokeWidth="4" fill="none" />
-        <path d="M58 50 v 20" stroke="black" strokeWidth="4" fill="none" />
+        {/* Stripes (Curved) */}
+        <path d="M40 49 C 45 60, 45 70, 40 79" stroke="black" strokeWidth="4" fill="none" />
+        <path d="M50 46 C 55 60, 55 70, 50 83" stroke="black" strokeWidth="4" fill="none" />
+        <path d="M60 49 C 65 60, 65 70, 60 79" stroke="black" strokeWidth="4" fill="none" />
         
         {/* Head */}
         <circle cx="30" cy="55" r="15" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
