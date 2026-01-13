@@ -45,10 +45,9 @@ service cloud.firestore {
         // READ: Anyone can read a published event.
         allow get: if resource.data.status == 'published';
 
-        // LIST: Anyone can list published events. 
-        // IMPORTANT: Your client-side queries MUST include `where('status', '==', 'published')`.
-        allow list: if isSignedIn() || request.query.status == 'published';
-
+        // LIST: Any signed-in user can query the events collection.
+        // Client-side queries are responsible for filtering results (e.g., by status or user).
+        allow list: if isSignedIn();
 
         // CREATE: Any signed-in user can create an event.
         allow create: if isSignedIn() && isRequestingOwner(request);
