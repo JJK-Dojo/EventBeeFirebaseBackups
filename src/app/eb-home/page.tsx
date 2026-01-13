@@ -72,10 +72,14 @@ export default function LandingPage() {
             <Logo />
              <div className="flex items-center gap-2 sm:gap-4">
                 <Link href="/login" passHref>
-                    <Button>Sign In</Button>
+                    <Button
+                     style={{ color: 'hsl(var(--accent))' }}
+                    >Sign In</Button>
                 </Link>
                 <Link href="/signup" passHref>
-                    <Button>Sign Up</Button>
+                    <Button
+                     style={{ color: 'hsl(var(--accent))' }}
+                    >Sign Up</Button>
                 </Link>
              </div>
           </div>
@@ -91,13 +95,13 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
-                        <Button size="lg">Find an Event</Button>
+                        <Button size="lg" style={{ color: 'hsl(var(--accent))' }}>Find an Event</Button>
                     </Link>
                     <Link href="/create-event" passHref>
-                        <Button size="lg">Create an Event</Button>
+                        <Button size="lg" style={{ color: 'hsl(var(--accent))' }}>Create an Event</Button>
                     </Link>
                     <Link href="/find-events" passHref>
-                        <Button size="lg">Continue as Guest</Button>
+                        <Button size="lg" style={{ color: 'hsl(var(--accent))' }}>Continue as Guest</Button>
                     </Link>
                 </div>
             </div>
