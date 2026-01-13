@@ -15,9 +15,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSignInWithEmailAndPassword, useSignInWithGoogle } from '@/firebase/auth/hooks';
 import { LoaderCircle } from 'lucide-react';
+import { useUser } from '@/firebase';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -32,9 +33,16 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+    const { user, isLoading: isUserLoading } = useUser();
 
     const { signIn, error: signInError } = useSignInWithEmailAndPassword();
     const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
+
+    useEffect(() => {
+        if (user) {
+            router.push('/dashboard');
+        }
+    }, [user, router]);
 
     const handleSignIn = async () => {
         setIsLoading(true);
@@ -61,6 +69,14 @@ export default function LoginPage() {
           toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: googleError });
       }
     }
+
+  if (isUserLoading || user) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

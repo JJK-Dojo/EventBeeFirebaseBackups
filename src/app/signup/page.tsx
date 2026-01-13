@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,6 +19,7 @@ import Logo from '@/components/logo';
 import { Facebook, Instagram, Twitter, Linkedin, MessageCircle, Ghost, LoaderCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useSignUp, useSignInWithGoogle } from '@/firebase/auth/hooks';
+import { useUser } from '@/firebase';
 
 
 const GoogleIcon = () => (
@@ -32,6 +33,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   const { signUp, error: signUpError } = useSignUp();
   const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
+  const { user, isLoading: isUserLoading } = useUser();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -39,6 +41,12 @@ export default function SignupPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+   useEffect(() => {
+        if (user) {
+            router.push('/dashboard');
+        }
+    }, [user, router]);
 
   const handleSignUp = async () => {
     if (!firstName || !lastName) {
@@ -70,6 +78,13 @@ export default function SignupPage() {
     }
   }
 
+  if (isUserLoading || user) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    )
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
