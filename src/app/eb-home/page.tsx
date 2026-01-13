@@ -104,19 +104,19 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                        <Button style={{ color: 'hsl(var(--accent))' }}>
                           <Search className="mr-2 h-5 w-5" />
                           Find an Event
                         </Button>
                     </Link>
                     <Link href="/create-event" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                        <Button style={{ color: 'hsl(var(--accent))' }}>
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Create an Event
                         </Button>
                     </Link>
                     <Link href="/find-events" passHref>
-                        <Button size="lg" className="font-bold" style={{ color: 'hsl(var(--accent))' }}>
+                        <Button style={{ color: 'hsl(var(--accent))' }}>
                           <Users className="mr-2 h-5 w-5" />
                           Continue as Guest
                         </Button>
