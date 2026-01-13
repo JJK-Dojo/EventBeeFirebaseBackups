@@ -20,7 +20,7 @@ const BeeIcon = ({ className }: { className?: string }) => (
         
         {/* Wider Smile */}
         <path d="M62 65 Q 70 72, 78 65" stroke="black" strokeWidth="2.5" fill="none" />
-        
+
         {/* Closed Eye (Wink) */}
         <path d="M68 52 Q 72 56, 76 52" stroke="black" strokeWidth="2" fill="none" />
 
@@ -86,14 +86,6 @@ export default function Logo({ className }: { className?: string }) {
                 strokeWidth="1.5"
               />
             </pattern>
-            <pattern
-              id="dots"
-              width="12"
-              height="12"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle cx="4" cy="4" r="2" fill="black" />
-            </pattern>
           </defs>
           <rect
             width="100%"
@@ -106,8 +98,8 @@ export default function Logo({ className }: { className?: string }) {
             width="100%"
             height="100%"
             fill="transparent"
-            stroke="url(#dots)"
-            strokeWidth="4"
+            stroke="black"
+            strokeWidth="2"
             rx="6"
             ry="6"
           />
