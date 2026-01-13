@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PT_Sans } from 'next/font/google';
+import { PT_Sans, Lobster } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
@@ -10,6 +10,13 @@ const ptSans = PT_Sans({
   display: 'swap',
   variable: '--font-pt-sans',
   weight: ['400', '700'],
+});
+
+const lobster = Lobster({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-lobster',
+  weight: ['400'],
 });
 
 
@@ -27,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${ptSans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${ptSans.variable} ${lobster.variable}`}>
        <head>
         {/* Font links are now handled by next/font */}
       </head>

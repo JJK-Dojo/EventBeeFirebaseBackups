@@ -81,7 +81,7 @@ export default function Logo({ className }: { className?: string }) {
                 r="45" 
                 fill="hsl(var(--primary))"
                 fillOpacity="0.8"
-                stroke="hsl(var(--accent))"
+                stroke="hsl(var(--golden))"
                 strokeWidth="2"
             />
         </svg>
@@ -104,7 +104,7 @@ export default function Logo({ className }: { className?: string }) {
             >
               <path
                 d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
-                stroke="hsla(var(--accent), 0.2)"
+                stroke="hsla(var(--golden), 0.7)"
                 strokeWidth="1.5"
               />
             </pattern>
@@ -120,7 +120,7 @@ export default function Logo({ className }: { className?: string }) {
             width="100%"
             height="100%"
             fill="transparent"
-            stroke="black"
+            stroke="hsl(var(--golden))"
             strokeWidth="2"
             rx="6"
             ry="6"

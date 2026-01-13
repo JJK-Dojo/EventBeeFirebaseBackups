@@ -18,7 +18,7 @@ export default {
     extend: {
       fontFamily: {
         body: ['var(--font-pt-sans)', 'sans-serif'],
-        headline: ['var(--font-pt-sans)', 'sans-serif'],
+        headline: ['var(--font-lobster)', 'cursive'],
         code: ['monospace'],
       },
       colors: {
@@ -62,6 +62,7 @@ export default {
           '4': 'hsl(var(--chart-4))',
           '5': 'hsl(var(--chart-5))',
         },
+        golden: 'hsl(var(--golden))'
       },
       borderRadius: {
         lg: 'var(--radius)',

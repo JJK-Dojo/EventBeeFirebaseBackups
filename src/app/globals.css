@@ -29,6 +29,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --golden: 36 82% 51%; /* #E6A121 */
   }
   .dark {
     --background: 222.2 84% 4.9%;
@@ -48,6 +49,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 180 80% 70%;
+    --golden: 36 82% 51%;
   }
 }
 
@@ -62,12 +64,8 @@
 
 @keyframes bee-fly {
   0% { transform: translate(0, 0) rotate(0deg); }
-  12.5% { transform: translate(-30px, -30px) rotate(-15deg); }
-  25% { transform: translate(-30px, -30px) rotate(0deg); }
-  37.5% { transform: translate(-30px, 30px) rotate(15deg); }
-  50% { transform: translate(-30px, 30px) rotate(0deg); }
-  62.5% { transform: translate(30px, 30px) rotate(-15deg); }
-  75% { transform: translate(30px, 30px) rotate(0deg); }
-  87.5% { transform: translate(30px, -30px) rotate(15deg); }
+  25% { transform: translate(-30px, -30px) rotate(-15deg); }
+  50% { transform: translate(-30px, 30px) rotate(15deg); }
+  75% { transform: translate(30px, 0px) rotate(-15deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
