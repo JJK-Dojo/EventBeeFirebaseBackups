@@ -7,6 +7,7 @@ import {
   FileCheck,
   CheckCircle,
   XCircle,
+  LoaderCircle,
 } from 'lucide-react';
 import Header from '@/components/header';
 import {
@@ -33,7 +34,9 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useCollection } from '@/firebase';
+import { useFirestore } from '@/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 
 const statusBadges: Record<Event['status'], React.ReactNode> = {
@@ -106,7 +109,7 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
                     <div className="flex justify-between items-start">
                         {statusBadges[event.status]}
                          <p className="text-xs text-muted-foreground">
-                            Submitted Anonymously
+                            Submitted by {event.organizer.name}
                         </p>
                     </div>
                     <h3 className="text-xl font-bold font-headline mt-2">
@@ -140,27 +143,41 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 
 export default function AdminPage() {
     const { toast } = useToast();
-    const [events, setEvents] = useState<Event[]>(DUMMY_EVENTS.filter(e => e.status === 'pending'));
+    const firestore = useFirestore();
+    const { data: events, isLoading } = useCollection<Event>('events', { 
+        where: ['status', '==', 'pending'] 
+    });
 
     const sortedEvents = useMemo(() => {
-        return [...events].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (!events) return [];
+        return [...events].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }, [events]);
 
-    const handleApprove = (eventId: string) => {
-        const eventToUpdate = events.find(e => e.id === eventId);
-        if (eventToUpdate) {
-            console.log(`Approving event: ${eventId}`);
-            setEvents(prev => prev.filter(e => e.id !== eventId));
-            toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
+    const handleApprove = async (eventId: string) => {
+        const eventToUpdate = events?.find(e => e.id === eventId);
+        if (eventToUpdate && firestore) {
+            try {
+                const eventDocRef = doc(firestore, 'events', eventId);
+                await updateDoc(eventDocRef, { status: 'published' });
+                toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
+            } catch (error) {
+                console.error("Error approving event: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not approve the event." });
+            }
         }
     };
 
-    const handleDeny = (eventId: string, feedback: string) => {
-        const eventToUpdate = events.find(e => e.id === eventId);
-        if (eventToUpdate) {
-            console.log(`Denying event: ${eventId} with feedback: ${feedback}`);
-            setEvents(prev => prev.filter(e => e.id !== eventId));
-            toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
+    const handleDeny = async (eventId: string, feedback: string) => {
+        const eventToUpdate = events?.find(e => e.id === eventId);
+        if (eventToUpdate && firestore) {
+            try {
+                const eventDocRef = doc(firestore, 'events', eventId);
+                await updateDoc(eventDocRef, { status: 'denied', feedback });
+                toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
+            } catch (error) {
+                console.error("Error denying event: ", error);
+                toast({ variant: "destructive", title: "Error", description: "Could not deny the event." });
+            }
         }
     };
 
@@ -180,7 +197,15 @@ export default function AdminPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                     {sortedEvents.length > 0 ? (
+                     {isLoading ? (
+                         <div className="py-24 text-center rounded-lg border-2 border-dashed flex flex-col items-center justify-center">
+                            <LoaderCircle className="h-8 w-8 animate-spin text-primary mb-4" />
+                            <p className="text-lg font-semibold">Loading Events for Review</p>
+                            <p className="text-muted-foreground">
+                                Please wait a moment...
+                            </p>
+                        </div>
+                     ) : sortedEvents.length > 0 ? (
                         <div className="space-y-6">
                         {sortedEvents.map((event) => (
                           <EventReviewCard key={event.id} event={event} onApprove={handleApprove} onDeny={handleDeny} />
