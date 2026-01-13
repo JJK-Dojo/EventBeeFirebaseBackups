@@ -2,117 +2,118 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import EventCard from '@/components/event-card';
-import EventFilters from '@/components/event-filters';
-import Header from '@/components/header';
-import type { Event } from '@/lib/types';
-import type { FilterState } from '@/components/event-filters';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection } from '@/firebase';
+import type { Event } from '@/lib/types';
+import Logo from '@/components/logo';
+import EventCardMini from '@/components/event-card-mini';
 
-export default function FindEventsPage() {
-  const [sortOption, setSortOption] = useState('recent');
-  const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
-
+export default function LandingPage() {
   const { data: allEvents, isLoading } = useCollection<Event>('events', {
-    where: ['status', '==', 'published']
+    where: ['status', '==', 'published'],
   });
 
-
-  const filteredEvents = useMemo(() => {
+  const eventsByDate = useMemo(() => {
     if (!allEvents) return [];
-    let eventsToDisplay = [...allEvents];
+    return [...allEvents]
+      .filter(event => new Date(event.date) >= new Date()) // Filter for upcoming events
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [allEvents]);
 
-    // Sorting logic
-    switch (sortOption) {
-        case 'recent':
-            eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-            break;
-        case 'date':
-             eventsToDisplay.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-            break;
-        default:
-             eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }
+  const eventsByPublished = useMemo(() => {
+    if (!allEvents) return [];
+    return [...allEvents]
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [allEvents]);
 
-    if (activeFilters) {
-      const { category, state, district, searchText, tags } = activeFilters;
-      
-      if (category) {
-          eventsToDisplay = eventsToDisplay.filter(event => event.category.toLowerCase() === category.toLowerCase());
-      }
-      if (state) {
-          eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(state.toLowerCase()));
-      }
-      if (district) {
-          eventsToDisplay = eventsToDisplay.filter(event => (event.location?.toLowerCase() || '').includes(district.toLowerCase()));
-      }
-      if (tags.length > 0) {
-        eventsToDisplay = eventsToDisplay.filter(event => 
-            tags.some(tag => (event.tags || []).includes(tag))
+  const EventList = ({ events }: { events: Event[] }) => {
+    if (isLoading) {
+        return (
+            <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="flex gap-4">
+                        <Skeleton className="h-20 w-20 rounded-md" />
+                        <div className="space-y-2 flex-1">
+                            <Skeleton className="h-4 w-1/2" />
+                            <Skeleton className="h-4 w-3/4" />
+                            <Skeleton className="h-4 w-1/4" />
+                        </div>
+                    </div>
+                ))}
+            </div>
         );
-      }
-      if (searchText) {
-          const lowercasedSearch = searchText.toLowerCase();
-          eventsToDisplay = eventsToDisplay.filter(event => 
-              (event.location?.toLowerCase() || '').includes(lowercasedSearch) ||
-              (event.title?.toLowerCase() || '').includes(lowercasedSearch) ||
-              (event.description?.toLowerCase() || '').includes(lowercasedSearch)
-          );
-      }
     }
-    
-    return eventsToDisplay;
-  }, [allEvents, activeFilters, sortOption]);
 
+    if (events.length === 0) {
+        return (
+            <div className="text-center py-10 border-2 border-dashed rounded-lg">
+                <p className="text-muted-foreground">No events to display.</p>
+            </div>
+        )
+    }
 
-  const handleFilter = (filters: FilterState) => {
-    setActiveFilters(filters);
+    return (
+        <div className="space-y-4">
+            {events.map((event) => (
+                <EventCardMini key={event.id} event={event} />
+            ))}
+        </div>
+    );
   };
 
-  const handleSort = (sortValue: string) => {
-    setSortOption(sortValue);
-  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <Header />
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-              Find Your Next Experience
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Hyperlocal events for your city, curated for students & young professionals.
-            </p>
-          </div>
-          <EventFilters onFilter={handleFilter} onSortChange={handleSort} />
-          {isLoading ? (
-             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="space-y-4">
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-6 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                    </div>
-                ))}
+      <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
+          <div className="container mx-auto flex h-20 items-center justify-between px-4">
+            <Logo />
+             <div className="flex items-center gap-2 sm:gap-4">
+                <Link href="/login" passHref>
+                    <Button variant="outline">Sign In</Button>
+                </Link>
+                <Link href="/signup" passHref>
+                    <Button>Sign Up</Button>
+                </Link>
              </div>
-          ) : filteredEvents.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {filteredEvents.map((event) => (
-                <EventCard key={event.id} event={event} />
-              ))}
+          </div>
+      </header>
+       <main className="flex-1">
+        <div className="container mx-auto px-4 py-8">
+            <div className="mb-8 p-6 rounded-lg bg-card border text-center">
+                <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                    Discover Your Next Experience
+                </h1>
+                <p className="text-lg text-muted-foreground mb-6">
+                    Hyperlocal events for your city, curated for students & young professionals.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4">
+                    <Link href="/find-events" passHref>
+                        <Button size="lg">Find an Event</Button>
+                    </Link>
+                    <Link href="/create-event" passHref>
+                        <Button size="lg" variant="secondary">Create an Event</Button>
+                    </Link>
+                    <Link href="/find-events" passHref>
+                        <Button size="lg" variant="ghost">Continue as Guest</Button>
+                    </Link>
+                </div>
             </div>
-          ) : (
-            <div className="text-center py-16">
-              <p className="text-lg font-semibold text-foreground">No Events Found</p>
-              <p className="text-muted-foreground">Try adjusting your filters or searching for something else.</p>
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                <div>
+                    <h2 className="text-2xl font-bold font-headline mb-4">Happening Soon</h2>
+                    <EventList events={eventsByDate} />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold font-headline mb-4">Recently Added</h2>
+                    <EventList events={eventsByPublished} />
+                </div>
             </div>
-          )}
         </div>
       </main>
     </div>
   );
 }
+

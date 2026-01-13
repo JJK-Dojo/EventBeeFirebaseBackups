@@ -46,12 +46,8 @@ const eventTags = [
 ];
 
 const sortOptions = [
-    { value: 'recent', label: 'Recent posts' },
-    { value: 'today', label: 'Posted Today' },
-    { value: 'state', label: 'Location: State' },
-    { value: 'district', label: 'Location: District' },
-    { value: 'next3-5', label: 'For the next 3-5 days' },
-    { value: 'next6-10', label: 'For the next 6-10 days' },
+    { value: 'recent', label: 'Recently Added' },
+    { value: 'date', label: 'Event Date' },
 ];
 
 
