@@ -108,7 +108,7 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
                     <div className="flex justify-between items-start">
                         {statusBadges[event.status]}
                          <p className="text-xs text-muted-foreground">
-                            by {event.organizer.name}
+                            Submitted Anonymously
                         </p>
                     </div>
                     <h3 className="text-xl font-bold font-headline mt-2">

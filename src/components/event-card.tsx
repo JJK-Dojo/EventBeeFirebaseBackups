@@ -43,18 +43,8 @@ export default function EventCard({ event }: { event: Event }) {
             <span className="truncate">{event.location}</span>
           </div>
         </CardContent>
-        <CardFooter className="p-4 pt-0">
-          <div className="flex items-center gap-2 text-sm">
-            <Image
-              src={event.organizer.avatarUrl}
-              alt={event.organizer.name}
-              width={24}
-              height={24}
-              className="rounded-full"
-            />
-            <span className="font-medium text-muted-foreground truncate">{event.organizer.name}</span>
-          </div>
-        </CardFooter>
+        {/* Organizer details removed from footer */}
+        <CardFooter className="p-4 pt-0 h-4"></CardFooter>
       </Card>
     </Link>
   );

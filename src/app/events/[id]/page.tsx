@@ -123,15 +123,7 @@ export default function EventDetailPage() {
                         <p className="text-muted-foreground">{event.location}</p>
                       </div>
                     </div>
-                    <div className="flex items-start">
-                      <User className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                      <div>
-                        <p className="font-semibold">Organizer</p>
-                        <p className="text-muted-foreground">
-                          {event.organizer.name}
-                        </p>
-                      </div>
-                    </div>
+                    {/* Organizer details removed */}
                   </div>
                 </CardContent>
               </Card>
