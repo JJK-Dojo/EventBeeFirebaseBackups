@@ -8,6 +8,7 @@ import {
   type DocumentData,
   type Query,
   type FirestoreError,
+  Timestamp,
 } from 'firebase/firestore';
 import { useFirestore } from '../provider';
 import { errorEmitter } from '../error-emitter';
@@ -16,6 +17,19 @@ import { FirestorePermissionError } from '../errors';
 type Options = {
   where?: [string, '==', any];
 };
+
+const processDoc = (doc: DocumentData) => {
+    const data = doc.data();
+    const processedData: DocumentData = {};
+    for (const key in data) {
+        if (data[key] instanceof Timestamp) {
+            processedData[key] = data[key].toDate().toISOString();
+        } else {
+            processedData[key] = data[key];
+        }
+    }
+    return { id: doc.id, ...processedData };
+}
 
 export function useCollection<T>(path: string, opts?: Options) {
   const firestore = useFirestore();
@@ -39,10 +53,7 @@ export function useCollection<T>(path: string, opts?: Options) {
     const unsubscribe = onSnapshot(
       queryRef.current,
       (snapshot) => {
-        const items = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as T[];
+        const items = snapshot.docs.map(processDoc) as T[];
         setData(items);
         setIsLoading(false);
       },
