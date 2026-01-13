@@ -73,12 +73,6 @@ export default function Logo({ className }: { className?: string }) {
                 cx="50" 
                 cy="50" 
                 r="45" 
-                fill="url(#honeycomb)" 
-            />
-            <circle 
-                cx="50" 
-                cy="50" 
-                r="45" 
                 fill="hsl(var(--primary))"
                 fillOpacity="0.8"
                 stroke="hsl(var(--golden))"
