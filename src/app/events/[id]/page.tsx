@@ -4,7 +4,7 @@
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { CalendarDays, MapPin, Navigation, Clock } from 'lucide-react';
+import { CalendarDays, MapPin, Navigation, Clock, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
@@ -14,13 +14,24 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import type { Event } from '@/lib/types';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useDoc } from '@/firebase';
 
 export default function EventDetailPage() {
   const params = useParams();
   const id = params.id as string;
   
-  const event: Event | undefined = DUMMY_EVENTS.find(e => e.id === id);
+  const { data: event, isLoading } = useDoc<Event>(`events/${id}`);
+
+  if (isLoading) {
+    return (
+        <div className="flex min-h-screen w-full flex-col bg-background">
+          <Header />
+          <main className="flex-1 flex items-center justify-center">
+             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+          </main>
+        </div>
+    )
+  }
 
   if (!event) {
     return (

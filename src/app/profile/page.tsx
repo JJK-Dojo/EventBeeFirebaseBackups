@@ -14,7 +14,8 @@ import {
   Award,
   AlertCircle,
   FileX,
-  History
+  History,
+  LoaderCircle,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,8 +33,8 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { DUMMY_EVENTS } from '@/lib/data';
-
+import { useUser } from '@/firebase/auth/use-user';
+import { useUserEvents } from '@/firebase/firestore/use-user-events';
 
 const BeeIcon = ({ className }: { className?: string }) => (
     <svg
@@ -140,21 +141,16 @@ function EventListItem({ event }: { event: UserEvent }) {
 }
 
 export default function ProfilePage() {
+    const { user, isLoading: isUserLoading } = useUser();
+    const { data: events, isLoading: areEventsLoading } = useUserEvents(user?.uid);
+    
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [sortedUserEvents, setSortedUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);
     const [sortOption, setSortOption] = useState('today');
 
-    // Mocking user data
-    const user = {
-        displayName: 'Guest User',
-        email: 'guest@example.com',
-        photoURL: "https://picsum.photos/seed/9/100/100"
-    };
+    const isLoading = isUserLoading || areEventsLoading;
     
-    const events = DUMMY_EVENTS; // Using all dummy events for profile
-    const isLoading = false;
-
     useEffect(() => {
         if (!isLoading && events) {
             const eventsWithStats = events.map((event) => ({
@@ -229,6 +225,16 @@ export default function ProfilePage() {
     const pendingEvents = eventsByStatus('pending');
     const deniedEvents = eventsByStatus('denied');
 
+    if (isLoading) {
+        return (
+             <div className="flex min-h-screen w-full flex-col bg-background">
+                <Header />
+                <main className="flex-1 flex items-center justify-center">
+                    <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+                </main>
+            </div>
+        )
+    }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">

@@ -8,16 +8,19 @@ import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DUMMY_EVENTS } from '@/lib/data';
+import { useCollection } from '@/firebase';
 
 export default function FindEventsPage() {
   const [sortOption, setSortOption] = useState('recent');
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
-  const allEvents = DUMMY_EVENTS.filter(event => event.status === 'published');
-  const isLoading = false;
+  const { data: allEvents, isLoading } = useCollection<Event>('events', {
+    where: ['status', '==', 'published']
+  });
+
 
   const filteredEvents = useMemo(() => {
+    if (!allEvents) return [];
     let eventsToDisplay = [...allEvents];
 
     // Sorting logic

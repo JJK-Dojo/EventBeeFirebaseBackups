@@ -2,12 +2,13 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   User,
   FileCheck,
+  LoaderCircle
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,8 +23,8 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
-import { DUMMY_EVENTS } from '@/lib/data';
-
+import { useUser } from '@/firebase/auth/use-user';
+import { useUserEvents } from '@/firebase/firestore/use-user-events';
 
 function EventListItem({ event }: { event: Event }) {
     return (
@@ -61,15 +62,10 @@ function EventListItem({ event }: { event: Event }) {
 
 export default function DashboardPage() {
     const router = useRouter();
-
-    // Mocking user and events data
-    const isLoading = false;
-    const user = {
-        uid: 'dummy-user',
-        displayName: 'Guest User',
-        photoURL: 'https://picsum.photos/seed/guest/100/100'
-    };
-    const userEvents = DUMMY_EVENTS; // Show all events for demo
+    const { user, isLoading: isUserLoading } = useUser();
+    const { data: userEvents, isLoading: areEventsLoading } = useUserEvents(user?.uid);
+    
+    const isLoading = isUserLoading || areEventsLoading;
 
     const recentEvents = useMemo(() => {
         if (!userEvents) return [];
@@ -77,6 +73,23 @@ export default function DashboardPage() {
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 10);
     }, [userEvents]);
+
+    if (isUserLoading) {
+        return (
+            <div className="flex min-h-screen w-full flex-col bg-background">
+                <Header />
+                <main className="flex-1 flex items-center justify-center">
+                    <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+                </main>
+            </div>
+        );
+    }
+    
+    if (!user) {
+        // This should be handled by the useUser hook, but as a fallback
+        router.push('/login');
+        return null;
+    }
 
 
   return (
