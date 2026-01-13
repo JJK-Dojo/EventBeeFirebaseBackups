@@ -7,7 +7,7 @@ import FirebaseErrorListener from '@/components/FirebaseErrorListener';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Eventbee-home',
+    default: 'EB-Home',
     template: '%s | EventBee.com',
   },
   description: 'EventBee.com - Your Hive for Local Events.',
