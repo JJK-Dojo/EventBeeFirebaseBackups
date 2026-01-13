@@ -16,6 +16,8 @@ import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { useSignInWithEmailAndPassword, useSignInWithGoogle } from '@/firebase/auth/hooks';
+import { LoaderCircle } from 'lucide-react';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -28,13 +30,37 @@ export default function LoginPage() {
     const { toast } = useToast();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-    const handleSignIn = () => {
-        // This is a simulation. In a real app, you'd handle auth.
-        console.log(`Simulating sign in for ${email}`);
-        toast({ title: 'Logged In!', description: 'You have successfully signed in (simulation).' });
-        router.push('/dashboard');
+    const { signIn, error: signInError } = useSignInWithEmailAndPassword();
+    const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
+
+    const handleSignIn = async () => {
+        setIsLoading(true);
+        const success = await signIn(email, password);
+        setIsLoading(false);
+
+        if (success) {
+            toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
+            router.push('/dashboard');
+        } else if (signInError) {
+             toast({ variant: 'destructive', title: 'Login Failed', description: signInError });
+        }
     };
+
+    const handleGoogleSignIn = async () => {
+      setIsGoogleLoading(true);
+      const success = await signInWithGoogle();
+      setIsGoogleLoading(false);
+
+      if (success) {
+          toast({ title: 'Logged In!', description: 'You have successfully signed in with Google.' });
+          router.push('/dashboard');
+      } else if (googleError) {
+          toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: googleError });
+      }
+    }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -49,8 +75,8 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full" onClick={handleSignIn}>
-            <GoogleIcon />
+          <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
+             {isGoogleLoading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
             Sign in with Google
           </Button>
           <div className="relative">
@@ -65,13 +91,16 @@ export default function LoginPage() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="john.doe@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input id="email" type="email" placeholder="john.doe@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading || isGoogleLoading}/>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading || isGoogleLoading} />
           </div>
-          <Button className="w-full" onClick={handleSignIn}>Sign in with Email</Button>
+          <Button className="w-full" onClick={handleSignIn} disabled={isLoading || isGoogleLoading}>
+            {isLoading && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+            Sign in with Email
+          </Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">

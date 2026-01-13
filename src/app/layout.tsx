@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import FirebaseErrorListener from '@/components/FirebaseErrorListener';
+
 
 export const metadata: Metadata = {
   title: 'EventBee.com',
@@ -25,6 +27,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
+          <FirebaseErrorListener />
           {children}
         </FirebaseClientProvider>
         <Toaster />

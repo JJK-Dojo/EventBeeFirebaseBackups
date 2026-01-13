@@ -2,7 +2,12 @@ import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 import { getFirebaseConfig } from './config';
-import { useFirebaseApp, useFirestore, useAuth } from './provider';
+import { useFirebaseApp, useFirestore, useAuth, FirebaseProvider } from './provider';
+import { FirebaseClientProvider } from './client-provider';
+import { useCollection } from './firestore/use-collection';
+import { useDoc } from './firestore/use-doc';
+import { useUser } from './auth/use-user';
+
 
 // Note: This is a client-side-only module.
 let firebaseApp: FirebaseApp;
@@ -24,4 +29,14 @@ function initializeFirebase() {
 }
 
 // Export the initialization function and the hooks
-export { initializeFirebase, useFirebaseApp, useFirestore, useAuth };
+export { 
+  initializeFirebase,
+  FirebaseProvider,
+  FirebaseClientProvider,
+  useFirebaseApp, 
+  useFirestore, 
+  useAuth,
+  useCollection,
+  useDoc,
+  useUser
+};

@@ -2,11 +2,14 @@
 'use client';
 
 import Link from 'next/link';
-import { PlusCircle, Search, LogIn } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from './logo';
+import { useUser } from '@/firebase/auth/use-user';
+import { UserMenu } from './user-menu';
 
 export default function Header() {
+  const { user, isLoading } = useUser();
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -65,12 +68,7 @@ export default function Header() {
                 <PlusCircle className="h-5 w-5" />
               </Button>
           </Link>
-          <Link href="/login" passHref>
-            <Button variant="outline">
-              <LogIn className="mr-2 h-4 w-4" />
-              Login
-            </Button>
-          </Link>
+          {!isLoading && <UserMenu user={user} />}
         </div>
       </div>
     </header>
