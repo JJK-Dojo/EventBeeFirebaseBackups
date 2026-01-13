@@ -10,7 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 [clip-path:polygon(91.67%_43.75%,78.79%_37.5%,74.04%_16.25%,59.62%_16.25%,53.67%_27.08%,50%_34.17%,46.33%_27.08%,40.38%_16.25%,25.96%_16.25%,21.21%_37.5%,8.33%_43.75%,4.17%_52.08%,4.17%_72.92%,8.33%_81.25%,19.79%_86.25%,20.83%_93.75%,27.08%_93.75%,32.92%_89.58%,38.75%_93.75%,41.67%_97.92%,45.83%_97.92%,50%_93.75%,54.17%_97.92%,58.33%_97.92%,61.25%_93.75%,67.08%_89.58%,72.92%_93.75%,79.17%_93.75%,80.21%_86.25%,91.67%_81.25%,95.83%_72.92%,95.83%_52.08%)]",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
