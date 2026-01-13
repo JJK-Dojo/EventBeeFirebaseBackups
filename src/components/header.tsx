@@ -2,12 +2,9 @@
 'use client';
 
 import Link from 'next/link';
-import { PlusCircle, Search } from 'lucide-react';
+import { PlusCircle, Search, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from './logo';
-import dynamic from 'next/dynamic';
-
-const UserMenu = dynamic(() => import('./user-menu'), { ssr: false });
 
 export default function Header() {
   return (
@@ -68,7 +65,12 @@ export default function Header() {
                 <PlusCircle className="h-5 w-5" />
               </Button>
           </Link>
-          <UserMenu />
+          <Link href="/login" passHref>
+            <Button variant="outline">
+              <LogIn className="mr-2 h-4 w-4" />
+              Login
+            </Button>
+          </Link>
         </div>
       </div>
     </header>
