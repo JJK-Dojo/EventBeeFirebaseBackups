@@ -51,7 +51,7 @@ export default function LoginPage() {
     const handleEmailSignIn = async () => {
         if (!auth) return;
         try {
-            initiateEmailSignIn(auth, email, password);
+            await initiateEmailSignIn(auth, email, password);
             toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
             router.push('/dashboard');
         } catch (error: any) {
