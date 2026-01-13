@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -72,7 +72,7 @@ export default function LandingPage() {
             <Logo />
              <div className="flex items-center gap-2 sm:gap-4">
                 <Link href="/login" passHref>
-                    <Button variant="outline">Sign In</Button>
+                    <Button>Sign In</Button>
                 </Link>
                 <Link href="/signup" passHref>
                     <Button>Sign Up</Button>
@@ -94,10 +94,10 @@ export default function LandingPage() {
                         <Button size="lg">Find an Event</Button>
                     </Link>
                     <Link href="/create-event" passHref>
-                        <Button size="lg" variant="secondary">Create an Event</Button>
+                        <Button size="lg">Create an Event</Button>
                     </Link>
                     <Link href="/find-events" passHref>
-                        <Button size="lg" variant="ghost">Continue as Guest</Button>
+                        <Button size="lg">Continue as Guest</Button>
                     </Link>
                 </div>
             </div>
