@@ -38,17 +38,18 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignUp = () => {
     if (!auth) return;
     const provider = new GoogleAuthProvider();
-    try {
-        await signInWithPopup(auth, provider);
-        toast({ title: 'Account Created!', description: 'You have successfully signed up with Google.' });
-        router.push('/dashboard');
-    } catch (error: any) {
-        console.error("Google Sign-Up Error: ", error);
-        toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
-    }
+    signInWithPopup(auth, provider)
+        .then(() => {
+            toast({ title: 'Account Created!', description: 'You have successfully signed up with Google.' });
+            router.push('/dashboard');
+        })
+        .catch((error: any) => {
+            console.error("Google Sign-Up Error: ", error);
+            toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
+        });
   };
 
   const handleEmailSignUp = async () => {

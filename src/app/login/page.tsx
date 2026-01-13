@@ -32,32 +32,34 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignIn = () => {
         if (!auth) return;
         const provider = new GoogleAuthProvider();
-        try {
-            await signInWithPopup(auth, provider);
-            toast({ title: 'Logged In!', description: 'You have successfully signed in with Google.' });
-            router.push('/dashboard');
-        } catch (error: any) {
-            // Don't show an error toast if the user closes the popup
-            if (error.code === 'auth/popup-closed-by-user') {
-                return;
-            }
-            toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
-        }
+        signInWithPopup(auth, provider)
+            .then(() => {
+                toast({ title: 'Logged In!', description: 'You have successfully signed in with Google.' });
+                router.push('/dashboard');
+            })
+            .catch((error: any) => {
+                // Don't show an error toast if the user closes the popup
+                if (error.code === 'auth/popup-closed-by-user') {
+                    return;
+                }
+                toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
+            });
     };
     
     const handleEmailSignIn = async () => {
         if (!auth) return;
-        try {
-            await initiateEmailSignIn(auth, email, password);
-            toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
-            router.push('/dashboard');
-        } catch (error: any) {
-            console.error("Email Sign-In Error: ", error);
-            toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
-        }
+        initiateEmailSignIn(auth, email, password)
+            .then(() => {
+                 toast({ title: 'Logged In!', description: 'You have successfully signed in.' });
+                 router.push('/dashboard');
+            })
+            .catch((error: any) => {
+                console.error("Email Sign-In Error: ", error);
+                toast({ variant: 'destructive', title: 'Sign-in Failed', description: error.message });
+            });
     };
 
 
