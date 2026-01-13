@@ -60,7 +60,7 @@ export default function Logo({ className }: { className?: string }) {
                 width="28"
                 height="48.5"
                 patternUnits="userSpaceOnUse"
-                patternTransform="scale(1.5)"
+                patternTransform="scale(0.5)"
                 >
                 <path
                     d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
@@ -100,7 +100,7 @@ export default function Logo({ className }: { className?: string }) {
               width="28"
               height="48.5"
               patternUnits="userSpaceOnUse"
-              patternTransform="scale(1.5)"
+              patternTransform="scale(0.5)"
             >
               <path
                 d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
