@@ -9,19 +9,20 @@
  *
  * Data Structure:
  * - /users/{userId}: Stores the public profile for a user.
- * - /users/{userId}/events/{eventId}: Stores events created by that user.
+ * - /events/{eventId}: A top-level collection for all events.
  *
  * Key Security Decisions:
- * - Strict Ownership: Users have full control over their own profile and events. They cannot
+ * - Strict Ownership for User Profiles: Users have full control over their own profile. They cannot
  *   access, view, or modify any data belonging to other users.
- * - No Public Listing: Listing all users from the top-level `/users` collection is explicitly
+ * - Public Read on Events: All users (authenticated or not) can read from the top-level `/events`
+ *   collection. This is necessary for pages like "Find Events" and "DB View".
+ * - Authenticated Write on Events: Only authenticated users can create, update, or delete events.
+ *   Ownership is enforced by checking a `userId` field within the event document.
+ * - No Public User Listing: Listing all users from the top-level `/users` collection is explicitly
  *   disallowed to protect user privacy and prevent data scraping.
- * - Path-Based Authorization: All authorization decisions are made by inspecting the document
- *   path and comparing it against the authenticated user's ID. This avoids costly and complex
- *   `get()` or `exists()` calls to other documents for authorization checks.
- * - Relational Integrity: On creation, documents must contain an ID field that matches the
- *   ID in the path, ensuring a consistent link between the path structure and the data itself.
- *   This link is immutable and cannot be changed on update.
+ * - Path-Based Authorization: For user profiles, authorization decisions are made by inspecting the document
+ *   path and comparing it against the authenticated user's ID.
+ * - Field-Based Authorization: For events, authorization is based on the `userId` field inside the document.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -31,96 +32,37 @@ service cloud.firestore {
     // Helper Functions
     // ------------------------------------------------------------------------
 
-    /**
-     * Checks if a user is authenticated.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the currently signed-in user's UID matches the provided userId.
-     * This is the fundamental check for document ownership.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Checks for ownership on an existing document. Used for update and delete
-     * operations to prevent acting on non-existent data.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * (CREATE) Validates that a new User profile's internal `id` field
-     * matches the document ID specified in the path.
-     */
-    function userProfileIdMatchesPath(userId) {
-      return request.resource.data.id == userId;
-    }
-
-    /**
-     * (UPDATE) Ensures the internal `id` field of a User profile cannot be changed.
-     */
-    function userProfileIdIsImmutable() {
-      return request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * (CREATE) Validates that a new Event's internal `userId` field
-     * matches the `userId` from the path, linking it to its creator.
-     */
-    function eventCreatorIdMatchesPath(userId) {
-      return request.resource.data.userId == userId;
-    }
-
-    /**
-     * (UPDATE) Ensures the `userId` field on an Event cannot be changed,
-     * preventing ownership transfer.
-     */
-    function eventCreatorIdIsImmutable() {
-      return request.resource.data.userId == resource.data.userId;
-    }
-
     // ------------------------------------------------------------------------
-    // Collection Rules
+    // /users Collection Rules
     // ------------------------------------------------------------------------
-
-    /**
-     * @description Manages user profile documents.
-     * @path /users/{userId}
-     * @allow (create) An authenticated user creating their own profile document for the first time.
-     * @allow (get) An authenticated user reading their own profile.
-     * @deny (list) Any user attempting to list all user profiles in the database.
-     * @deny (update) A user trying to modify another user's profile.
-     * @principle Enforces self-creation and ownership for a user's root document.
-     */
     match /users/{userId} {
       allow get: if isOwner(userId);
-      allow list: if false;
-      allow create: if isOwner(userId) && userProfileIdMatchesPath(userId);
-      allow update: if isExistingOwner(userId) && userProfileIdIsImmutable();
-      allow delete: if isExistingOwner(userId);
+      allow list: if false; // Prevent listing all users
+      allow create: if isOwner(userId) && request.resource.data.uid == userId;
+      allow update: if isOwner(userId) && request.resource.data.uid == resource.data.uid;
+      allow delete: if isOwner(userId);
+    }
 
-      /**
-       * @description Manages events created by a specific user.
-       * @path /users/{userId}/events/{eventId}
-       * @allow (create) An authenticated user creating a new event under their own profile.
-       * @allow (list) An authenticated user listing all events they have created.
-       * @deny (get) A user attempting to read an event created by another user.
-       * @deny (delete) A user attempting to delete another user's event.
-       * @principle Restricts access to a user's own data tree using path-based ownership.
-       */
-      match /events/{eventId} {
-        allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
-        allow create: if isOwner(userId) && eventCreatorIdMatchesPath(userId);
-        allow update: if isExistingOwner(userId) && eventCreatorIdIsImmutable();
-        allow delete: if isExistingOwner(userId);
-      }
+    // ------------------------------------------------------------------------
+    // /events Collection Rules
+    // ------------------------------------------------------------------------
+    match /events/{eventId} {
+      // Anyone can read events
+      allow get, list: if true;
+      
+      // Only signed-in users can create events, and they must be the owner
+      allow create: if isSignedIn() && request.resource.data.organizer.id == request.auth.uid;
+      
+      // Only the event owner can update or delete their event
+      allow update, delete: if isSignedIn() && resource.data.organizer.id == request.auth.uid;
     }
   }
 }
