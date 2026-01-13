@@ -2,64 +2,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // --------------------------------------------------------------------
-    // Helper Functions
-    // --------------------------------------------------------------------
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    // Check ownership on an existing resource
-    function isResourceOwner(resource) {
-        return isOwner(resource.data.organizer.id);
-    }
-    
-    // Check ownership on a new resource for creation
-    function isRequestingOwner(request) {
-       return isOwner(request.resource.data.organizer.id);
-    }
-
-    function isAdmin() {
-      // In a real app, this would be more secure, like checking a custom claim.
-      // For now, we assume an 'roles_admin' collection exists.
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    // --------------------------------------------------------------------
-    // Collection Rules
-    // --------------------------------------------------------------------
-
-    match /users/{userId} {
-      allow get: if isSignedIn();
-      allow create: if isOwner(userId);
-      allow update, delete: if isOwner(userId);
-      allow list: if false; // Don't allow listing all users
-    }
-    
-    match /events/{eventId} {
-        // READ: Anyone can read a published event.
-        allow get: if resource.data.status == 'published';
-
-        // LIST: Any signed-in user can query the events collection.
-        // Client-side queries are responsible for filtering results (e.g., by status or user).
-        allow list: if isSignedIn();
-
-        // CREATE: Any signed-in user can create an event.
-        allow create: if isSignedIn() && isRequestingOwner(request);
-
-        // UPDATE / DELETE: Only the owner or an admin can update/delete.
-        allow update, delete: if isSignedIn() && (isResourceOwner(resource) || isAdmin());
-    }
-    
-    // A collection to store admin UIDs. Manage this in the Firebase Console.
-    match /roles_admin/{userId} {
-      allow get: if isSignedIn();
-      allow list, create, update, delete: if false; // Lock down modifications from client
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
