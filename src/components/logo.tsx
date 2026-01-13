@@ -15,26 +15,26 @@ const BeeIcon = ({ className }: { className?: string }) => (
         <path d="M40 50 C 35 60, 35 70, 40 80" stroke="black" strokeWidth="4" fill="none" />
         
         {/* Head */}
-        <circle cx="30" cy="55" r="15" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
+        <circle cx="70" cy="55" r="15" fill="hsl(var(--accent))" stroke="black" strokeWidth="2.5" />
         
         {/* Closed Eye (Wink) */}
-        <path d="M28 52 Q 32 56, 36 52" stroke="black" strokeWidth="2" fill="none" />
-        
+        <path d="M68 52 Q 72 56, 76 52" stroke="black" strokeWidth="2" fill="none" />
+
         {/* Smile */}
-        <path d="M22 62 Q 25 66, 28 64" stroke="black" strokeWidth="2" fill="none" />
+        <path d="M62 62 Q 65 66, 68 64" stroke="black" strokeWidth="2" fill="none" />
         
         {/* Stinger */}
-        <path d="M75 60 L 85 60" stroke="black" strokeWidth="3" strokeLinecap="round" />
+        <path d="M25 60 L 15 60" stroke="black" strokeWidth="3" strokeLinecap="round" />
 
         {/* Wings */}
         <path
-          d="M40 30 C 50 10, 20 10, 30 30"
+          d="M60 30 C 50 10, 80 10, 70 30"
           fill="rgba(255,255,255,0.8)"
           stroke="black"
           strokeWidth="2"
         />
         <path
-          d="M45 32 C 55 15, 30 15, 35 32"
+          d="M55 32 C 45 15, 70 15, 65 32"
           fill="rgba(255,255,255,0.7)"
           stroke="black"
           strokeWidth="2"
@@ -47,8 +47,20 @@ const BeeIcon = ({ className }: { className?: string }) => (
 export default function Logo({ className }: { className?: string }) {
   return (
     <div className={`group flex items-center gap-3 text-foreground ${className}`}>
-      <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-primary transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/50 border-4 border-accent">
-        <BeeIcon className="h-16 w-16 text-accent animate-[bee-fly_8s_ease-in-out_infinite]" />
+      <div className="relative h-24 w-24">
+        <svg
+          viewBox="0 0 100 100"
+          className="absolute inset-0 h-full w-full transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] filter"
+        >
+          <path
+            d="M 50,5 L 93.3,27.5 V 72.5 L 50,95 L 6.7,72.5 V 27.5 Z"
+            fill="hsl(var(--primary))"
+            stroke="white"
+            strokeWidth="4"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <BeeIcon className="h-full w-full text-accent animate-[bee-fly_8s_ease-in-out_infinite] relative" />
       </div>
        <div className="bg-accent p-2 rounded-md border-2 border-dashed border-black">
         <span
