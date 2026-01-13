@@ -64,7 +64,7 @@ export default function Logo({ className }: { className?: string }) {
                 >
                 <path
                     d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
-                    stroke="hsla(var(--accent), 0.2)"
+                    stroke="hsla(var(--golden), 0.7)"
                     strokeWidth="1.5"
                 />
                 </pattern>
@@ -123,10 +123,10 @@ export default function Logo({ className }: { className?: string }) {
             stroke="hsl(var(--golden))"
             strokeWidth="2"
             rx="6"
-            ry="6"
+ry="6"
           />
         </svg>
-        <div className="relative z-10 bg-transparent">
+        <div className="relative z-10 bg-transparent text-center px-4">
             <span className="text-2xl font-bold font-headline transition-colors duration-300 text-black">
             EventBee
             </span>
