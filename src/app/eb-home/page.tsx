@@ -74,7 +74,6 @@ export default function LandingPage() {
              <div className="flex items-center gap-2 sm:gap-4">
                 <Link href="/login" passHref>
                     <Button
-                     className="font-bold"
                      style={{ color: 'hsl(var(--accent))' }}
                     >
                       <LogIn className="mr-2 h-4 w-4" />
@@ -83,7 +82,6 @@ export default function LandingPage() {
                 </Link>
                 <Link href="/signup" passHref>
                     <Button
-                     className="font-bold"
                      style={{ color: 'hsl(var(--accent))' }}
                     >
                       <UserPlus className="mr-2 h-4 w-4" />
@@ -100,7 +98,7 @@ export default function LandingPage() {
                     Discover Your Next Experience
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                    Hyperlocal events for your city, curated for students & young professionals.
+                    Hyperlocal events for your city, bringing the community together.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
