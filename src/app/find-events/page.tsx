@@ -8,40 +8,29 @@ import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
+import { DUMMY_EVENTS } from '@/lib/data';
 
 export default function FindEventsPage() {
-  const firestore = useFirestore();
   const [sortOption, setSortOption] = useState('recent');
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
 
-  const eventsQuery = useMemoFirebase(() => {
-    if (!firestore) return null; // Wait for firestore to be initialized
-
-    let q = query(collection(firestore, 'events'), where('status', '==', 'published'));
-    
-    // Sorting logic that can be done on the server
-    switch (sortOption) {
-        case 'recent':
-            q = query(q, orderBy('createdAt', 'desc'));
-            break;
-        case 'date':
-             q = query(q, orderBy('date', 'asc'));
-            break;
-        default:
-             q = query(q, orderBy('createdAt', 'desc'));
-    }
-
-    return q;
-  }, [firestore, sortOption]);
-
-  const { data: allEvents, isLoading } = useCollection<Event>(eventsQuery);
+  const allEvents = DUMMY_EVENTS.filter(event => event.status === 'published');
+  const isLoading = false;
 
   const filteredEvents = useMemo(() => {
-    if (!allEvents) return [];
-
     let eventsToDisplay = [...allEvents];
+
+    // Sorting logic
+    switch (sortOption) {
+        case 'recent':
+            eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            break;
+        case 'date':
+             eventsToDisplay.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            break;
+        default:
+             eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
 
     if (activeFilters) {
       const { category, state, district, searchText, tags } = activeFilters;
@@ -71,7 +60,7 @@ export default function FindEventsPage() {
     }
     
     return eventsToDisplay;
-  }, [allEvents, activeFilters]);
+  }, [allEvents, activeFilters, sortOption]);
 
 
   const handleFilter = (filters: FilterState) => {

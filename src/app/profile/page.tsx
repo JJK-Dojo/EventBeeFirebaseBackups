@@ -32,8 +32,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { DUMMY_EVENTS } from '@/lib/data';
 
 
 const BeeIcon = ({ className }: { className?: string }) => (
@@ -141,19 +140,20 @@ function EventListItem({ event }: { event: UserEvent }) {
 }
 
 export default function ProfilePage() {
-    const firestore = useFirestore();
-    const { user, isUserLoading } = useUser();
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
     const [sortedUserEvents, setSortedUserEvents] = useState<UserEvent[]>([]);
     const [totalBees, setTotalBees] = useState<number | null>(null);
     const [sortOption, setSortOption] = useState('today');
 
-    const userEventsQuery = useMemoFirebase(() => {
-        if (!user) return null;
-        return query(collection(firestore, 'events'), where('organizer.id', '==', user.uid));
-    }, [firestore, user]);
-
-    const { data: events, isLoading } = useCollection<Event>(userEventsQuery);
+    // Mocking user data
+    const user = {
+        displayName: 'Guest User',
+        email: 'guest@example.com',
+        photoURL: "https://picsum.photos/seed/9/100/100"
+    };
+    
+    const events = DUMMY_EVENTS; // Using all dummy events for profile
+    const isLoading = false;
 
     useEffect(() => {
         if (!isLoading && events) {

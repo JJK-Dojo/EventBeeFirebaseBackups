@@ -33,9 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
-import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
-import { collection, doc, query, where } from 'firebase/firestore';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { DUMMY_EVENTS } from '@/lib/data';
 
 
 const statusBadges: Record<Event['status'], React.ReactNode> = {
@@ -141,40 +139,27 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 }
 
 export default function AdminPage() {
-    const firestore = useFirestore();
     const { toast } = useToast();
-    const { user } = useUser();
-    
-    const eventsQuery = useMemoFirebase(() => {
-        if (!firestore || !user) return null;
-        // Only query for events that are pending review.
-        return query(collection(firestore, 'events'), where('status', '==', 'pending'));
-    }, [firestore, user]);
-
-    const { data: events, isLoading } = useCollection<Event>(eventsQuery);
-
+    const [events, setEvents] = useState<Event[]>(DUMMY_EVENTS.filter(e => e.status === 'pending'));
 
     const sortedEvents = useMemo(() => {
-        if (!events) return [];
         return [...events].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [events]);
 
     const handleApprove = (eventId: string) => {
-        if (!events || !firestore) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
-            const eventRef = doc(firestore, 'events', eventId);
-            updateDocumentNonBlocking(eventRef, { status: 'published' });
+            console.log(`Approving event: ${eventId}`);
+            setEvents(prev => prev.filter(e => e.id !== eventId));
             toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
         }
     };
 
     const handleDeny = (eventId: string, feedback: string) => {
-        if (!events || !firestore) return;
         const eventToUpdate = events.find(e => e.id === eventId);
         if (eventToUpdate) {
-            const eventRef = doc(firestore, 'events', eventId);
-            updateDocumentNonBlocking(eventRef, { status: 'denied', feedback });
+            console.log(`Denying event: ${eventId} with feedback: ${feedback}`);
+            setEvents(prev => prev.filter(e => e.id !== eventId));
             toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
         }
     };

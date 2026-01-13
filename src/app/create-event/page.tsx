@@ -49,9 +49,7 @@ import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
-import { useFirestore, useUser, addDocumentNonBlocking, setDocumentNonBlocking, initiateAnonymousSignIn, useAuth } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
-
+import { DUMMY_EVENTS } from '@/lib/data';
 
 type PostOffice = {
   Name: string;
@@ -179,9 +177,6 @@ export default function CreateEventPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const firestore = useFirestore();
-  const auth = useAuth();
-  const { user, isUserLoading } = useUser();
 
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
@@ -216,10 +211,7 @@ export default function CreateEventPage() {
   useEffect(() => {
     const eventId = searchParams.get('edit');
     if (eventId) {
-      // In a real app, you would fetch the event data from your backend
-      // For now, we simulate this by finding it in a dummy list if it exists.
-      // const foundEvent = events.find(e => e.id === eventId);
-      const foundEvent: Event | undefined = undefined; // Placeholder
+      const foundEvent = DUMMY_EVENTS.find(e => e.id === eventId);
       if (foundEvent) {
         setIsEditing(true);
         setEventToEdit(foundEvent);
@@ -380,14 +372,6 @@ export default function CreateEventPage() {
   }
 
   const handleSubmit = () => {
-    // If the user isn't logged in, sign them in anonymously.
-    if (!user && auth) {
-        initiateAnonymousSignIn(auth);
-        toast({ title: "Submitting anonymously", description: "Your event will be posted as an anonymous contributor." });
-        // We don't return here. The auth state change will trigger a re-render
-        // but we can proceed with an optimistic UI. The 'user' object will be null for now.
-    }
-    
     const newStatus = visibility === 'public' ? 'pending' : 'draft';
 
     const getBrandedImageUrl = () => {
@@ -397,41 +381,17 @@ export default function CreateEventPage() {
     
     const finalImageUrl = imagePreview || getBrandedImageUrl();
 
-    if (isEditing && eventToEdit && user && eventToEdit.organizer.id === user.uid) {
-      const eventRef = doc(firestore, 'events', eventToEdit.id);
-      const updatedEvent: Partial<Event> = {
-        title,
-        description,
-        date: date ? date.toISOString() : new Date().toISOString(),
-        location: pincodeSearchInput,
-        imageUrl: finalImageUrl,
-        category: categories.find(c => c.value === selectedCategory)?.label || 'General',
-        tags: selectedTags,
-        status: newStatus,
-        editCount: newStatus === 'pending' ? eventToEdit.editCount + 1 : eventToEdit.editCount, // Increment edit count on resubmission
-        feedback: undefined, // Clear feedback on resubmission
-      };
-
-      if (updatedEvent.editCount && updatedEvent.editCount > 5 && newStatus === 'pending') {
-        toast({
-            variant: "destructive",
-            title: "Edit Limit Reached",
-            description: "You have reached the maximum number of edits for this event.",
-        });
-        return;
-      }
-      
-      setDocumentNonBlocking(eventRef, updatedEvent, { merge: true });
-      
+    if (isEditing && eventToEdit) {
+      console.log('Simulating update for event:', eventToEdit.id);
+      // In a real app, you would update the event in your state management
       toast({
         title: `Event ${newStatus === 'pending' ? 'Resubmitted' : 'Updated'}!`,
-        description: `${title} has been successfully updated.`,
+        description: `${title} has been successfully updated (simulation).`,
       });
-
       router.push('/profile');
-
     } else {
-      const newEvent: Omit<Event, 'id'> = {
+      console.log('Simulating creation of new event');
+       const newEvent: Omit<Event, 'id'> = {
           title,
           description,
           date: date ? date.toISOString() : new Date().toISOString(),
@@ -440,25 +400,24 @@ export default function CreateEventPage() {
           imageUrl: finalImageUrl,
           imageHint: 'event image',
           organizer: {
-              id: user?.uid || 'anonymous',
-              name: user?.displayName || 'Anonymous Contributor',
-              avatarUrl: user?.photoURL || `https://picsum.photos/seed/${user?.uid || 'anon'}/40/40`,
+              id: 'anonymous',
+              name: 'Anonymous Contributor',
+              avatarUrl: `https://picsum.photos/seed/anon/40/40`,
           },
           category: categories.find(c => c.value === selectedCategory)?.label || 'General',
           tags: selectedTags,
           status: newStatus,
           editCount: 0,
       };
-
-      addDocumentNonBlocking(collection(firestore, 'events'), newEvent);
+      console.log(newEvent);
 
       toast({
         title: `Event ${newStatus === 'pending' ? 'Submitted for Review' : 'Saved as Draft'}!`,
-        description: `${title} has been successfully ${newStatus === 'pending' ? 'submitted' : 'saved'}.`,
+        description: `${title} has been successfully ${newStatus === 'pending' ? 'submitted' : 'saved'} (simulation).`,
       });
 
       // Redirect based on whether they are logged in and what they chose.
-      if (user && newStatus === 'draft') {
+      if (newStatus === 'draft') {
         router.push('/profile');
       } else {
         router.push('/find-events');
@@ -815,5 +774,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    

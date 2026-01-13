@@ -14,30 +14,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth, useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 
 export default function UserMenu() {
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+
+  // Mock user state
+  const [user, setUser] = useState<{ displayName: string; email: string; photoURL: string; } | null>(null);
+  const isUserLoading = false;
 
   // In a real app, you'd have logic to determine if the user is an admin
   const isAdmin = true;
 
+  const handleLogin = () => {
+    // Simulate login
+    setUser({
+        displayName: 'Guest User',
+        email: 'guest@example.com',
+        photoURL: 'https://picsum.photos/seed/9/40/40'
+    });
+    router.push('/dashboard');
+  }
+
   const handleLogout = () => {
-    if (auth) {
-        signOut(auth).then(() => {
-            toast({ title: "Logged Out", description: "You have been successfully logged out." });
-            router.push('/');
-        }).catch((error) => {
-            console.error("Logout Error:", error);
-            toast({ variant: 'destructive', title: "Logout Failed", description: "Could not log you out. Please try again." });
-        });
-    }
+    // Simulate logout
+    setUser(null);
+    toast({ title: "Logged Out", description: "You have been successfully logged out." });
+    router.push('/');
   }
 
   if (isUserLoading) {
@@ -50,12 +56,10 @@ export default function UserMenu() {
 
   if (!user) {
     return (
-       <Link href="/login" passHref>
-        <Button variant="outline">
+       <Button variant="outline" onClick={handleLogin}>
           <LogIn className="mr-2 h-4 w-4" />
           Login
         </Button>
-      </Link>
     )
   }
 

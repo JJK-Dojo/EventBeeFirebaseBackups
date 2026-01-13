@@ -24,22 +24,15 @@ import {
   Legend,
   CartesianGrid
 } from "recharts";
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
 import type { Event } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { DUMMY_EVENTS } from '@/lib/data';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function AnalyticsPage() {
-  const firestore = useFirestore();
-  
-  const eventsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'events'), where('status', '==', 'published'));
-  }, [firestore]);
-
-  const { data: events, isLoading } = useCollection<Event>(eventsQuery);
+  const events = DUMMY_EVENTS.filter(e => e.status === 'published');
+  const isLoading = false;
 
   const eventsByCategory = useMemo(() => {
     if (!events) return [];
@@ -53,7 +46,7 @@ export default function AnalyticsPage() {
   const eventsByStatus = useMemo(() => {
     if (!events) return [];
     const counts: { [key: string]: number } = {};
-    events.forEach(event => {
+    DUMMY_EVENTS.forEach(event => { // Use all dummy events for status chart
       counts[event.status] = (counts[event.status] || 0) + 1;
     });
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
@@ -65,8 +58,11 @@ export default function AnalyticsPage() {
     events.forEach(event => {
         const parts = event.location.split(', ');
         if (parts.length > 1) {
-            const state = parts[1];
+            const state = parts[1]; // This is not a state but works for demo
             counts[state] = (counts[state] || 0) + 1;
+        } else {
+            const city = parts[0];
+            counts[city] = (counts[city] || 0) + 1;
         }
     });
     return Object.entries(counts)
@@ -198,10 +194,10 @@ export default function AnalyticsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <BarChart className="h-6 w-6 text-primary"/>
-                    Top 10 Event Locations (by State)
+                    Top 10 Event Locations
                 </CardTitle>
                 <CardDescription>
-                    States with the highest number of events.
+                    Locations with the highest number of events.
                 </CardDescription>
               </CardHeader>
               <CardContent>

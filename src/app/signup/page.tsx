@@ -17,8 +17,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Logo from '@/components/logo';
 import { Facebook, Instagram, Twitter, Linkedin, MessageCircle, Ghost } from 'lucide-react';
-import { useAuth } from '@/firebase';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -29,7 +27,6 @@ const GoogleIcon = () => (
 )
 
 export default function SignupPage() {
-  const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -38,37 +35,14 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleGoogleSignUp = () => {
-    if (!auth) return;
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-        .then(() => {
-            toast({ title: 'Account Created!', description: 'You have successfully signed up with Google.' });
-            router.push('/dashboard');
-        })
-        .catch((error: any) => {
-            console.error("Google Sign-Up Error: ", error);
-            toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
-        });
-  };
-
-  const handleEmailSignUp = async () => {
-    if (!auth) return;
+  const handleSignUp = async () => {
     if (!firstName || !lastName) {
       toast({ variant: 'destructive', title: 'Missing Name', description: 'Please enter your first and last name.' });
       return;
     }
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, {
-        displayName: `${firstName} ${lastName}`
-      });
-      toast({ title: 'Account Created!', description: 'You have successfully signed up with email.' });
-      router.push('/dashboard');
-    } catch (error: any) {
-      console.error("Email Sign-Up Error: ", error);
-      toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
-    }
+    console.log(`Simulating account creation for ${email}`);
+    toast({ title: 'Account Created!', description: 'You have successfully signed up (simulation).' });
+    router.push('/dashboard');
   };
 
 
@@ -85,7 +59,7 @@ export default function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
+          <Button variant="outline" className="w-full" onClick={handleSignUp}>
             <GoogleIcon />
             Sign up with Google
           </Button>
@@ -173,7 +147,7 @@ export default function SignupPage() {
           </div>
 
 
-          <Button className="w-full mt-4" onClick={handleEmailSignUp}>Create account</Button>
+          <Button className="w-full mt-4" onClick={handleSignUp}>Create account</Button>
         </CardContent>
         <CardFooter className="flex-col gap-4">
             <div className="text-center text-sm text-muted-foreground">

@@ -2,14 +2,12 @@
 'use client';
 
 import Image from 'next/image';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   User,
   FileCheck,
-  LogIn,
-  LogOut,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -24,8 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { DUMMY_EVENTS } from '@/lib/data';
 
 
 function EventListItem({ event }: { event: Event }) {
@@ -63,38 +60,24 @@ function EventListItem({ event }: { event: Event }) {
 }
 
 export default function DashboardPage() {
-    const { user, isUserLoading } = useUser();
-    const firestore = useFirestore();
     const router = useRouter();
 
-    const userEventsQuery = useMemoFirebase(() => {
-        if (!user || !firestore) return null;
-        return query(collection(firestore, 'events'), where('organizer.id', '==', user.uid));
-    }, [user, firestore]);
-
-    const { data: events, isLoading } = useCollection<Event>(userEventsQuery);
+    // Mocking user and events data
+    const isLoading = false;
+    const user = {
+        uid: 'dummy-user',
+        displayName: 'Guest User',
+        photoURL: 'https://picsum.photos/seed/guest/100/100'
+    };
+    const userEvents = DUMMY_EVENTS; // Show all events for demo
 
     const recentEvents = useMemo(() => {
-        if (!events) return [];
-        return [...events]
+        if (!userEvents) return [];
+        return [...userEvents]
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 10);
-    }, [events]);
+    }, [userEvents]);
 
-    useEffect(() => {
-        if (!isUserLoading && !user) {
-            router.push('/login');
-        }
-    }, [isUserLoading, user, router]);
-
-
-    if (isUserLoading || !user) {
-        return (
-            <div className="flex min-h-screen w-full flex-col items-center justify-center bg-background">
-                <p>Loading user dashboard...</p>
-            </div>
-        );
-    }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
