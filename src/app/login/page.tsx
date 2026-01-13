@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -39,10 +38,10 @@ export default function LoginPage() {
     const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
 
     useEffect(() => {
-        if (user) {
+        if (!isUserLoading && user) {
             router.push('/dashboard');
         }
-    }, [user, router]);
+    }, [user, isUserLoading, router]);
 
     const handleSignIn = async () => {
         setIsLoading(true);
