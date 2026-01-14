@@ -1,4 +1,3 @@
-
 {
   "entities": {
     "User": {
@@ -9,7 +8,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the user entity."
+          "description": "Unique identifier for the user."
         },
         "email": {
           "type": "string",
@@ -23,29 +22,36 @@
         "displayName": {
           "type": "string",
           "description": "User's display name."
+        },
+        "creationDate": {
+          "type": "string",
+          "description": "Date and time the user account was created.",
+          "format": "date-time"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "Date and time of the user's last login.",
+          "format": "date-time"
         }
       },
       "required": [
-        "id"
+        "id",
+        "email"
       ]
     },
     "Event": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Event",
       "type": "object",
-      "description": "Represents a local event posted on the LocalLooms platform.",
+      "description": "Represents an event posted on the LocalLooms platform.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the event entity."
+          "description": "Unique identifier for the event."
         },
-        "organizer": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            }
-          }
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Event)"
         },
         "title": {
           "type": "string",
@@ -53,70 +59,105 @@
         },
         "description": {
           "type": "string",
-          "description": "Detailed description of the event."
+          "description": "Description of the event."
         },
-        "date": {
+        "startDate": {
           "type": "string",
-          "description": "The start date and time of the event.",
+          "description": "Start date and time of the event.",
           "format": "date-time"
         },
-        "location": {
+        "endDate": {
           "type": "string",
-          "description": "Location of the event."
+          "description": "End date and time of the event.",
+          "format": "date-time"
         },
-        "status": {
+        "locationName": {
           "type": "string",
-          "enum": ["published", "pending", "draft", "denied"]
+          "description": "Name of the event location."
+        },
+        "locationLatitude": {
+          "type": "number",
+          "description": "Latitude of the event location."
+        },
+        "locationLongitude": {
+          "type": "number",
+          "description": "Longitude of the event location."
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the event (e.g., Music, Sports, Art)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the event image.",
+          "format": "uri"
+        },
+        "tags": {
+          "type": "array",
+          "description": "Tags associated with the event",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
+        "id",
+        "userId",
         "title",
         "description",
-        "date",
-        "location"
+        "startDate",
+        "endDate",
+        "locationName",
+        "locationLatitude",
+        "locationLongitude"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
     "structure": [
       {
-        "path": "/users/{userId}",
+        "path": "users/{userId}",
         "definition": {
           "entityName": "User",
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles. The 'userId' parameter corresponds to the Firebase Auth UID.",
+          "description": "Stores user profile information. The 'userId' parameter represents the unique identifier for each user.",
           "params": [
             {
               "name": "userId",
-              "description": "The unique identifier of the user (Firebase Auth UID)."
+              "description": "Unique identifier for the user."
             }
           ]
         }
       },
       {
-        "path": "/events/{eventId}",
+        "path": "users/{userId}/events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
             "$ref": "#/backend/entities/Event"
           },
-          "description": "A top-level collection for all events.",
+          "description": "Stores event data associated with a specific user.  This subcollection leverages path-based ownership for security. Includes denormalized 'userId' to ensure authorization independence.",
           "params": [
             {
+              "name": "userId",
+              "description": "Unique identifier for the user."
+            },
+            {
               "name": "eventId",
-              "description": "The unique identifier of the event."
+              "description": "Unique identifier for the event."
             }
           ]
         }
       }
-    ]
+    ],
+    "reasoning": "The Firestore structure is designed to support the LocalLooms application, focusing on user and event data.  The primary goal is Authorization Independence to ensure robust security rules and atomic operations. This is achieved through path-based ownership for user data and denormalization where appropriate.  Event data is stored as a subcollection of user documents, enabling easy querying of events by a specific user.  To enable secure listing of events (QAPs), we leverage structural segregation: all event documents within a user's subcollection share the same security rules (user ownership). Geo-location search is facilitated by storing location data directly within the Event document. The overall structure prioritizes clarity, security, and scalability.  The user's profile information is kept in the `users` collection. The events are kept inside each user document in the `events` subcollection. Thus, to query all the events, you can create an index over all `users/{userId}/events` subcollections. This design enforces ownership and enables efficient data retrieval."
   }
 }
