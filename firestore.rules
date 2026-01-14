@@ -1,40 +1,37 @@
+
 /**
- * LocalLooms Firestore Security Rules
+ * EventBee Firestore Security Rules
  *
  * Core Philosophy:
- * This ruleset enforces a strict user-ownership model. All user-generated content,
- * such as profiles and events, is stored in a data tree directly associated with
- * the user's unique ID (UID). This ensures that users can only access and modify
- * their own data, providing strong data isolation and privacy by default.
+ * This ruleset uses a dual-collection approach. The `/users` collection enforces
+ * a strict user-ownership model for private profile data. The `/events` collection
+ * provides a public space for event documents, allowing them to be listed by any
+ * authenticated user, while still restricting write access to the event's creator.
  *
- * Data Structure:
- * Data is organized hierarchically under the `/users/{userId}` path. A user's
- * profile is stored in the `/users/{userId}` document, and their created events
- * are stored in the `/users/{userId}/events` subcollection. This structure
- * makes ownership-based security rules simple and performant.
- *
- * Key Security Decisions:
- * - User Enumeration is Disallowed: Listing the top-level `/users` collection is
- *   explicitly forbidden to protect user privacy and prevent data scraping.
- * - Strict Ownership: All readable and writable data requires the requesting
- *   user's UID to match the `userId` in the document path. There is no public
- *   or shared data.
- * - Relational Integrity: On creation, documents must contain an internal ID
- *   field (`id` for Users, `userId` for Events) that matches the owning user's
- *   UID from the path. This field is enforced as immutable on updates, creating
- *   a permanent and trustworthy link to the owner.
+ * Data Structure & Key Decisions:
+ * - User Data: `/users/{userId}` is strictly private. Only the owner can read or
+ *   write their own profile. Listing the `/users` collection is forbidden to
+ *   prevent user enumeration and protect privacy.
+ * - Event Data: `/events/{eventId}` is the central, public collection for all
+ *   event listings.
+ *   - Read Access (`get`, `list`): Any authenticated user can read events, which
+ *     is essential for features like the "Find Events" page and the main
+ *     landing page.
+ *   - Write Access (`create`, `update`, `delete`): Only the user whose UID matches
+ *     the `userId` field inside the event document can modify it. This enforces
+ *     ownership at the document level.
  *
  * Denormalization for Authorization:
  * Each `Event` document contains a `userId` field. This denormalization is
  * crucial, as it allows security rules to verify ownership directly from the
- * document's data without needing extra database reads, ensuring fast and
- * cost-effective authorization checks.
+ * document's data (`resource.data.userId`) without needing extra database reads,
+ * ensuring fast and cost-effective authorization checks for all write operations.
  *
- * Structural Segregation:
- * The app's data is naturally segregated by user. By placing each user's events
- * in a dedicated subcollection (`/users/{userId}/events`), we leverage Firestore's
- * structure to guarantee that a query for events can only ever operate within the
- * security context of a single user's data tree.
+ * Relational Integrity:
+ * On document creation, the `id` and `userId` fields within the data must match
+ * the document's ID and the authenticated user's UID, respectively. These fields
+ * are enforced as immutable on updates, creating a permanent and trustworthy link
+ * between the document, its ID, and its owner.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -57,6 +54,14 @@ service cloud.firestore {
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
+    
+    /**
+     * Checks if the authenticated user's UID matches the `userId` field in the resource data.
+     * This is used for collections where ownership is determined by a field in the document.
+     */
+    function isResourceOwner() {
+        return isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
 
     /**
      * Checks if the document being written to already exists.
@@ -67,10 +72,17 @@ service cloud.firestore {
     }
 
     /**
-     * Combines owner and existence checks for secure update/delete operations.
+     * Combines owner and existence checks for secure update/delete operations on path-based ownership.
      */
-    function isExistingOwner(userId) {
+    function isExistingPathOwner(userId) {
       return isOwner(userId) && isExistingDoc();
+    }
+    
+     /**
+     * Combines owner and existence checks for secure update/delete operations on resource-based ownership.
+     */
+    function isExistingResourceOwner() {
+      return isSignedIn() && isExistingDoc() && request.auth.uid == resource.data.userId;
     }
     
     /**
@@ -88,11 +100,19 @@ service cloud.firestore {
     }
     
     /**
-     * On create, validates that the event document's internal 'userId' field matches the path.
+     * On create, validates that the event document's internal 'userId' field matches the authenticated user.
      */
-    function createdWithMatchingUserId(userId) {
-      return request.resource.data.userId == userId;
+    function createdWithMatchingUserId() {
+      return request.resource.data.userId == request.auth.uid;
     }
+    
+     /**
+     * On create, validates that the event document's 'id' field matches its actual document ID.
+     */
+    function eventIdMatchesDocId(eventId) {
+        return request.resource.data.id == eventId;
+    }
+
 
     /**
      * On update, ensures the event document's internal 'userId' field is immutable.
@@ -119,25 +139,26 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if false;
       allow create: if isOwner(userId) && createdWithMatchingId(userId);
-      allow update: if isExistingOwner(userId) && idIsImmutable();
-      allow delete: if isExistingOwner(userId);
+      allow update: if isExistingPathOwner(userId) && idIsImmutable();
+      allow delete: if isExistingPathOwner(userId);
     }
-
+    
     /**
-     * @description Secures the events created by a specific user.
-     * @path /users/{userId}/events/{eventId}
-     * @allow (create) User 'user_abc' creating a new event in their own subcollection at `/users/user_abc/events/event_123`.
-     * @allow (list) User 'user_abc' listing all events within their own subcollection at `/users/user_abc/events`.
-     * @deny (update) User 'user_123' attempting to modify an event owned by 'user_abc'.
-     * @deny (create) User 'user_abc' trying to create an event with a mismatched `userId` field in the data.
-     * @principle Enforces document ownership and validates relational integrity between the event and its owner.
+     * @description Secures the public collection of all events.
+     * @path /events/{eventId}
+     * @allow (list, get) Any authenticated user can read event data for discovery.
+     * @allow (create) A user can create an event if the `userId` in the new document matches their own UID.
+     * @allow (update, delete) A user can modify or delete an event only if the `userId` in the *existing* document matches their UID.
+     * @deny (update) A user trying to change the `userId` of an event after it has been created.
+     * @principle Enables public discovery of events while strictly enforcing ownership for all write operations.
      */
-    match /users/{userId}/events/{eventId} {
-      allow get: if isOwner(userId);
-      allow list: if isOwner(userId);
-      allow create: if isOwner(userId) && createdWithMatchingUserId(userId);
-      allow update: if isExistingOwner(userId) && userIdIsImmutable();
-      allow delete: if isExistingOwner(userId);
+    match /events/{eventId} {
+      allow list, get: if isSignedIn();
+      allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
+      allow update: if isExistingResourceOwner() && userIdIsImmutable() && eventIdMatchesDocId(eventId);
+      allow delete: if isExistingResourceOwner();
     }
   }
 }
+
+    

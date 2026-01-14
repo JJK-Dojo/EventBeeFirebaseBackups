@@ -51,7 +51,7 @@ import { useToast } from '@/hooks/use-toast';
 import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
 import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { useUser } from '@/firebase/auth/use-user';
 
 type PostOffice = {
@@ -403,8 +403,13 @@ export default function CreateEventPage() {
         };
         
         const finalImageUrl = imagePreview || getBrandedImageUrl();
-
+        
+        const eventCollectionRef = collection(firestore, 'events');
+        const newEventRef = doc(eventCollectionRef);
+        
         const eventData = {
+            id: newEventRef.id,
+            userId: user.uid,
             title,
             description,
             date: date ? date.toISOString() : new Date().toISOString(),
@@ -432,8 +437,8 @@ export default function CreateEventPage() {
           });
           router.push('/profile');
         } else {
-          const docRef = await addDoc(collection(firestore, 'events'), eventData);
-          console.log("Document written with ID: ", docRef.id);
+          await setDoc(newEventRef, eventData);
+          console.log("Document written with ID: ", newEventRef.id);
           
           toast({
             title: `Event ${newStatus === 'pending' ? 'Submitted' : 'Saved'}!`,
@@ -813,5 +818,7 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
 
     

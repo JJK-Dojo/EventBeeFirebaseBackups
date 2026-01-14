@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "User": {
@@ -51,7 +52,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Event)"
+          "description": "Reference to the User who created the event."
         },
         "title": {
           "type": "string",
@@ -127,9 +128,9 @@
         "definition": {
           "entityName": "User",
           "schema": {
-            "$ref": "#/backend/entities/User"
+            "$ref": "#/entities/User"
           },
-          "description": "Stores user profile information. The 'userId' parameter represents the unique identifier for each user.",
+          "description": "Stores private user profile information. The 'userId' parameter represents the unique identifier for each user, enforcing ownership.",
           "params": [
             {
               "name": "userId",
@@ -139,18 +140,14 @@
         }
       },
       {
-        "path": "users/{userId}/events/{eventId}",
+        "path": "events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
-            "$ref": "#/backend/entities/Event"
+            "$ref": "#/entities/Event"
           },
-          "description": "Stores event data associated with a specific user.  This subcollection leverages path-based ownership for security. Includes denormalized 'userId' to ensure authorization independence.",
+          "description": "Stores all public event data. Documents are readable by any authenticated user but writable only by the owner, as determined by the 'userId' field within the document.",
           "params": [
-            {
-              "name": "userId",
-              "description": "Unique identifier for the user."
-            },
             {
               "name": "eventId",
               "description": "Unique identifier for the event."
@@ -159,6 +156,8 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to support the LocalLooms application, focusing on user and event data.  The primary goal is Authorization Independence to ensure robust security rules and atomic operations. This is achieved through path-based ownership for user data and denormalization where appropriate.  Event data is stored as a subcollection of user documents, enabling easy querying of events by a specific user.  To enable secure listing of events (QAPs), we leverage structural segregation: all event documents within a user's subcollection share the same security rules (user ownership). Geo-location search is facilitated by storing location data directly within the Event document. The overall structure prioritizes clarity, security, and scalability.  The user's profile information is kept in the `users` collection. The events are kept inside each user document in the `events` subcollection. Thus, to query all the events, you can create an index over all `users/{userId}/events` subcollections. This design enforces ownership and enables efficient data retrieval."
+    "reasoning": "The Firestore structure is designed for a public-facing event platform. It uses a dual-collection model: a private `/users` collection for profile data, secured by path-based ownership, and a public-readable `/events` collection for all event listings. This separation is key: it allows any authenticated user to query and discover all events (essential for the `find-events` page) while still enforcing strict ownership for all write operations (create, update, delete) on individual events. Ownership of an event is determined by a `userId` field denormalized into each event document, which allows security rules to be both efficient and secure without needing cross-collection queries. This model supports the core functionality of a public event board while protecting user-specific data and event integrity."
   }
 }
+
+    
