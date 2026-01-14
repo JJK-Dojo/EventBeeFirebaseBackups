@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import {
   User,
   FileCheck,
-  LoaderCircle
+  LoaderCircle,
+  Edit,
 } from 'lucide-react';
 import Header from '@/components/header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -28,35 +29,46 @@ import { useUserEvents } from '@/firebase/firestore/use-user-events';
 
 function EventListItem({ event }: { event: Event }) {
     return (
-        <Link href={`/events/${event.id}`} className="group block">
+        <div className="group block">
             <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-md md:flex-row">
-                <div className="relative h-24 w-full flex-shrink-0 md:h-auto md:w-32">
-                <Image
-                    src={event.imageUrl}
-                    alt={event.title}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={event.imageHint}
-                />
-                </div>
+                 <Link href={`/events/${event.id}`} className="relative h-24 w-full flex-shrink-0 md:h-auto md:w-32">
+                    <Image
+                        src={event.imageUrl}
+                        alt={event.title}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={event.imageHint}
+                    />
+                </Link>
                 <div className="flex flex-1 flex-col p-3">
                     <div className="flex-1">
                         <div className="flex justify-between items-start">
-                            <Badge variant={event.status === 'published' ? 'secondary' : 'outline'} className="mb-2">{event.status}</Badge>
+                             <div className="flex items-center gap-2">
+                                <Badge variant={event.status === 'published' ? 'secondary' : 'outline'} className="mb-2">{event.status}</Badge>
+                                {(event.status === 'draft' || event.status === 'published') && (
+                                    <Link href={`/create-event?edit=${event.id}`} onClick={(e) => e.stopPropagation()}>
+                                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                                            <Edit className="h-4 w-4 text-muted-foreground" />
+                                        </Button>
+                                    </Link>
+                                )}
+                            </div>
                             <p className="text-xs text-muted-foreground">
                                 {event.createdAt && `Posted ${format(event.createdAt, 'MMM d, h:mm a')}`}
                             </p>
                         </div>
-                        <h3 className="font-bold group-hover:text-primary">
-                            {event.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                            {event.date && `${format(event.date, 'EEE, MMM d, yyyy')} • ${event.location}`}
-                        </p>
+                         <Link href={`/events/${event.id}`}>
+                            <h3 className="font-bold group-hover:text-primary">
+                                {event.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                {event.date && `${format(event.date, 'EEE, MMM d, yyyy')} • ${event.location}`}
+                            </p>
+                        </Link>
                     </div>
                 </div>
             </Card>
-        </Link>
+        </div>
     );
 }
 
