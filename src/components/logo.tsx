@@ -6,7 +6,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import Autoplay from "embla-carousel-autoplay";
 
 export default function Logo({ className }: { className?: string }) {
   
@@ -16,7 +15,6 @@ export default function Logo({ className }: { className?: string }) {
     <div className={`relative h-24 w-24 ${className}`}>
       <Carousel
         className="w-full h-full"
-        plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]}
         opts={{ loop: true }}
       >
         <CarouselContent>
