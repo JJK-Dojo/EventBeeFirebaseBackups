@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -46,7 +47,7 @@ function EventListItem({ event }: { event: Event }) {
                                 {event.createdAt && `Posted ${format(event.createdAt, 'MMM d, h:mm a')}`}
                             </p>
                         </div>
-                        <h3 className="font-bold font-headline group-hover:text-primary">
+                        <h3 className="font-bold group-hover:text-primary">
                             {event.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">
