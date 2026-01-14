@@ -1,112 +1,220 @@
 {
   "placeholderImages": [
     {
-      "id": "festival_holi",
-      "description": "People celebrating the Holi festival, covered in colorful powders.",
-      "imageUrl": "https://images.unsplash.com/photo-1580829864253-ead2c8369a45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob2xpJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "holi festival"
+      "id": "slide_01",
+      "description": "A vibrant, close-up shot of a person's face painted with intricate patterns and adorned with colorful beads and feathers for a festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_01.webp",
+      "imageHint": "festival portrait"
     },
     {
-      "id": "festival_lantern",
-      "description": "Thousands of lanterns being released into the night sky during a festival in Thailand.",
-      "imageUrl": "https://images.unsplash.com/photo-1531213373904-a3163a35893d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsYW50ZXJuJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
+      "id": "slide_02",
+      "description": "A high-angle view of a massive crowd celebrating at a music festival, with colorful lights illuminating the stage and audience.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_02.webp",
+      "imageHint": "music festival"
+    },
+    {
+      "id": "slide_03",
+      "description": "A joyful woman with brightly colored powder on her face and in her hair, celebrating the Holi festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_03.webp",
+      "imageHint": "holi celebration"
+    },
+    {
+      "id": "slide_04",
+      "description": "An elaborately dressed performer in a large, feathered headdress dancing in a vibrant street parade, likely during Carnival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_04.webp",
+      "imageHint": "carnival parade"
+    },
+    {
+      "id": "slide_05",
+      "description": "A night shot of a sky filled with glowing lanterns being released during a festival, creating a magical and serene atmosphere.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_05.webp",
       "imageHint": "lantern festival"
     },
     {
-      "id": "festival_rio_carnival",
-      "description": "A colorful float and dancers at the Carnival in Rio de Janeiro, Brazil.",
-      "imageUrl": "https://images.unsplash.com/photo-1594514922115-38e41461c3de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyaW8lMjBjYXJuaXZhbHxlbnwwfHx8fDE3MTc2ODQ3Mzd8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "rio carnival"
+      "id": "slide_06",
+      "description": "A group of friends with face paint and glitter, smiling and enjoying themselves at an outdoor summer festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_06.webp",
+      "imageHint": "festival friends"
     },
     {
-      "id": "festival_day_of_dead",
-      "description": "A woman with intricate 'Calavera' (sugar skull) makeup for the Day of the Dead in Mexico.",
-      "imageUrl": "https://images.unsplash.com/photo-1629818812488-8b548858280f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYXklMjBvZiUyMHRoZSUyMGRlYWQlMjBtZXhpY298ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "day of dead"
+      "id": "slide_07",
+      "description": "A performer in traditional costume with intricate face paint and headdress, representing a cultural or religious festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_07.webp",
+      "imageHint": "cultural performer"
     },
     {
-      "id": "festival_oktoberfest",
-      "description": "A large beer tent filled with people at Oktoberfest in Munich, Germany.",
-      "imageUrl": "https://images.unsplash.com/photo-1567946914565-3c997a3a8317?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvayBvYmVyZmVzdCUyMGdlcm1hbnl8ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "oktoberfest germany"
+      "id": "slide_08",
+      "description": "A long-exposure shot of a spinning ferris wheel at night, brightly lit against the dark sky at a fair or festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_08.webp",
+      "imageHint": "ferris wheel"
     },
     {
-      "id": "festival_cherry_blossom",
-      "description": "People enjoying a picnic under blooming cherry blossom trees in Japan.",
-      "imageUrl": "https://images.unsplash.com/photo-1522383225653-ed111181a951?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjerryJTIwYmxvc3NvbSUyMGZlc3RpdmFsJTIwamFwYW58ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "cherry blossom"
+      "id": "slide_09",
+      "description": "A silhouette of a cheering crowd against a brightly lit stage during a music festival at sunset.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_09.webp",
+      "imageHint": "concert crowd"
     },
     {
-      "id": "festival_mardi_gras",
-      "description": "A vibrant and crowded street scene during Mardi Gras in New Orleans.",
-      "imageUrl": "https://images.unsplash.com/photo-1550426735-c33a124a3a62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtYXJkaSUyMGdyYXMlMjBuZXclMjBvcmxlYW5zfGVufDB8fHx8MTcxNzY4NDczN3ww&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "mardi gras"
+      "id": "slide_10",
+      "description": "A woman's hands decorated with intricate henna designs, a tradition in many South Asian festivals and celebrations.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_10.webp",
+      "imageHint": "henna hands"
     },
     {
-      "id": "festival_la_tomatina",
-      "description": "A massive crowd of people covered in tomatoes during La Tomatina festival in Spain.",
-      "imageUrl": "https://images.unsplash.com/photo-1562615828-918c07166a1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsYSUyMHRvbWF0aW5hJTIwc3BhaW58ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "la tomatina"
+      "id": "slide_11",
+      "description": "Colorful decorations, including lanterns and banners, hanging over a bustling street during a city festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_11.webp",
+      "imageHint": "street festival"
     },
     {
-      "id": "festival_chinese_new_year",
-      "description": "A traditional dragon dance performance during Chinese New Year celebrations.",
-      "imageUrl": "https://images.unsplash.com/photo-1548043429-0e78a42332b7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjaGluZXNlJTIwbmV3JTIweWVhcnxlbnwwfHx8fDE3MTc2ODQ3Mzd8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "chinese new year"
+      "id": "slide_12",
+      "description": "A dramatic shot of a fire dancer performing at night, creating mesmerizing patterns with flames.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_12.webp",
+      "imageHint": "fire dancer"
     },
     {
-      "id": "festival_balloon",
-      "description": "Dozens of hot air balloons rising into the sky at the Albuquerque International Balloon Fiesta.",
-      "imageUrl": "https://images.unsplash.com/photo-1533610229868-693822180a58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiYWxsb29uJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "balloon fiesta"
+      "id": "slide_13",
+      "description": "A woman wearing a vibrant floral headdress and smiling, embodying the spirit of a spring or summer festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_13.webp",
+      "imageHint": "floral headdress"
     },
     {
-      "id": "festival_water",
-      "description": "People joyfully splashing each other with water during the Songkran festival in Thailand.",
-      "imageUrl": "https://images.unsplash.com/photo-1520643187299-63303a1a7a0b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzb25na3JhbiUyMHdhdGVyJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzE3Njg0NzM3fDA&ixlib=rb-4.0.3&q=80&w=1080",
+      "id": "slide_14",
+      "description": "A traditional dragon dance performance with a large, colorful dragon puppet weaving through a crowd during Chinese New Year.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_14.webp",
+      "imageHint": "dragon dance"
+    },
+    {
+      "id": "slide_15",
+      "description": "A child's face painted with butterfly wings, looking up in wonder at a family-friendly festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_15.webp",
+      "imageHint": "child facepaint"
+    },
+    {
+      "id": "slide_16",
+      "description": "Hot air balloons of various colors and shapes rising into the sky at dawn during a balloon festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_16.webp",
+      "imageHint": "balloon festival"
+    },
+    {
+      "id": "slide_17",
+      "description": "A performer in a traditional Venetian mask and costume, posing during the Carnival of Venice.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_17.webp",
+      "imageHint": "venice carnival"
+    },
+    {
+      "id": "slide_18",
+      "description": "A display of intricately carved pumpkins lit from within for a Halloween or autumn harvest festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_18.webp",
+      "imageHint": "carved pumpkins"
+    },
+    {
+      "id": "slide_19",
+      "description": "People celebrating and throwing colored powder in the air during the Holi festival, creating a cloud of vibrant colors.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_19.webp",
+      "imageHint": "holi powder"
+    },
+    {
+      "id": "slide_20",
+      "description": "A close-up of a person's eye with festive, sparkling makeup and glitter, reflecting the lights of a celebration.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_20.webp",
+      "imageHint": "festival makeup"
+    },
+    {
+      "id": "slide_21",
+      "description": "A vibrant street market scene during a festival, with stalls selling food, crafts, and other goods.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_21.webp",
+      "imageHint": "street market"
+    },
+    {
+      "id": "slide_22",
+      "description": "A person wearing a VR headset, deeply engrossed in a virtual reality experience at a tech or digital arts festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_22.webp",
+      "imageHint": "VR experience"
+    },
+    {
+      "id": "slide_23",
+      "description": "A group of people dressed in historical costumes, participating in a reenactment or Renaissance fair.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_23.webp",
+      "imageHint": "renaissance fair"
+    },
+    {
+      "id": "slide_24",
+      "description": "A woman in traditional Japanese attire holding a decorative umbrella while walking through a garden during a spring festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_24.webp",
+      "imageHint": "japanese festival"
+    },
+    {
+      "id": "slide_25",
+      "description": "A massive, enthusiastic crowd at a concert, with hands in the air, seen from the perspective of the stage.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_25.webp",
+      "imageHint": "concert view"
+    },
+    {
+      "id": "slide_26",
+      "description": "A woman's face adorned with small, delicate flowers and subtle glitter for a whimsical, nature-themed festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_26.webp",
+      "imageHint": "nature makeup"
+    },
+    {
+      "id": "slide_27",
+      "description": "A street performer juggling flaming torches at dusk, captivating a small crowd.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_27.webp",
+      "imageHint": "street performer"
+    },
+    {
+      "id": "slide_28",
+      "description": "A delicious-looking platter of street food, likely from a food truck or stall at a food festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_28.webp",
+      "imageHint": "street food"
+    },
+    {
+      "id": "slide_29",
+      "description": "People joyfully splashing water on each other during the Songkran festival in Thailand.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_29.webp",
       "imageHint": "water festival"
     },
     {
-      "id": "festival_mud",
-      "description": "People covered in mud, wrestling and playing at the Boryeong Mud Festival in South Korea.",
-      "imageUrl": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmZXN0aXZhbCUyMGNyb3dkfGVufDB8fHx8MTcxNzY4NDczN3ww&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "mud festival"
+      "id": "slide_30",
+      "description": "A large, colorful kite flying in the sky during a kite festival, with other kites visible in the background.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_30.webp",
+      "imageHint": "kite festival"
     },
     {
-      "id": "festival_st_patricks",
-      "description": "A parade with green decorations and costumes for St. Patrick's Day.",
-      "imageUrl": "https://images.unsplash.com/photo-1582883693743-9a3b6a65b3e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzdCUyMHBhdHJpY2tzJTIwZGF5JTIwcGFyYWRlfGVufDB8fHx8MTcxNzY4NDczN3ww&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "st patricks day"
+      "id": "slide_31",
+      "description": "A person meditating peacefully in a field, possibly at a wellness or spiritual retreat festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_31.webp",
+      "imageHint": "wellness retreat"
     },
     {
-      "id": "event_music_concert",
-      "description": "A packed crowd at an indie music concert with vibrant stage lights.",
-      "imageUrl": "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtdXNpYyUyMGNvbmNlcnR8ZW58MHx8fHwxNzY4MjgyNjg4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "music concert"
+      "id": "slide_32",
+      "description": "A close-up shot of a DJ's hands on a turntable, mixing music at a lively party or festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_32.webp",
+      "imageHint": "DJ mixing"
     },
     {
-      "id": "event_art_exhibition",
-      "description": "People admiring paintings in a modern art gallery.",
-      "imageUrl": "https://images.unsplash.com/photo-1605999081451-4436bf1d0d88?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhcnQlMjBleGhpYml0aW9ufGVufDB8fHx8MTc2ODM3MTg3OHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "art exhibition"
+      "id": "slide_33",
+      "description": "Fireworks exploding in a brilliant display over a city or landmark during a national holiday celebration.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_33.webp",
+      "imageHint": "fireworks display"
     },
     {
-      "id": "event_tech_conference",
-      "description": "A speaker on stage at a large tech conference.",
-      "imageUrl": "https://images.unsplash.com/photo-1700936655679-83f4b37d7d74?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx0ZWNoJTIwY29uZmVyZW5jZXxlbnwwfHx8fDE3NjgzNzE4Nzh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "tech conference"
+      "id": "slide_34",
+      "description": "A group of people sitting around a bonfire at night, enjoying a cozy and communal festival atmosphere.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_34.webp",
+      "imageHint": "bonfire gathering"
     },
     {
-      "id": "event_community_run",
-      "description": "Runners at the starting line of a city marathon.",
-      "imageUrl": "https://images.unsplash.com/photo-1766066015228-9f99d6dfae5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Y29tbXVuaXR5JTIwcnVufGVufDB8fHx8MTc2ODM3MTg3OHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "community run"
+      "id": "slide_35",
+      "description": "A person in a whimsical, fairy-like costume with glowing wings, wandering through an enchanted forest-themed event.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_35.webp",
+      "imageHint": "fairy costume"
     },
     {
-      "id": "event_food_festival",
-      "description": "Various food stalls at an outdoor food festival.",
-      "imageUrl": "https://images.unsplash.com/photo-1509315811345-672d83ef2fbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmb29kJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzY4MzMzODg4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "food festival"
+      "id": "slide_36",
+      "description": "An ice sculpture of a dragon, intricately detailed and illuminated with blue light at a winter festival.",
+      "imageUrl": "https://storage.googleapis.com/studioprompt-5253197355.appspot.com/collages/01/slide_36.webp",
+      "imageHint": "ice sculpture"
     }
   ]
 }

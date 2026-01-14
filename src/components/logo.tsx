@@ -35,7 +35,7 @@ export default function Logo({ className }: { className?: string }) {
                   src={image.imageUrl}
                   alt={image.description}
                   fill
-                  className="object-cover filter grayscale"
+                  className="object-cover"
                   data-ai-hint={image.imageHint}
                   unoptimized
                 />
