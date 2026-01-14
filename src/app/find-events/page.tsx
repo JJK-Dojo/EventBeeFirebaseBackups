@@ -30,13 +30,28 @@ export default function FindEventsPage() {
     // Sorting logic
     switch (sortOption) {
         case 'recent':
-            eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+            eventsToDisplay.sort((a, b) => {
+                if (a.createdAt && b.createdAt) {
+                    return b.createdAt.getTime() - a.createdAt.getTime();
+                }
+                return 0;
+            });
             break;
         case 'date':
-             eventsToDisplay.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+             eventsToDisplay.sort((a, b) => {
+                if (a.date && b.date) {
+                    return a.date.getTime() - b.date.getTime();
+                }
+                return 0;
+             });
             break;
         default:
-             eventsToDisplay.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+             eventsToDisplay.sort((a, b) => {
+                if (a.createdAt && b.createdAt) {
+                    return b.createdAt.getTime() - a.createdAt.getTime();
+                }
+                return 0;
+            });
     }
 
     if (activeFilters) {

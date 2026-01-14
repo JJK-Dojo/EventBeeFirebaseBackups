@@ -86,7 +86,7 @@ export default function DbViewPage() {
                       <TableRow key={event.id}>
                         <TableCell className="font-mono text-xs">{event.id}</TableCell>
                         <TableCell className="font-medium">{event.title}</TableCell>
-                        <TableCell>{format(new Date(event.date), 'PPp')}</TableCell>
+                        <TableCell>{event.date ? format(event.date, 'PPp') : 'N/A'}</TableCell>
                         <TableCell>{event.location}</TableCell>
                         <TableCell>{statusBadges[event.status]}</TableCell>
                       </TableRow>

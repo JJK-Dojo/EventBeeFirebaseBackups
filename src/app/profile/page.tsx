@@ -105,7 +105,7 @@ function EventListItem({ event }: { event: UserEvent }) {
                 {event.title}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
+                {event.date && `${format(event.date, 'EEE, MMM d, yyyy')} • ${event.location}`}
                 </p>
 
                 {event.status === 'denied' && event.feedback && (
@@ -183,19 +183,20 @@ export default function ProfilePage() {
 
         if (sortOption === 'today') {
             filtered = filtered.filter(event => {
-                const eventCreationDate = new Date(event.createdAt);
+                const eventCreationDate = event.createdAt;
+                if (!eventCreationDate) return false;
                 const eventDay = new Date(eventCreationDate.getFullYear(), eventCreationDate.getMonth(), eventCreationDate.getDate());
                 return eventDay.getTime() === today.getTime();
             });
         } else if (sortOption === 'next3-5') {
             filtered = filtered.filter(event => {
-                const eventDate = new Date(event.date);
-                return eventDate >= threeDays && eventDate <= fiveDays;
+                const eventDate = event.date;
+                return eventDate && eventDate >= threeDays && eventDate <= fiveDays;
             });
         } else if (sortOption === 'next6-10') {
             filtered = filtered.filter(event => {
-                const eventDate = new Date(event.date);
-                return eventDate >= sixDays && eventDate <= tenDays;
+                const eventDate = event.date;
+                return eventDate && eventDate >= sixDays && eventDate <= tenDays;
             });
         }
         
@@ -208,8 +209,8 @@ export default function ProfilePage() {
                 case 'recent':
                 case 'today':
                 default: {
-                    const timeA = new Date(a.createdAt).getTime();
-                    const timeB = new Date(b.createdAt).getTime();
+                    const timeA = a.createdAt?.getTime() || 0;
+                    const timeB = b.createdAt?.getTime() || 0;
                     return timeB - timeA;
                 }
             }

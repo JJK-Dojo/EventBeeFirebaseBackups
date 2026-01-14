@@ -26,7 +26,7 @@ export default function EventCardMini({ event }: { event: Event }) {
                 </p>
                 <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                     <CalendarDays className="h-3 w-3" />
-                    <span className="truncate">{format(new Date(event.date), 'MMM d, yyyy')}</span>
+                    <span className="truncate">{event.date && format(event.date, 'MMM d, yyyy')}</span>
                 </div>
                  <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                     <MapPin className="h-3 w-3" />

@@ -99,7 +99,7 @@ export default function EventDetailPage() {
                       <div>
                         <p className="font-semibold">Date</p>
                         <p className="text-muted-foreground">
-                          {format(new Date(event.date), 'EEEE, MMMM d, yyyy')}
+                          {event.date && format(event.date, 'EEEE, MMMM d, yyyy')}
                         </p>
                       </div>
                     </div>
@@ -108,7 +108,7 @@ export default function EventDetailPage() {
                       <div>
                         <p className="font-semibold">Time</p>
                         <p className="text-muted-foreground">
-                          {format(new Date(event.date), 'h:mm a')}
+                          {event.date && format(event.date, 'h:mm a')}
                         </p>
                       </div>
                     </div>

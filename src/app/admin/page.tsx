@@ -115,7 +115,7 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
                         {event.title}
                     </h3>
                     <p className="text-sm text-muted-foreground">
-                        {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
+                        {event.date && `${format(event.date, 'EEE, MMM d, yyyy')} • ${event.location}`}
                     </p>
                     <p className="text-sm mt-2 line-clamp-3">
                         {event.description}
@@ -153,7 +153,12 @@ export default function AdminPage() {
 
     const sortedEvents = useMemo(() => {
         if (!events) return [];
-        return [...events].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return [...events].sort((a, b) => {
+            if (a.createdAt && b.createdAt) {
+                return a.createdAt.getTime() - b.createdAt.getTime();
+            }
+            return 0;
+        });
     }, [events]);
 
     const handleApprove = async (eventId: string) => {

@@ -2,8 +2,8 @@ export type Event = {
   id: string;
   title: string;
   description: string;
-  date: string;
-  createdAt: string; // Add createdAt field
+  date: Date;
+  createdAt: Date; // Add createdAt field
   location: string;
   imageUrl: string;
   imageHint: string;

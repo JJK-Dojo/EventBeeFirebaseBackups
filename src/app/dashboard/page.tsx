@@ -1,4 +1,3 @@
-
 'use client';
 
 import Image from 'next/image';
@@ -44,14 +43,14 @@ function EventListItem({ event }: { event: Event }) {
                         <div className="flex justify-between items-start">
                             <Badge variant={event.status === 'published' ? 'secondary' : 'outline'} className="mb-2">{event.status}</Badge>
                             <p className="text-xs text-muted-foreground">
-                                Posted {format(new Date(event.createdAt), 'MMM d, h:mm a')}
+                                {event.createdAt && `Posted ${format(event.createdAt, 'MMM d, h:mm a')}`}
                             </p>
                         </div>
                         <h3 className="font-bold font-headline group-hover:text-primary">
                             {event.title}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                            {format(new Date(event.date), 'EEE, MMM d, yyyy')} &bull; {event.location}
+                            {event.date && `${format(event.date, 'EEE, MMM d, yyyy')} • ${event.location}`}
                         </p>
                     </div>
                 </div>
@@ -70,7 +69,12 @@ export default function DashboardPage() {
     const recentEvents = useMemo(() => {
         if (!userEvents) return [];
         return [...userEvents]
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .sort((a, b) => {
+                if (a.createdAt && b.createdAt) {
+                    return b.createdAt.getTime() - a.createdAt.getTime();
+                }
+                return 0;
+            })
             .slice(0, 10);
     }, [userEvents]);
 

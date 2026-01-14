@@ -26,14 +26,24 @@ export default function LandingPage() {
   const eventsByDate = useMemo(() => {
     if (!allEvents) return [];
     return [...allEvents]
-      .filter(event => new Date(event.date) >= new Date()) // Filter for upcoming events
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      .filter(event => event.date && new Date(event.date) >= new Date()) // Filter for upcoming events
+      .sort((a, b) => {
+          if (a.date && b.date) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime()
+          }
+          return 0;
+      });
   }, [allEvents]);
 
   const eventsByPublished = useMemo(() => {
     if (!allEvents) return [];
     return [...allEvents]
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        .sort((a, b) => {
+            if (a.createdAt && b.createdAt) {
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            }
+            return 0;
+        });
   }, [allEvents]);
 
   const EventList = ({ events }: { events: Event[] }) => {
