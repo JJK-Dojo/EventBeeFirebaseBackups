@@ -14,13 +14,20 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import type { Event } from '@/lib/types';
-import { useDoc } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 export default function EventDetailPage() {
   const params = useParams();
   const id = params.id as string;
+  const firestore = useFirestore();
+
+  const eventDocRef = useMemoFirebase(() => {
+    if (!firestore || !id) return null;
+    return doc(firestore, 'events', id);
+  }, [firestore, id]);
   
-  const { data: event, isLoading } = useDoc<Event>(`events/${id}`);
+  const { data: event, isLoading } = useDoc<Event>(eventDocRef);
 
   if (isLoading) {
     return (

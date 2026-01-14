@@ -8,15 +8,20 @@ import Header from '@/components/header';
 import type { Event } from '@/lib/types';
 import type { FilterState } from '@/components/event-filters';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 
 export default function FindEventsPage() {
   const [sortOption, setSortOption] = useState('recent');
   const [activeFilters, setActiveFilters] = useState<FilterState | null>(null);
+  const firestore = useFirestore();
 
-  const { data: allEvents, isLoading } = useCollection<Event>('events', {
-    where: ['status', '==', 'published']
-  });
+  const publishedEventsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'events'), where('status', '==', 'published'));
+  }, [firestore]);
+
+  const { data: allEvents, isLoading } = useCollection<Event>(publishedEventsQuery);
 
   const filteredEvents = useMemo(() => {
     if (!allEvents) return [];

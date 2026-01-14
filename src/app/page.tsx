@@ -5,17 +5,23 @@ import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
 import Logo from '@/components/logo';
 import EventCardMini from '@/components/event-card-mini';
 import type { Metadata } from 'next';
 import { LogIn, UserPlus, Search, PlusCircle, Users } from 'lucide-react';
+import { collection, query, where } from 'firebase/firestore';
 
 export default function LandingPage() {
-  const { data: allEvents, isLoading } = useCollection<Event>('events', {
-    where: ['status', '==', 'published'],
-  });
+  const firestore = useFirestore();
+
+  const publishedEventsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'events'), where('status', '==', 'published'));
+  }, [firestore]);
+
+  const { data: allEvents, isLoading } = useCollection<Event>(publishedEventsQuery);
 
   const eventsByDate = useMemo(() => {
     if (!allEvents) return [];

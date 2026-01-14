@@ -34,9 +34,8 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
-import { useCollection } from '@/firebase';
-import { useFirestore } from '@/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 
 
 const statusBadges: Record<Event['status'], React.ReactNode> = {
@@ -144,9 +143,13 @@ function EventReviewCard({ event, onApprove, onDeny }: { event: Event; onApprove
 export default function AdminPage() {
     const { toast } = useToast();
     const firestore = useFirestore();
-    const { data: events, isLoading } = useCollection<Event>('events', { 
-        where: ['status', '==', 'pending'] 
-    });
+
+    const pendingEventsQuery = useMemoFirebase(() => {
+        if (!firestore) return null;
+        return query(collection(firestore, 'events'), where('status', '==', 'pending'));
+    }, [firestore]);
+
+    const { data: events, isLoading } = useCollection<Event>(pendingEventsQuery);
 
     const sortedEvents = useMemo(() => {
         if (!events) return [];

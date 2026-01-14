@@ -13,11 +13,12 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Database } from 'lucide-react';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
+import { collection } from 'firebase/firestore';
 
 const statusBadges: Record<Event['status'], React.ReactNode> = {
     published: <Badge variant="secondary" className="bg-green-100 text-green-800">Published</Badge>,
@@ -28,7 +29,13 @@ const statusBadges: Record<Event['status'], React.ReactNode> = {
 
 
 export default function DbViewPage() {
-  const { data: events, isLoading, error } = useCollection<Event>('events');
+  const firestore = useFirestore();
+  const eventsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'events');
+  }, [firestore]);
+  
+  const { data: events, isLoading, error } = useCollection<Event>(eventsQuery);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
