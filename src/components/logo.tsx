@@ -7,21 +7,28 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Logo({ className }: { className?: string }) {
-  const latestImages = PlaceHolderImages.slice(24, 36);
+  const allImages = PlaceHolderImages;
 
   return (
     <div className={`relative h-24 w-24 ${className}`}>
       <Carousel
         className="h-full w-full"
+        plugins={[
+          Autoplay({
+            delay: 2000,
+            stopOnInteraction: false,
+          }),
+        ]}
         opts={{
           loop: true,
           align: 'start',
         }}
       >
         <CarouselContent>
-          {latestImages.map((image) => (
+          {allImages.map((image) => (
             <CarouselItem key={image.id}>
               <div className="relative h-24 w-24 overflow-hidden rounded-full border-2 border-golden">
                 <Image
