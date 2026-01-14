@@ -1,3 +1,4 @@
+
 'use client';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -9,11 +10,7 @@ import {
 
 export default function Logo({ className }: { className?: string }) {
   
-  const slideImages = PlaceHolderImages.filter(p => {
-    if (!p.id.startsWith('slide_')) return false;
-    const slideNumber = parseInt(p.id.split('_')[1], 10);
-    return slideNumber >= 25 && slideNumber <= 36;
-  });
+  const slideImages = PlaceHolderImages.filter(p => p.id.startsWith('slide_'));
 
   return (
     <div className={`relative h-24 w-24 ${className}`}>
