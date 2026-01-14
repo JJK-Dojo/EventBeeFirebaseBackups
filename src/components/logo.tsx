@@ -6,11 +6,14 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
 
 export default function Logo({ className }: { className?: string }) {
   
-  const slideImages = PlaceHolderImages.filter(p => p.id.startsWith('slide_'));
+  const slideImages = PlaceHolderImages.filter(p => {
+    if (!p.id.startsWith('slide_')) return false;
+    const slideNumber = parseInt(p.id.split('_')[1], 10);
+    return slideNumber >= 25 && slideNumber <= 36;
+  });
 
   return (
     <div className={`relative h-24 w-24 ${className}`}>
@@ -18,12 +21,6 @@ export default function Logo({ className }: { className?: string }) {
         key={slideImages.length}
         className="w-full h-full"
         opts={{ loop: true }}
-        plugins={[
-          Autoplay({
-            delay: 2000,
-            stopOnInteraction: false,
-          }),
-        ]}
       >
         <CarouselContent>
           {slideImages.map((image) => (
