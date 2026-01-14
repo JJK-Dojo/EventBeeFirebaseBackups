@@ -3,7 +3,7 @@ import { PT_Sans, Lobster } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import FirebaseErrorListener from '@/components/FirebaseErrorListener';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
