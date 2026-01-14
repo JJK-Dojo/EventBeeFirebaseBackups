@@ -26,6 +26,7 @@ import {
   FileUp,
   AlertCircle,
   Eye,
+  X,
 } from 'lucide-react';
 import { format, parse, parseISO } from 'date-fns';
 import Header from '@/components/header';
@@ -53,6 +54,7 @@ import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import { useUser } from '@/firebase/auth/use-user';
+import Image from 'next/image';
 
 type PostOffice = {
   Name: string;
@@ -128,7 +130,7 @@ const indianStatesAndDistricts: Record<string, string[]> = {
     "Tripura": ["Dhalai", "Gomati", "Khowai", "North Tripura", "Sepahijala", "South Tripura", "Unakoti", "West Tripura"],
     "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Prayagraj", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"],
     "Uttarakhand": ["Almora", "Bageshwar", "Chamoli", "Champawat", "Dehradun", "Haridwar", "Nainital", "Pauri Garhwal", "Pithoragarh", "Rudraprayag", "Tehri Garhwal", "Udham Singh Nagar", "Uttarkashi"],
-    "West Bengal": ["Alipurduar", "Bankura", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjeeling", "Hooghly", "Howrah", "Jalpaiguri", "Jhargram", "Kalimpong", "Kolkata", "Malda", "Murshidabad", "Nadia", "North 24 Parganas", "Paschim Bardhaman", "Paschim Medinipur", "Purba Bardhaman", "Purba Medinipur", "Purulia", "South 24 Parganas", "Uttar Dinajpur"]
+    "West Bengal": ["Alipurduar", "Bankura", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjeeling", "Hooghly", "Howrah", "Jalpaiguri", "Jhargram", "Kalimpong", "Kolkata", "Malda", "Murshidabad", "Nadia", "North 24 Parganas", "Paschim Bardhaman", "Paschim Medinipur", "Purba Bardhaman", "Purulia", "South 24 Parganas", "Uttar Dinajpur"]
 };
 
 const states = Object.keys(indianStatesAndDistricts).map(state => ({ value: state, label: state }));
@@ -192,7 +194,7 @@ export default function CreateEventPage() {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState<Date | undefined>();
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCountry, setSelectedCountry] = useState('India');
   const [selectedState, setSelectedState] = useState('');
@@ -233,7 +235,7 @@ export default function CreateEventPage() {
         setDescription(foundEvent.description);
         setDate(new Date(foundEvent.date));
         setSelectedCategory(foundEvent.category);
-        setImagePreview(foundEvent.imageUrl);
+        setImagePreviews([foundEvent.imageUrl]);
         setSelectedTags(foundEvent.tags || []);
         setPincodeSearchInput(foundEvent.location);
       }
@@ -246,18 +248,33 @@ export default function CreateEventPage() {
   }, [selectedState]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (files) {
+      const newPreviews: string[] = [];
+      const promises = Array.from(files).map(file => {
+        return new Promise<void>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            newPreviews.push(reader.result as string);
+            resolve();
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(promises).then(() => {
+        setImagePreviews(prev => [...prev, ...newPreviews]);
+      });
     }
   };
 
+  const handleRemoveImage = (index: number) => {
+    setImagePreviews(previews => previews.filter((_, i) => i !== index));
+  }
+
   const handleAutoFill = async () => {
-    if (!imagePreview) {
+    if (imagePreviews.length === 0) {
       toast({
         variant: 'destructive',
         title: 'No Image Selected',
@@ -268,7 +285,7 @@ export default function CreateEventPage() {
 
     setIsExtracting(true);
     try {
-      const jpegDataUri = await toJpegDataURL(imagePreview);
+      const jpegDataUri = await toJpegDataURL(imagePreviews[0]);
       const result = await extractEventDetailsFromImage({ imageDataUri: jpegDataUri });
       
       setTitle(result.title);
@@ -402,7 +419,7 @@ export default function CreateEventPage() {
             return `https://picsum.photos/seed/${seed}/600/400`;
         };
         
-        const finalImageUrl = imagePreview || getBrandedImageUrl();
+        const finalImageUrl = imagePreviews.length > 0 ? imagePreviews[0] : getBrandedImageUrl();
         
         const eventCollectionRef = collection(firestore, 'events');
         const newEventRef = doc(eventCollectionRef);
@@ -426,6 +443,8 @@ export default function CreateEventPage() {
             status: newStatus,
             editCount: 0,
             createdAt: serverTimestamp(),
+            // Storing multiple image URLs would require a schema change.
+            // For now, only the first image is saved.
         };
 
         if (isEditing && eventToEdit) {
@@ -693,38 +712,52 @@ export default function CreateEventPage() {
                 <div className="space-y-4">
                   <Label className="text-lg font-semibold flex items-center">
                     <ImageIcon className="mr-2 h-5 w-5 text-primary" />
-                    Event Image
+                    Event Images
                   </Label>
-                  <div className="flex flex-col sm:flex-row items-center gap-4">
-                    <div className="relative h-48 w-full max-w-sm flex-shrink-0 overflow-hidden rounded-lg border-2 border-dashed border-border">
-                      {imagePreview ? (
-                        <img
-                          src={imagePreview}
-                          alt="Event preview"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full flex-col items-center justify-center bg-muted text-muted-foreground">
-                          <ImageIcon className="h-10 w-10" />
-                          <p className="mt-2 text-sm">Image Preview</p>
-                        </div>
-                      )}
+                  <div className="flex flex-col gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {imagePreviews.map((src, index) => (
+                            <div key={index} className="relative aspect-video group">
+                                <Image
+                                src={src}
+                                alt={`Event preview ${index + 1}`}
+                                fill
+                                className="object-cover rounded-md border"
+                                />
+                                <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => handleRemoveImage(index)}
+                                >
+                                <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+
+                        <Label 
+                            htmlFor="image-upload" 
+                            className="flex flex-col items-center justify-center aspect-video w-full cursor-pointer rounded-lg border-2 border-dashed border-border text-muted-foreground hover:bg-muted"
+                        >
+                            <FileUp className="h-8 w-8" />
+                            <span className="mt-2 text-sm text-center">Add Images</span>
+                        </Label>
                     </div>
                     <div className="w-full space-y-2">
-                      <Label htmlFor="image-upload" className="sr-only">Upload Image</Label>
                       <Input
                         id="image-upload"
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="cursor-pointer file:cursor-pointer file:font-medium file:text-primary hover:file:text-primary/80"
+                        className="hidden"
+                        multiple
                       />
                       <p className="text-sm text-muted-foreground">
-                        PNG, JPG, GIF up to 10MB. Recommended: 1200x628px.
+                        PNG, JPG, GIF up to 10MB. Recommended: 1200x628px. The first image will be the main event banner.
                       </p>
                        <Button 
                         onClick={handleAutoFill} 
-                        disabled={!imagePreview || isExtracting} 
+                        disabled={imagePreviews.length === 0 || isExtracting} 
                         className="w-full sm:w-auto"
                         variant="outline"
                         >
@@ -733,11 +766,12 @@ export default function CreateEventPage() {
                         ) : (
                           <Sparkles className="mr-2 h-5 w-5" />
                         )}
-                        Auto-fill with AI
+                        Auto-fill with AI (uses first image)
                       </Button>
                     </div>
                   </div>
                 </div>
+
 
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold flex items-center">
@@ -818,6 +852,8 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
 
     
 
