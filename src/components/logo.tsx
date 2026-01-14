@@ -1,3 +1,14 @@
+
+'use client';
+import Image from 'next/image';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
+import Autoplay from "embla-carousel-autoplay";
+
 const BeeIcon = ({ className }: { className?: string }) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -47,38 +58,35 @@ const BeeIcon = ({ className }: { className?: string }) => (
 
 
 export default function Logo({ className }: { className?: string }) {
+  
+  const feastImages = PlaceHolderImages.filter(p => p.id.startsWith('feast_'));
+
   return (
     <div className={`group flex items-center gap-3 text-foreground ${className}`}>
       <div className="relative h-24 w-24">
-        <svg
-          viewBox="0 0 100 100"
-          className="absolute inset-0 h-full w-full transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(var(--primary))] filter"
-        >
-             <defs>
-                <pattern
-                id="honeycomb"
-                width="28"
-                height="48.5"
-                patternUnits="userSpaceOnUse"
-                patternTransform="scale(0.5)"
-                >
-                <path
-                    d="M-7,24.25 l7,-12.12 M21,0 l7,12.12 M-7,24.25 l-7,12.12 M21,48.5 l-7,-12.12 M7,12.12 l14,0 M-14,36.37 l14,0"
-                    stroke="hsla(var(--golden), 0.7)"
-                    strokeWidth="1.5"
-                />
-                </pattern>
-            </defs>
-            <circle 
-                cx="50" 
-                cy="50" 
-                r="45" 
-                fill="hsl(var(--primary))"
-                fillOpacity="0.8"
-                stroke="hsl(var(--golden))"
-                strokeWidth="2"
-            />
-        </svg>
+        <div className="absolute inset-0 h-full w-full">
+            <Carousel 
+                className="w-full h-full"
+                plugins={[Autoplay({ delay: 2000, stopOnInteraction: false })]}
+                opts={{ loop: true }}
+            >
+                <CarouselContent>
+                    {feastImages.map((image) => (
+                    <CarouselItem key={image.id}>
+                        <div className="relative h-24 w-24 rounded-full overflow-hidden border-2 border-golden">
+                            <Image
+                                src={image.imageUrl}
+                                alt={image.description}
+                                fill
+                                className="object-cover"
+                                data-ai-hint={image.imageHint}
+                            />
+                        </div>
+                    </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+        </div>
         <BeeIcon className="h-full w-full text-accent animate-[bee-fly_8s_ease-in-out_infinite] relative" />
       </div>
       <div className="relative p-2 rounded-md">
@@ -91,8 +99,8 @@ export default function Logo({ className }: { className?: string }) {
           <defs>
             <pattern
               id="honeycomb-text"
-              width="28"
-              height="48.5"
+              width="14"
+              height="24.25"
               patternUnits="userSpaceOnUse"
               patternTransform="scale(0.5)"
             >
@@ -121,7 +129,7 @@ ry="6"
           />
         </svg>
         <div className="relative z-10 bg-transparent text-center px-4">
-            <span className="text-2xl font-bold font-headline transition-colors duration-300 text-black tracking-wider">
+            <span className="text-2xl font-bold font-headline tracking-wider glitter-text">
             EventBee
             </span>
             <p className="text-xs -mt-1 text-black">
