@@ -6,6 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Logo({ className }: { className?: string }) {
   
@@ -14,8 +15,15 @@ export default function Logo({ className }: { className?: string }) {
   return (
     <div className={`relative h-24 w-24 ${className}`}>
       <Carousel
+        key={slideImages.length}
         className="w-full h-full"
         opts={{ loop: true }}
+        plugins={[
+          Autoplay({
+            delay: 2000,
+            stopOnInteraction: false,
+          }),
+        ]}
       >
         <CarouselContent>
           {slideImages.map((image) => (
@@ -27,6 +35,7 @@ export default function Logo({ className }: { className?: string }) {
                   fill
                   className="object-cover filter grayscale"
                   data-ai-hint={image.imageHint}
+                  unoptimized
                 />
               </div>
             </CarouselItem>
