@@ -22,10 +22,10 @@ const lobster = Lobster({
 
 export const metadata: Metadata = {
   title: {
-    default: 'LocalLooms',
-    template: '%s | LocalLooms',
+    default: 'EventBee',
+    template: '%s | EventBee',
   },
-  description: 'LocalLooms - Weaving Your Community Together.',
+  description: 'EventBee - Weaving Your Community Together.',
 };
 
 export default function RootLayout({
