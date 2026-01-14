@@ -160,7 +160,7 @@ const parseDateString = (dateString: string): Date | null => {
 // Function to convert an image to a JPEG data URI
 const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
     return new Promise((resolve, reject) => {
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
@@ -852,9 +852,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    
-
-    
 
     
