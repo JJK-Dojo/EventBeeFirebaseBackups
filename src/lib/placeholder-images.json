@@ -1,76 +1,220 @@
 {
   "placeholderImages": [
     {
-      "id": "event_music_concert",
-      "description": "A lively music concert with a crowd.",
-      "imageUrl": "https://images.unsplash.com/photo-1499364615650-ec38552f4f34?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtdXNpYyUyMGNvbmNlcnR8ZW58MHx8fHwxNzY1MjM1OTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "music concert"
+      "id": "slide_01",
+      "description": "Sunlight streaming through an arched hallway in an old Indian building.",
+      "imageUrl": "https://images.unsplash.com/photo-1605206983785-3b10c5586b6a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhcmNoZWQlMjBpbmRpYW4lMjBoYWxsd2F5fGVufDB8fHx8MTc2ODQzMjM5N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "architecture interior"
     },
     {
-      "id": "event_art_exhibition",
-      "description": "An art exhibition in a modern gallery.",
-      "imageUrl": "https://images.unsplash.com/photo-1569783721854-33a99b4c0bae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxhcnQlMjBnYWxsZXJ5fGVufDB8fHx8MTc2NTI3MDYzNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "art gallery"
+      "id": "slide_02",
+      "description": "Colorful powders in baskets for the Holi festival.",
+      "imageUrl": "https://images.unsplash.com/photo-1580829864253-ead2c8369a45?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob2xpJTIwY29sb3JzJTIwcG93ZGVyfGVufDB8fHx8MTc2ODQzMjQzNnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "holi festival"
     },
     {
-      "id": "event_food_festival",
-      "description": "A bustling food festival with various stalls.",
-      "imageUrl": "https://images.unsplash.com/photo-1551883738-19ffa3dc4c43?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmb29kJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzY1MjQ2MzcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "food festival"
+      "id": "slide_03",
+      "description": "The grand, ornate interior of an Indian palace or tomb.",
+      "imageUrl": "https://images.unsplash.com/photo-1617511342578-9a21b3c97169?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBwYWxhY2UlMjBpbnRlcmlvcnxlbnwwfHx8fDE3Njg0MzI0NjR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "palace interior"
     },
     {
-      "id": "event_tech_conference",
-      "description": "A speaker on stage at a tech conference.",
-      "imageUrl": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZWNoJTIwY29uZmVyZW5jZXxlbnwwfHx8fDE3NjUxODc0MzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "tech conference"
+      "id": "slide_04",
+      "description": "Portrait of an Indian woman with traditional clothing and a nose ring.",
+      "imageUrl": "https://images.unsplash.com/photo-1620027712398-a1c0b3a7c645?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwb3J0cmFpdCUyMGluZGlhbiUyMHdvbWFufGVufDB8fHx8MTc2ODQzMjQ5NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "indian woman"
     },
     {
-      "id": "event_community_run",
-      "description": "People participating in a morning marathon.",
-      "imageUrl": "https://images.unsplash.com/photo-1570004119777-2b1786b0e5bd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtYXJhdGhvbiUyMHJ1bnxlbnwwfHx8fDE3NjUyNTkwMDh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "marathon run"
+      "id": "slide_05",
+      "description": "The Taj Mahal mausoleum in Agra, India.",
+      "imageUrl": "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0YWolMjBtYWhhbHxlbnwwfHx8fDE3Njg0MzI1MjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "taj mahal"
     },
     {
-      "id": "event_farmers_market",
-      "description": "Fresh produce at a local farmers market.",
-      "imageUrl": "https://images.unsplash.com/photo-1567306295427-94503f8300d7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmYXJtZXJzJTIwbWFya2V0fGVufDB8fHx8MTc2NTIwOTQ3N3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "farmers market"
+      "id": "slide_06",
+      "description": "Portrait of a woman from Rajasthan in colorful traditional attire.",
+      "imageUrl": "https://images.unsplash.com/photo-1603290888258-c5aa7d4a2b9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWphc3RoYW5pJTIwd29tYW58ZW58MHx8fHwxNzY4NDMyNTQ4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rajasthani woman"
     },
     {
-      "id": "event_yoga_workshop",
-      "description": "A group of people in a yoga session outdoors.",
-      "imageUrl": "https://images.unsplash.com/photo-1661308411865-4fce7576bef8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx5b2dhJTIwd29ya3Nob3B8ZW58MHx8fHwxNzY1MzAwODAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "yoga workshop"
+      "id": "slide_07",
+      "description": "A snake charmer with a cobra.",
+      "imageUrl": "https://images.unsplash.com/photo-1576402061034-1c12a7d43306?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBzbWFrZSUyMGNoYXJtZXJ8ZW58MHx8fHwxNzY4NDMyNTc3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "snake charmer"
     },
     {
-      "id": "event_book_fair",
-      "description": "Shelves filled with books at a book fair.",
-      "imageUrl": "https://images.unsplash.com/photo-1547126298-f0ae8a42c489?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxib29rJTIwZmFpcnxlbnwwfHx8fDE3NjUyMjk0Mzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "book fair"
+      "id": "slide_08",
+      "description": "Two happy Indian children smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1619218938435-f2a899651c69?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGluZGlhbiUyMGNoaWxkcmVufGVufDB8fHx8MTc2ODQzMjYwNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "happy children"
     },
     {
-      "id": "user_avatar_1",
-      "description": "Avatar for a user.",
-      "imageUrl": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjUyNDQyOTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person portrait"
+      "id": "slide_09",
+      "description": "Sand dunes in the Thar Desert, Rajasthan.",
+      "imageUrl": "https://images.unsplash.com/photo-1613919999482-3e4b162a4f1a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0aGFyJTIwZGVzZXJ0JTIwZHVua3xlbnwwfHx8fDE3Njg0MzI2Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "desert dunes"
     },
     {
-      "id": "feast_1",
-      "description": "A delicious looking plate of food at a feast.",
-      "imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop",
-      "imageHint": "food plate"
+      "id": "slide_10",
+      "description": "Tourists walking along the path towards the Taj Mahal.",
+      "imageUrl": "https://images.unsplash.com/photo-1587135304383-a442a53d1e44?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0b3VyaXN0cyUyMHRhaiUyMG1haGFsfGVufDB8fHx8MTc2ODQzMjY1NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tourists india"
     },
     {
-      "id": "feast_2",
-      "description": "A table full of different kinds of food.",
-      "imageUrl": "https://images.unsplash.com/photo-1526394931762-9252c8ce9ac1?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "food table"
+      "id": "slide_11",
+      "description": "A collection of colorful bangles at a market.",
+      "imageUrl": "https://images.unsplash.com/photo-1599661522889-13233363d917?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBiYW5nbGVzJTIwbWFya2V0fGVufDB8fHx8MTc2ODQzMjY4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "colorful bangles"
     },
     {
-      "id": "feast_3",
-      "description": "People enjoying a local food feast.",
-      "imageUrl": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=1974&auto=format&fit=crop",
-      "imageHint": "people eating"
+      "id": "slide_12",
+      "description": "An ornate window (Jharokha) of an Indian palace.",
+      "imageUrl": "https://images.unsplash.com/photo-1628752945209-4a94a1122617?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWphc3RoYW5pJTIwd2luZG93fGVufDB8fHx8MTc2ODQzMjcwOXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "palace window"
+    },
+    {
+      "id": "slide_13",
+      "description": "Portrait of an elderly man with a large white mustache and a yellow turban.",
+      "imageUrl": "https://images.unsplash.com/photo-1610122998634-110291995831?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWphc3RoYW5pJTIwbWFuJTIwdHVyYmFufGVufDB8fHx8MTc2ODQzMjczNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rajasthani man"
+    },
+    {
+      "id": "slide_14",
+      "description": "A bustling Indian flower market with garlands of marigolds.",
+      "imageUrl": "https://images.unsplash.com/photo-1596180378399-5f12a3554ed4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBmbG93ZXIlMjBtYXJrZXR8ZW58MHx8fHwxNzY4NDMyNzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "flower market"
+    },
+    {
+      "id": "slide_15",
+      "description": "Portrait of an elderly Indian woman with weathered features.",
+      "imageUrl": "https://images.unsplash.com/photo-1620027712398-a1c0b3a7c645?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxlbGRlcmx5JTIwaW5kaWFuJTIwd29tYW58ZW58MHx8fHwxNzY4NDMyNzg3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "elderly woman"
+    },
+    {
+      "id": "slide_16",
+      "description": "A beautiful Thai-style temple in India.",
+      "imageUrl": "https://images.unsplash.com/photo-1595826588638-3457545932a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiZW5nYWx1cnUlMjB0ZW1wbGV8ZW58MHx8fHwxNzY4NDMyODIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "buddhist temple"
+    },
+    {
+      "id": "slide_17",
+      "description": "The Golden Temple (Harmandir Sahib) in Amritsar at dusk.",
+      "imageUrl": "https://images.unsplash.com/photo-1609947996500-20235471485c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxnb2xkZW4lMjB0ZW1wbGUlMjBhbXJpdHNhcnxlbnwwfHx8fDE3Njg0MzI4NTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "golden temple"
+    },
+    {
+      "id": "slide_18",
+      "description": "A street vendor selling fresh vegetables like carrots and radishes.",
+      "imageUrl": "https://images.unsplash.com/photo-1600512874139-937215a452d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB2ZWdldGFibGUlMjBzdGFsbHxlbnwwfHx8fDE3Njg0MzI4NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vegetable stall"
+    },
+    {
+      "id": "slide_19",
+      "description": "A woman carrying a pot on her head, walking through a rural landscape.",
+      "imageUrl": "https://images.unsplash.com/photo-1534423862287-46ded435017a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB3b21hbiUyMGNhcnJ5aW5nJTIwcG90fGVufDB8fHx8MTc2ODQzMjkwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rural woman"
+    },
+    {
+      "id": "slide_20",
+      "description": "A decorated boat on the waters in Kerala or West Bengal.",
+      "imageUrl": "https://images.unsplash.com/photo-1593657788478-8349b1a03977?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjByaXZlciUyMGJvYXR8ZW58MHx8fHwxNzY4NDMyOTQwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "decorated boat"
+    },
+    {
+      "id": "slide_21",
+      "description": "An arched gateway looking towards a dome, typical of Mughal architecture.",
+      "imageUrl": "https://images.unsplash.com/photo-1617511342578-9a21b3c97169?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBhcmNoJTIwZ2F0ZXdheXxlbnwwfHx8fDE3Njg0MzI5Njd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mughal architecture"
+    },
+    {
+      "id": "slide_22",
+      "description": "An Indian mother holding her child.",
+      "imageUrl": "https://images.unsplash.com/photo-1618397553245-bf4e797d0967?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBtb3RoZXIlMjBjaGlsZHxlbnwwfHx8fDE3Njg0MzI5OTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mother child"
+    },
+    {
+      "id": "slide_23",
+      "description": "A serene lake scene at dusk with hanging lanterns.",
+      "imageUrl": "https://images.unsplash.com/photo-1505322262009-17a3a9311333?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzZXJlbmUlMjBsYWtlJTIwaW5kaWF8ZW58MHx8fHwxNzY4NDMzMDIwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "serene lake"
+    },
+    {
+      "id": "slide_24",
+      "description": "A modern Indian lakeside hotel or palace.",
+      "imageUrl": "https://images.unsplash.com/photo-1544161515-cfd836396a92?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBsYWtlJTIwaG90ZWx8ZW58MHx8fHwxNzY4NDMzMDQ4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "lake palace"
+    },
+    {
+      "id": "slide_25",
+      "description": "Two men in traditional white Indian attire.",
+      "imageUrl": "https://images.unsplash.com/photo-1624398114663-a5509a80356c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0cmFkaXRpb25hbCUyMGluZGlhbiUyMG1lbnxlbnwwfHx8fDE3Njg0MzMwNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "traditional men"
+    },
+    {
+      "id": "slide_26",
+      "description": "A scenic view of a lakeside town in India, like Pushkar.",
+      "imageUrl": "https://images.unsplash.com/photo-1584344405363-22f306917b2b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwdXNoa2FyJTIwbGFrZXxlbnwwfHx8fDE3Njg0MzMxMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "pushkar lake"
+    },
+    {
+      "id": "slide_27",
+      "description": "A colorful fishing boat on a sandy beach in India.",
+      "imageUrl": "https://images.unsplash.com/photo-1506106594533-25934a35b44a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxmaXNoaW5nJTIwYm9hdCUyMGluZGlhbiUyMGJlYWNofGVufDB8fHx8MTc2ODQzMzEyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "fishing boat"
+    },
+    {
+      "id": "slide_28",
+      "description": "The Bibi Ka Maqbara, a tomb resembling the Taj Mahal, in Aurangabad.",
+      "imageUrl": "https://images.unsplash.com/photo-1609282243544-d364a5c05e55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiaWJpJTIwa2ElMjBtYXFiYXJhfGVufDB8fHx8MTc2ODQzMzE1NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "bibi ka"
+    },
+    {
+      "id": "slide_29",
+      "description": "An Indian mother and child in a Santa hat, showing cultural fusion.",
+      "imageUrl": "https://images.unsplash.com/photo-1640322301826-608a0558f331?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBjaGlsZCUyMHNhbnRhJTIwaGF0fGVufDB8fHx8MTc2ODQzMzE4MXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mother child"
+    },
+    {
+      "id": "slide_30",
+      "description": "A rural village home in India with a woman in a saree.",
+      "imageUrl": "https://images.unsplash.com/photo-1605634594394-b582a47e74f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjB2aWxsYWdlJTIwaG91c2V8ZW58MHx8fHwxNzY4NDMzMjA3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "village home"
+    },
+    {
+      "id": "slide_31",
+      "description": "Two Rajasthani musicians playing traditional string instruments.",
+      "imageUrl": "https://images.unsplash.com/photo-1624398114663-a5509a80356c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWphc3RoYW5pJTIwbXVzaWNpYW5zfGVufDB8fHx8MTc2ODQzMzIzM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "rajasthani musicians"
+    },
+    {
+      "id": "slide_32",
+      "description": "Ornately decorated windows of a haveli in Rajasthan.",
+      "imageUrl": "https://images.unsplash.com/photo-1598923769411-9311b5120352?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoYXZlbGklMjB3aW5kb3dzfGVufDB8fHx8MTc2ODQzMzI2MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "haveli windows"
+    },
+    {
+      "id": "slide_33",
+      "description": "A large group of people gathered for a community event or festival.",
+      "imageUrl": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBmZXN0aXZhbCUyMGNyb3dkfGVufDB8fHx8MTc2ODQzMzI4Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival crowd"
+    },
+    {
+      "id": "slide_34",
+      "description": "Hands decorated with intricate henna (mehndi) designs.",
+      "imageUrl": "https://images.unsplash.com/photo-1596206584245-714c9c227448?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxoZW5uYSUyMGRlc2lnbnxlbnwwfHx8fDE3Njg0MzMzMTF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "henna design"
+    },
+    {
+      "id": "slide_35",
+      "description": "A group of women in colorful sarees walking together.",
+      "imageUrl": "https://images.unsplash.com/photo-1610484869507-683072e60921?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21lbiUyMGluJTIwc2FyZWVzfGVufDB8fHx8MTc2ODQzMzMzN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "women sarees"
+    },
+    {
+      "id": "slide_36",
+      "description": "A beautiful tropical beach in Goa with palm trees.",
+      "imageUrl": "https://images.unsplash.com/photo-1590372793661-5743b1a823ff?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxnb2ElMjBiZWFjaCUyMHBhbG18ZW58MHx8fHwxNzY4NDMzMzY0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "goa beach"
     }
   ]
 }

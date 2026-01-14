@@ -10,7 +10,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 export default function Logo({ className }: { className?: string }) {
   
-  const feastImages = PlaceHolderImages.filter(p => p.id.startsWith('feast_'));
+  const slideImages = PlaceHolderImages.filter(p => p.id.startsWith('slide_'));
 
   return (
     <div className={`relative h-24 w-24 ${className}`}>
@@ -20,7 +20,7 @@ export default function Logo({ className }: { className?: string }) {
         opts={{ loop: true }}
       >
         <CarouselContent>
-          {feastImages.map((image) => (
+          {slideImages.map((image) => (
             <CarouselItem key={image.id}>
               <div className="relative h-24 w-24 rounded-full overflow-hidden border-2 border-golden">
                 <Image
