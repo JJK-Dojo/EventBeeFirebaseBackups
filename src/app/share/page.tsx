@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -56,13 +55,16 @@ export default function SharePage() {
           <CardContent className="space-y-6">
             <div className="flex justify-center p-4 bg-white rounded-lg">
               {url ? (
-                <QRCode
-                  value={url}
-                  size={256}
-                  bgColor={"#FFFFFF"}
-                  fgColor={"#000000"}
-                  level={"L"}
-                />
+                <div style={{ height: "auto", margin: "0 auto", maxWidth: "256px", width: "100%" }}>
+                    <QRCode
+                        value={url}
+                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        bgColor={"#FFFFFF"}
+                        fgColor={"#000000"}
+                        level={"L"}
+                        viewBox={`0 0 256 256`}
+                    />
+                </div>
               ) : (
                 <div className="h-[256px] w-[256px] bg-gray-200 animate-pulse rounded-md" />
               )}
