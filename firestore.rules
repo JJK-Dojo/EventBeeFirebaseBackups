@@ -14,9 +14,8 @@
  *   prevent user enumeration and protect privacy.
  * - Event Data: `/events/{eventId}` is the central, public collection for all
  *   event listings.
- *   - Read Access (`get`, `list`): Any authenticated user can read events, which
- *     is essential for features like the "Find Events" page and the main
- *     landing page.
+ *   - Read Access (`get`, `list`): Any user (authenticated or not) can read events,
+ *     which is essential for public-facing pages like the landing page and event discovery.
  *   - Write Access (`create`, `update`, `delete`): Only the user whose UID matches
  *     the `userId` field inside the event document can modify it. This enforces
  *     ownership at the document level.
@@ -153,12 +152,10 @@ service cloud.firestore {
      * @principle Enables public discovery of events while strictly enforcing ownership for all write operations.
      */
     match /events/{eventId} {
-      allow list, get: if isSignedIn();
+      allow list, get;
       allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
       allow update: if isExistingResourceOwner() && userIdIsImmutable() && eventIdMatchesDocId(eventId);
       allow delete: if isExistingResourceOwner();
     }
   }
 }
-
-    
