@@ -10,7 +10,7 @@ import { UserMenu } from './user-menu';
 export default function Header() {
   const { user, isLoading } = useUser();
   
-  const logoHref = user ? '/dashboard' : '/login';
+  const logoHref = user ? '/dashboard' : '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">

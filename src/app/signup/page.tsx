@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -91,7 +90,9 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
-            <Logo className="h-24 w-auto" />
+            <Link href="/">
+              <Logo className="h-24 w-auto" />
+            </Link>
           </div>
           <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
           <CardDescription>

@@ -9,7 +9,6 @@ import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
 import Logo from '@/components/logo';
 import EventCardMini from '@/components/event-card-mini';
-import type { Metadata } from 'next';
 import { LogIn, UserPlus, Search, PlusCircle, Users } from 'lucide-react';
 import { collection, query, where } from 'firebase/firestore';
 
@@ -86,7 +85,9 @@ export default function LandingPage() {
     <div className="flex min-h-screen w-full flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
           <div className="container mx-auto flex h-20 items-center justify-between px-4">
-            <Logo />
+            <Link href="/">
+              <Logo />
+            </Link>
              <div className="flex items-center gap-2 sm:gap-4">
                 <Link href="/login" passHref>
                     <Button
@@ -114,7 +115,7 @@ export default function LandingPage() {
                     Discover Your Next Experience
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                    Your guide to local happenings.
+                  Your guide to local happenings.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>

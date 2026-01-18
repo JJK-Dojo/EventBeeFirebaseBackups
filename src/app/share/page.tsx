@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Copy } from 'lucide-react';
 import Header from '@/components/header';
 import Logo from '@/components/logo';
+import Link from 'next/link';
 
 export default function SharePage() {
   const { toast } = useToast();
@@ -44,7 +45,9 @@ export default function SharePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 flex justify-center">
+              <Link href="/">
                 <Logo className="h-20 w-auto" />
+              </Link>
             </div>
             <CardTitle className="font-headline text-2xl md:text-3xl">
               Share This App

@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -83,7 +82,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
-            <Logo className="h-24 w-auto" />
+            <Link href="/">
+              <Logo className="h-24 w-auto" />
+            </Link>
           </div>
           <CardTitle className="font-headline text-2xl">Welcome Back!</CardTitle>
           <CardDescription>
