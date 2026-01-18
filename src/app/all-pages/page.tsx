@@ -92,12 +92,6 @@ const pages = [
     fields: ['Task', 'Assignee', 'Status', 'Due Date']
   },
   { 
-    href: '/test-ai', 
-    title: 'AI Test Page', 
-    description: 'A utility page for testing AI image extraction.',
-    fields: ['Image Upload', 'Raw AI JSON Response']
-  },
-  { 
     href: '/test-ui', 
     title: 'UI Showcase', 
     description: 'A utility page for previewing UI components.',

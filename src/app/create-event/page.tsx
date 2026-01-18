@@ -49,7 +49,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { extractEventDetailsFromImage } from '@/ai/flows/extract-event-details';
 import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
@@ -205,7 +204,6 @@ export default function CreateEventPage() {
   const [pincodeData, setPincodeData] = useState<PostOffice[]>([]);
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
-  const [isExtracting, setIsExtracting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const districts = useMemo(() => {
@@ -272,56 +270,6 @@ export default function CreateEventPage() {
   const handleRemoveImage = (index: number) => {
     setImagePreviews(previews => previews.filter((_, i) => i !== index));
   }
-
-  const handleAutoFill = async () => {
-    if (imagePreviews.length === 0) {
-      toast({
-        variant: 'destructive',
-        title: 'No Image Selected',
-        description: 'Please upload an event flyer or poster first.',
-      });
-      return;
-    }
-
-    setIsExtracting(true);
-    try {
-      const jpegDataUri = await toJpegDataURL(imagePreviews[0]);
-      const result = await extractEventDetailsFromImage({ imageDataUri: jpegDataUri });
-      
-      setTitle(result.title);
-      setDescription(result.description);
-      
-      if (result.date) {
-        const parsedDate = parseDateString(result.date);
-        
-        if (parsedDate) {
-          handleDateSelect(parsedDate);
-        } else {
-           console.error("Could not parse date from AI:", result.date);
-          toast({
-            variant: "destructive",
-            title: "AI Error: Invalid Date",
-            description: `The AI suggested a date format that could not be understood: "${result.date}". Please set the date manually.`
-          })
-        }
-      }
-      
-      toast({
-        title: 'Fields Auto-filled!',
-        description: 'The event details have been extracted from the image.',
-      });
-
-    } catch (error) {
-      console.error('AI extraction failed:', error);
-      toast({
-        variant: 'destructive',
-        title: 'AI Extraction Failed',
-        description: 'Could not extract details from the image. Please fill them manually.',
-      });
-    } finally {
-      setIsExtracting(false);
-    }
-  };
 
   const handlePincodeSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -755,19 +703,6 @@ export default function CreateEventPage() {
                       <p className="text-sm text-muted-foreground">
                         PNG, JPG, GIF up to 10MB. Recommended: 1200x628px. The first image will be the main event banner.
                       </p>
-                       <Button 
-                        onClick={handleAutoFill} 
-                        disabled={imagePreviews.length === 0 || isExtracting} 
-                        className="w-full sm:w-auto"
-                        variant="outline"
-                        >
-                        {isExtracting ? (
-                          <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-                        ) : (
-                          <Sparkles className="mr-2 h-5 w-5" />
-                        )}
-                        Auto-fill with AI (uses first image)
-                      </Button>
                     </div>
                   </div>
                 </div>
@@ -852,5 +787,3 @@ export default function CreateEventPage() {
     </div>
   );
 }
-
-    

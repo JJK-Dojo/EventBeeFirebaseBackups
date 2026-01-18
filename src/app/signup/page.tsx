@@ -91,11 +91,11 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
-            <Logo />
+            <Logo className="text-5xl" />
           </div>
           <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
           <CardDescription>
-            Join and start discovering local events!
+            Join Eventide and start discovering local events!
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

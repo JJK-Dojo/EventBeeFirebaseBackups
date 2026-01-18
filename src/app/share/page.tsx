@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -43,7 +44,7 @@ export default function SharePage() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
-                <Logo />
+                <Logo className="text-5xl" />
             </div>
             <CardTitle className="font-headline text-2xl md:text-3xl">
               Share This App
