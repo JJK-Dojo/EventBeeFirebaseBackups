@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -10,7 +11,7 @@ import { UserMenu } from './user-menu';
 export default function Header() {
   const { user, isLoading } = useUser();
   
-  const logoHref = user ? '/dashboard' : '/';
+  const logoHref = '/';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
