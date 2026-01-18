@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, UserCog } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { useSignOut } from '@/firebase/auth/hooks';
 import Link from 'next/link';
@@ -62,6 +62,26 @@ export function UserMenu({ user }: { user: User | null }) {
         </DropdownMenuItem>
          <DropdownMenuItem asChild>
              <Link href="/create-event"><PlusCircle className="mr-2 h-4 w-4" />Create Event</Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+         <DropdownMenuLabel>Admin & Dev</DropdownMenuLabel>
+        <DropdownMenuItem asChild>
+            <Link href="/admin"><Shield className="mr-2 h-4 w-4" />Admin Panel</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link href="/analytics"><BarChart2 className="mr-2 h-4 w-4" />Analytics</Link>
+        </DropdownMenuItem>
+         <DropdownMenuItem asChild>
+            <Link href="/site-planner-excel"><Sheet className="mr-2 h-4 w-4" />Site Planner</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link href="/db-view"><Database className="mr-2 h-4 w-4" />DB View</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link href="/test-ai"><FlaskConical className="mr-2 h-4 w-4" />Test AI</Link>
+        </DropdownMenuItem>
+         <DropdownMenuItem asChild>
+            <Link href="/test-ui"><Palette className="mr-2 h-4 w-4" />UI Showcase</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={signOut}>
