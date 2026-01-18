@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -17,6 +18,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Combobox } from '@/components/ui/combobox';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
 const initialActivities = [
     { id: 1, task: 'Finalize app branding and logo', assignee: 'Design Team', status: 'Completed', dueDate: '2024-07-10' },
@@ -43,6 +54,8 @@ const statusOptions = [
 
 export default function SitePlannerExcelPage() {
   const [activities, setActivities] = useState(initialActivities);
+  const [newTask, setNewTask] = useState({ task: '', assignee: '', dueDate: '' });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const sortedActivities = useMemo(() => {
         const active = activities.filter(a => a.status !== 'Completed');
@@ -72,16 +85,15 @@ export default function SitePlannerExcelPage() {
         ));
     };
 
-    const handleAddRow = () => {
+    const handleSaveNewTask = () => {
+        if (!newTask.task) return; 
         const newId = activities.length > 0 ? Math.max(...activities.map(a => a.id)) + 1 : 1;
-        const newActivity = {
-            id: newId,
-            task: '',
-            assignee: '',
-            status: 'Not Started' as 'Not Started' | 'In Progress' | 'Completed',
-            dueDate: '',
-        };
-        setActivities([newActivity, ...activities]);
+        setActivities([
+            { ...newTask, id: newId, status: 'Not Started' },
+            ...activities
+        ]);
+        setNewTask({ task: '', assignee: '', dueDate: '' });
+        setIsDialogOpen(false);
     };
 
     const handleDeleteRow = (id: number) => {
@@ -191,15 +203,44 @@ export default function SitePlannerExcelPage() {
                 </TableBody>
               </Table>
             </CardContent>
-             <CardFooter className="justify-between border-t pt-6">
+            <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={handleExport}>
                     <Download className="mr-2 h-4 w-4" />
                     Download as CSV
                 </Button>
-                <Button onClick={handleAddRow}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Row
-                </Button>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Row
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add New Task</DialogTitle>
+                            <DialogDescription>
+                                Fill in the details for the new activity you want to track.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                             <div className="grid w-full items-center gap-1.5">
+                                <Label htmlFor="task-name">Task</Label>
+                                <Input id="task-name" value={newTask.task} onChange={(e) => setNewTask({...newTask, task: e.target.value})} placeholder="Describe the task..." />
+                            </div>
+                             <div className="grid w-full items-center gap-1.5">
+                                <Label htmlFor="assignee">Assignee</Label>
+                                <Input id="assignee" value={newTask.assignee} onChange={(e) => setNewTask({...newTask, assignee: e.target.value})} placeholder="Who is responsible?" />
+                            </div>
+                            <div className="grid w-full items-center gap-1.5">
+                                <Label htmlFor="due-date">Due Date</Label>
+                                <Input id="due-date" type="date" value={newTask.dueDate} onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})} />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button onClick={handleSaveNewTask}>Save Task</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </CardFooter>
           </Card>
         </div>
