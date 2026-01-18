@@ -3,14 +3,12 @@
 import { cn } from '@/lib/utils';
 
 export default function Logo({ className }: { className?: string }) {
-  // Using a standard img tag for simplicity and to avoid Next/Image issues.
-  // The user should place their logo.png in the /public directory.
+  // eslint-disable-next-line @next/next/no-img-element
   return (
-    // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo.png"
+      src="https://i.postimg.cc/fTX70zjV/Vibrant-evening-them5.png"
       alt="Eventide Logo"
-      className={cn("h-12 w-28 object-contain", className)}
+      className={cn("h-full w-full object-contain", className)}
     />
   );
 }
