@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Header from '@/components/header';
 import {
   Table,
@@ -10,12 +11,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sheet } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Sheet, Plus, Trash2 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Combobox } from '@/components/ui/combobox';
 
-const activities = [
+const initialActivities = [
     { id: 1, task: 'Finalize app branding and logo', assignee: 'Design Team', status: 'Completed', dueDate: '2024-07-10' },
     { id: 2, task: 'Develop user authentication flow (signup/login)', assignee: 'Frontend Dev', status: 'Completed', dueDate: '2024-07-15' },
     { id: 3, task: 'Implement Firestore database structure', assignee: 'Backend Dev', status: 'Completed', dueDate: '2024-07-18' },
@@ -31,14 +34,47 @@ const activities = [
     { id: 13, task: 'Add "Site Under Construction" watermark', assignee: 'Frontend Dev', status: 'Completed', dueDate: '2024-07-19' },
 ];
 
-const statusBadges: Record<string, React.ReactNode> = {
-    'Completed': <Badge variant="secondary" className="bg-green-100 text-green-800">Completed</Badge>,
-    'In Progress': <Badge variant="outline" className="bg-yellow-100 text-yellow-800">In Progress</Badge>,
-    'Not Started': <Badge variant="destructive">Not Started</Badge>,
-};
+const statusOptions = [
+    { value: 'Not Started', label: 'Not Started' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Completed', label: 'Completed' },
+];
 
 
 export default function SitePlannerExcelPage() {
+  const [activities, setActivities] = useState(initialActivities);
+
+    const handleInputChange = (id: number, field: string, value: string | boolean) => {
+        setActivities(activities.map(activity => {
+            if (activity.id === id) {
+                return { ...activity, [field]: value };
+            }
+            return activity;
+        }));
+    };
+    
+    const handleStatusChange = (id: number, newStatus: string) => {
+         setActivities(activities.map(activity => 
+            activity.id === id ? { ...activity, status: newStatus } : activity
+        ));
+    };
+
+    const handleAddRow = () => {
+        const newId = activities.length > 0 ? Math.max(...activities.map(a => a.id)) + 1 : 1;
+        const newActivity = {
+            id: newId,
+            task: '',
+            assignee: '',
+            status: 'Not Started' as 'Not Started' | 'In Progress' | 'Completed',
+            dueDate: '',
+        };
+        setActivities([...activities, newActivity]);
+    };
+
+    const handleDeleteRow = (id: number) => {
+        setActivities(activities.filter(activity => activity.id !== id));
+    };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -64,25 +100,63 @@ export default function SitePlannerExcelPage() {
                     <TableHead>Assignee</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Due Date</TableHead>
+                    <TableHead className="w-[50px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {activities.map((activity) => (
                     <TableRow key={activity.id} className={activity.status === 'Completed' ? 'bg-muted/50' : ''}>
                       <TableCell>
-                        <Checkbox checked={activity.status === 'Completed'} />
+                        <Checkbox 
+                            checked={activity.status === 'Completed'} 
+                            onCheckedChange={(checked) => handleStatusChange(activity.id, checked ? 'Completed' : 'In Progress')}
+                        />
                       </TableCell>
-                      <TableCell className={`font-medium ${activity.status === 'Completed' ? 'text-muted-foreground line-through' : ''}`}>
-                        {activity.task}
+                      <TableCell>
+                        <Input
+                            value={activity.task}
+                            onChange={(e) => handleInputChange(activity.id, 'task', e.target.value)}
+                            className="border-none bg-transparent p-0 focus-visible:ring-0"
+                         />
                       </TableCell>
-                      <TableCell>{activity.assignee}</TableCell>
-                      <TableCell>{statusBadges[activity.status]}</TableCell>
-                      <TableCell>{activity.dueDate}</TableCell>
+                      <TableCell>
+                        <Input
+                            value={activity.assignee}
+                            onChange={(e) => handleInputChange(activity.id, 'assignee', e.target.value)}
+                            className="border-none bg-transparent p-0 focus-visible:ring-0"
+                         />
+                      </TableCell>
+                      <TableCell>
+                        <Combobox
+                            items={statusOptions}
+                            value={activity.status}
+                            onValueChange={(value) => handleStatusChange(activity.id, value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                         <Input
+                            type="date"
+                            value={activity.dueDate}
+                            onChange={(e) => handleInputChange(activity.id, 'dueDate', e.target.value)}
+                            className="border-none bg-transparent p-0 focus-visible:ring-0"
+                         />
+                      </TableCell>
+                       <TableCell className="text-right">
+                         <Button variant="ghost" size="icon" onClick={() => handleDeleteRow(activity.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                         </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </CardContent>
+             <CardFooter className="justify-end border-t pt-6">
+                <Button onClick={handleAddRow}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Row
+                </Button>
+            </CardFooter>
           </Card>
         </div>
       </main>
