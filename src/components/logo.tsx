@@ -4,14 +4,17 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export default function Logo({ className }: { className?: string }) {
+  // The parent element must have position: relative and a defined size for `fill` to work.
+  // object-contain will ensure the image aspect ratio is preserved.
   return (
-    <Image
-      src="/logo.png" // This will load the logo from the `public/logo.png` path
-      alt="Eventide Logo"
-      width={120}
-      height={60}
-      className={cn("h-auto", className)}
-      priority // Preload the logo as it's important for the page
-    />
+    <div className={cn("relative h-10 w-24", className)}>
+      <Image
+        src="/logo.png"
+        alt="Eventide Logo"
+        fill
+        style={{ objectFit: 'contain' }}
+        priority
+      />
+    </div>
   );
 }
