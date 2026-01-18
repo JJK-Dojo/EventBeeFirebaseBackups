@@ -114,7 +114,7 @@ export default function LandingPage() {
                     Discover Your Next Experience
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                    Hyperlocal events for your city, bringing the community together.
+                    Your guide to local happenings.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>

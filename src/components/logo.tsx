@@ -6,8 +6,7 @@ import { cn } from '@/lib/utils';
 export default function Logo({ className }: { className?: string }) {
   return (
     <Image
-      src="https://picsum.photos/seed/eventide-logo-2/120/40"
-      data-ai-hint="modern abstract logo"
+      src="https://picsum.photos/seed/eventide-logo-3/120/40"
       alt="Eventide Logo"
       width={120}
       height={40}
