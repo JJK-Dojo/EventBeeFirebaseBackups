@@ -95,7 +95,7 @@ export default function SignupPage() {
           </div>
           <CardTitle className="font-headline text-2xl">Create an Account</CardTitle>
           <CardDescription>
-            Join the hive and start discovering local events!
+            Join and start discovering local events!
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

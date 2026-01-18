@@ -35,9 +35,6 @@ export default function LoginPage() {
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const { user, isLoading: isUserLoading } = useUser();
 
-    const { signIn, error: signInError } = useSignInWithEmailAndPassword();
-    const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
-
     useEffect(() => {
         if (!isUserLoading && user) {
             router.push('/dashboard');
@@ -56,6 +53,9 @@ export default function LoginPage() {
              toast({ variant: 'destructive', title: 'Login Failed', description: signInError });
         }
     };
+
+    const { signIn, error: signInError } = useSignInWithEmailAndPassword();
+    const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
 
     const handleGoogleSignIn = async () => {
       setIsGoogleLoading(true);
@@ -87,7 +87,7 @@ export default function LoginPage() {
           </div>
           <CardTitle className="font-headline text-2xl">Welcome Back!</CardTitle>
           <CardDescription>
-            Sign in to your EventBee account to continue.
+            Sign in to your Eventide account to continue.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

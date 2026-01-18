@@ -1,6 +1,6 @@
 
 /**
- * EventBee Firestore Security Rules
+ * Eventide Firestore Security Rules
  *
  * Core Philosophy:
  * This ruleset uses a dual-collection approach. The `/users` collection enforces
@@ -115,7 +115,11 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if false;
       allow create: if isOwner(userId) && createdWithMatchingId(userId);
-      allow update: if isExistingPathOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().has('id');
+      allow update: if 
+        isExistingPathOwner(userId) &&
+        // On any update, ensure 'id' and 'uid' are not being changed.
+        !('id' in request.resource.data) &&
+        !('uid' in request.resource.data);
       allow delete: if isExistingPathOwner(userId);
     }
     
@@ -132,17 +136,15 @@ service cloud.firestore {
       allow list, get;
       allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
       allow update: if
-        isSignedIn() &&
-        isExistingDoc() &&
-        // Prevent 'id' and 'userId' from being changed on any update
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['id', 'userId']) &&
-        (
-          // Allow if the user is the owner of the event
-          request.auth.uid == resource.data.userId
-          ||
-          // OR if the user is only updating status/feedback (admin action)
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'feedback'])
-        );
+          isSignedIn() &&
+          isExistingDoc() &&
+          // On any update, ensure 'id' and 'userId' are not being changed.
+          !('id' in request.resource.data) &&
+          !('userId' in request.resource.data) &&
+          // Allow update if the user is the owner of the event
+          (request.auth.uid == resource.data.userId ||
+          // OR if the request only changes 'status' or 'feedback' (admin action)
+          request.resource.data.keys().hasOnly(['status', 'feedback']));
       allow delete: if isExistingResourceOwner();
     }
   }

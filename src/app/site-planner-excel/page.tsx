@@ -160,12 +160,12 @@ export default function SitePlannerExcelPage() {
                 Site Planner
               </CardTitle>
               <CardDescription>
-                A high-level activity planner to track the development of the EventBee portal.
+                A high-level activity planner to track the development of the Eventide portal.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
-                <TableCaption>EventBee development activity list.</TableCaption>
+                <TableCaption>Eventide development activity list.</TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]">Done</TableHead>
