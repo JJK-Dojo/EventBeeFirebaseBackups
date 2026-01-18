@@ -55,14 +55,6 @@ service cloud.firestore {
     }
     
     /**
-     * Checks if the authenticated user's UID matches the `userId` field in the resource data.
-     * This is used for collections where ownership is determined by a field in the document.
-     */
-    function isResourceOwner() {
-        return isSignedIn() && request.auth.uid == request.resource.data.userId;
-    }
-
-    /**
      * Checks if the document being written to already exists.
      * Crucial for protecting against unintended updates or deletes on non-existent paths.
      */
@@ -90,13 +82,6 @@ service cloud.firestore {
     function createdWithMatchingId(userId) {
       return request.resource.data.id == userId;
     }
-
-    /**
-     * On update, ensures the user document's internal 'id' field is immutable.
-     */
-    function idIsImmutable() {
-      return request.resource.data.id == resource.data.id;
-    }
     
     /**
      * On create, validates that the event document's internal 'userId' field matches the authenticated user.
@@ -110,14 +95,6 @@ service cloud.firestore {
      */
     function eventIdMatchesDocId(eventId) {
         return request.resource.data.id == eventId;
-    }
-
-
-    /**
-     * On update, ensures the event document's internal 'userId' field is immutable.
-     */
-    function userIdIsImmutable() {
-      return request.resource.data.userId == resource.data.userId;
     }
 
 
@@ -138,7 +115,7 @@ service cloud.firestore {
       allow get: if isOwner(userId);
       allow list: if false;
       allow create: if isOwner(userId) && createdWithMatchingId(userId);
-      allow update: if isExistingPathOwner(userId) && idIsImmutable();
+      allow update: if isExistingPathOwner(userId) && !request.resource.data.diff(resource.data).affectedKeys().has('id');
       allow delete: if isExistingPathOwner(userId);
     }
     
@@ -154,10 +131,18 @@ service cloud.firestore {
     match /events/{eventId} {
       allow list, get;
       allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
-      allow update: if isSignedIn() && isExistingDoc() && userIdIsImmutable() && eventIdMatchesDocId(eventId) && (
-        (request.auth.uid == resource.data.userId) || // is owner
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'feedback'])) // is admin updating status
-      );
+      allow update: if
+        isSignedIn() &&
+        isExistingDoc() &&
+        // Prevent 'id' and 'userId' from being changed on any update
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['id', 'userId']) &&
+        (
+          // Allow if the user is the owner of the event
+          request.auth.uid == resource.data.userId
+          ||
+          // OR if the user is only updating status/feedback (admin action)
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'feedback'])
+        );
       allow delete: if isExistingResourceOwner();
     }
   }
