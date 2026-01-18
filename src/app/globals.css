@@ -96,3 +96,9 @@
   background-size: 200% auto;
   animation: glitter 3s linear infinite;
 }
+
+@layer components {
+  .watermark {
+    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-45 whitespace-nowrap text-8xl font-bold text-neutral-500/10 pointer-events-none z-[9999];
+  }
+}

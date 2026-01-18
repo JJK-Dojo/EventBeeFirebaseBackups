@@ -39,6 +39,7 @@ export default function RootLayout({
         {/* Font links are now handled by next/font */}
       </head>
       <body className="font-body antialiased">
+        <div className="watermark">Site Under Construction</div>
         <FirebaseClientProvider>
           <FirebaseErrorListener />
           {children}

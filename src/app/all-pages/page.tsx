@@ -1,4 +1,3 @@
-
 'use client';
 
 import Header from '@/components/header';
@@ -18,6 +17,12 @@ const pages = [
     title: 'Analytics Dashboard', 
     description: 'View insights into event trends and engagement.',
     fields: ['Events by Category Chart', 'Events by Status Chart', 'Top Locations Chart', 'Tag Popularity Chart']
+  },
+  { 
+    href: '/contact-us', 
+    title: 'Contact Us', 
+    description: 'A page for users to send messages to the support team.',
+    fields: ['Name', 'Email', 'Subject', 'Message', 'Submit Button']
   },
   { 
     href: '/create-event', 
@@ -50,6 +55,12 @@ const pages = [
     fields: ['Search by Tags/Keywords', 'Category Filter', 'Sort Options', 'Location Filters (State, District)', 'Event Cards Grid']
   },
   { 
+    href: '/', 
+    title: 'Home (Website Preview)', 
+    description: 'The root page, which serves as the public-facing website preview.',
+    fields: ['Event Filters', 'Event Card Grid']
+  },
+  { 
     href: '/login', 
     title: 'Login Page', 
     description: 'Page for users to sign in to their account.',
@@ -74,6 +85,12 @@ const pages = [
     fields: ['Sign up with Google', 'First/Last Name', 'Email', 'Phone Number', 'Password', 'Optional Social Links']
   },
   { 
+    href: '/site-planner-excel', 
+    title: 'Site Planner', 
+    description: 'An Excel-like sheet to track development activities.',
+    fields: ['Task', 'Assignee', 'Status', 'Due Date']
+  },
+  { 
     href: '/test-ai', 
     title: 'AI Test Page', 
     description: 'A utility page for testing AI image extraction.',
@@ -84,12 +101,6 @@ const pages = [
     title: 'UI Showcase', 
     description: 'A utility page for previewing UI components.',
     fields: ['Event Card Preview', 'Event Filters Preview', 'Buttons', 'Inputs', 'Badges']
-  },
-  { 
-    href: '/', 
-    title: 'Home (Website Preview)', 
-    description: 'The root page, which serves as the public-facing website preview.',
-    fields: ['Event Filters', 'Event Card Grid']
   },
 ];
 
