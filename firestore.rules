@@ -154,7 +154,10 @@ service cloud.firestore {
     match /events/{eventId} {
       allow list, get;
       allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
-      allow update: if isExistingResourceOwner() && userIdIsImmutable() && eventIdMatchesDocId(eventId);
+      allow update: if isSignedIn() && isExistingDoc() && userIdIsImmutable() && eventIdMatchesDocId(eventId) && (
+        (request.auth.uid == resource.data.userId) || // is owner
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'feedback'])) // is admin updating status
+      );
       allow delete: if isExistingResourceOwner();
     }
   }
