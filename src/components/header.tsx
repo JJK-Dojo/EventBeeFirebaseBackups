@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -17,7 +16,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href={logoHref}>
-          <Logo className="text-2xl" />
+          <Logo className="h-10 w-auto" />
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
           <Link href="/find-events" passHref>

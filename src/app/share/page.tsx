@@ -43,8 +43,8 @@ export default function SharePage() {
       <main className="flex flex-1 items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4">
-                <Logo className="text-5xl" />
+            <div className="mx-auto mb-4 flex justify-center">
+                <Logo className="h-20 w-auto" />
             </div>
             <CardTitle className="font-headline text-2xl md:text-3xl">
               Share This App
@@ -54,20 +54,19 @@ export default function SharePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex justify-center p-4 bg-white rounded-lg">
+            <div className="flex justify-center rounded-lg bg-white p-4">
               {url ? (
-                <div style={{ height: "auto", margin: "0 auto", maxWidth: "256px", width: "100%" }}>
+                <div style={{ background: "white", padding: '16px' }}>
                     <QRCode
                         value={url}
-                        style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                        size={256}
                         bgColor={"#FFFFFF"}
                         fgColor={"#000000"}
                         level={"L"}
-                        viewBox={`0 0 256 256`}
                     />
                 </div>
               ) : (
-                <div className="h-[256px] w-[256px] bg-gray-200 animate-pulse rounded-md" />
+                <div className="h-[256px] w-[256px] animate-pulse rounded-md bg-gray-200" />
               )}
             </div>
             <div className="space-y-2">
