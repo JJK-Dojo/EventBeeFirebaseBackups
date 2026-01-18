@@ -24,11 +24,13 @@ export default function SharePage() {
   const [url, setUrl] = useState('');
 
   useEffect(() => {
-    // Ensure this code runs only on the client
-    setUrl(window.location.origin);
+    // This URL should be the public-facing URL of your application.
+    // window.location.origin points to the internal workstation URL in this environment.
+    setUrl('https://eventbee.com');
   }, []);
 
   const handleCopy = () => {
+    if (!url) return;
     navigator.clipboard.writeText(url);
     toast({
       title: 'Link Copied!',
