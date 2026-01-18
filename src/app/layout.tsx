@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     default: 'Eventide',
     template: '%s | Eventide',
   },
-  description: 'Eventide - Weaving Your Community Together.',
+  description: 'Eventide: Your guide to local happenings.',
 };
 
 export default function RootLayout({
