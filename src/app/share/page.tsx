@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,9 +24,8 @@ export default function SharePage() {
   const [url, setUrl] = useState('');
 
   useEffect(() => {
-    // This URL should be the public-facing URL of your application.
-    // You must replace this placeholder with your actual domain after deployment.
-    setUrl('https://your-live-app-url.com');
+    // Set the URL to the application's origin when the component mounts on the client.
+    setUrl(window.location.origin);
   }, []);
 
   const handleCopy = () => {
@@ -50,7 +50,7 @@ export default function SharePage() {
               Share This App
             </CardTitle>
             <CardDescription>
-              Scan the QR code or copy the link to share. The URL is a placeholder and must be updated with your live domain.
+              Scan the QR code or copy the link to share the application.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -68,7 +68,7 @@ export default function SharePage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="share-link">Shareable Link (Placeholder)</Label>
+              <Label htmlFor="share-link">Shareable Link</Label>
               <div className="flex items-center gap-2">
                 <Input id="share-link" readOnly value={url} />
                 <Button variant="outline" size="icon" onClick={handleCopy} disabled={!url}>
