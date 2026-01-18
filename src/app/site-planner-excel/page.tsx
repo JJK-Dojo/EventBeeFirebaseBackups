@@ -25,9 +25,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 const initialActivities = [
     { id: 1, task: 'Finalize app branding and logo', assignee: 'Design Team', status: 'Completed', dueDate: '2024-07-10' },
@@ -56,6 +56,7 @@ export default function SitePlannerExcelPage() {
   const [activities, setActivities] = useState(initialActivities);
   const [newTask, setNewTask] = useState({ task: '', assignee: '', dueDate: '' });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
 
     const sortedActivities = useMemo(() => {
         const active = activities.filter(a => a.status !== 'Completed');
@@ -86,7 +87,14 @@ export default function SitePlannerExcelPage() {
     };
 
     const handleSaveNewTask = () => {
-        if (!newTask.task) return; 
+        if (!newTask.task.trim()) {
+            toast({
+                variant: "destructive",
+                title: "Task is empty",
+                description: "Please provide a task description before saving.",
+            });
+            return;
+        }
         const newId = activities.length > 0 ? Math.max(...activities.map(a => a.id)) + 1 : 1;
         setActivities([
             { ...newTask, id: newId, status: 'Not Started' },
@@ -124,6 +132,19 @@ export default function SitePlannerExcelPage() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+    
+    const handleAddRowClick = () => {
+        const isBlankRow = activities.some(a => !a.task.trim());
+        if (isBlankRow) {
+            toast({
+                variant: 'destructive',
+                title: 'Incomplete Task Found',
+                description: 'Please fill in the task description for all rows before adding a new one.',
+            });
+        } else {
+            setIsDialogOpen(true);
+        }
     };
 
 
@@ -209,12 +230,10 @@ export default function SitePlannerExcelPage() {
                     Download as CSV
                 </Button>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Row
-                        </Button>
-                    </DialogTrigger>
+                    <Button onClick={handleAddRowClick}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Row
+                    </Button>
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Add New Task</DialogTitle>
