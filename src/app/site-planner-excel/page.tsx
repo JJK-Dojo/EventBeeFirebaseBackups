@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '@/components/header';
 import {
   Table,
@@ -12,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Sheet, Plus, Trash2 } from 'lucide-react';
+import { Sheet, Plus, Trash2, Download } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,6 +44,19 @@ const statusOptions = [
 export default function SitePlannerExcelPage() {
   const [activities, setActivities] = useState(initialActivities);
 
+    const sortedActivities = useMemo(() => {
+        const active = activities.filter(a => a.status !== 'Completed');
+        const completed = activities.filter(a => a.status === 'Completed');
+
+        completed.sort((a, b) => {
+            const dateA = a.dueDate ? new Date(a.dueDate).getTime() : 0;
+            const dateB = b.dueDate ? new Date(b.dueDate).getTime() : 0;
+            return dateB - dateA;
+        });
+
+        return [...active, ...completed];
+    }, [activities]);
+
     const handleInputChange = (id: number, field: string, value: string | boolean) => {
         setActivities(activities.map(activity => {
             if (activity.id === id) {
@@ -68,12 +81,39 @@ export default function SitePlannerExcelPage() {
             status: 'Not Started' as 'Not Started' | 'In Progress' | 'Completed',
             dueDate: '',
         };
-        setActivities([...activities, newActivity]);
+        setActivities([newActivity, ...activities]);
     };
 
     const handleDeleteRow = (id: number) => {
         setActivities(activities.filter(activity => activity.id !== id));
     };
+
+    const handleExport = () => {
+        const headers = ['Task', 'Assignee', 'Status', 'Due Date'];
+        const rows = sortedActivities.map(activity => 
+            [
+                `"${activity.task.replace(/"/g, '""')}"`,
+                activity.assignee,
+                activity.status,
+                activity.dueDate
+            ].join(',')
+        );
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        if (link.href) {
+            URL.revokeObjectURL(link.href);
+        }
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'site-planner.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -104,8 +144,8 @@ export default function SitePlannerExcelPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {activities.map((activity) => (
-                    <TableRow key={activity.id} className={activity.status === 'Completed' ? 'bg-muted/50' : ''}>
+                  {sortedActivities.map((activity) => (
+                    <TableRow key={activity.id} className={activity.status === 'Completed' ? 'bg-muted/50 text-muted-foreground' : ''}>
                       <TableCell>
                         <Checkbox 
                             checked={activity.status === 'Completed'} 
@@ -151,7 +191,11 @@ export default function SitePlannerExcelPage() {
                 </TableBody>
               </Table>
             </CardContent>
-             <CardFooter className="justify-end border-t pt-6">
+             <CardFooter className="justify-between border-t pt-6">
+                <Button variant="outline" onClick={handleExport}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download as CSV
+                </Button>
                 <Button onClick={handleAddRow}>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Row
