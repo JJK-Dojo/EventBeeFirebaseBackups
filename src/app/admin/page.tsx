@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import type { Event } from '@/lib/types';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, updateDoc, collection, query, where } from 'firebase/firestore';
 
 
@@ -161,31 +161,45 @@ export default function AdminPage() {
         });
     }, [events]);
 
-    const handleApprove = async (eventId: string) => {
+    const handleApprove = (eventId: string) => {
         const eventToUpdate = events?.find(e => e.id === eventId);
         if (eventToUpdate && firestore) {
-            try {
-                const eventDocRef = doc(firestore, 'events', eventId);
-                await updateDoc(eventDocRef, { status: 'published' });
-                toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
-            } catch (error) {
-                console.error("Error approving event: ", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not approve the event." });
-            }
+            const eventDocRef = doc(firestore, 'events', eventId);
+            const updateData = { status: 'published' };
+            
+            updateDoc(eventDocRef, updateData)
+                .then(() => {
+                    toast({ title: "Event Approved", description: `"${eventToUpdate.title}" has been published.` });
+                })
+                .catch((serverError) => {
+                    const permissionError = new FirestorePermissionError({
+                        path: eventDocRef.path,
+                        operation: 'update',
+                        requestResourceData: updateData,
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
+                });
         }
     };
 
-    const handleDeny = async (eventId: string, feedback: string) => {
+    const handleDeny = (eventId: string, feedback: string) => {
         const eventToUpdate = events?.find(e => e.id === eventId);
         if (eventToUpdate && firestore) {
-            try {
-                const eventDocRef = doc(firestore, 'events', eventId);
-                await updateDoc(eventDocRef, { status: 'denied', feedback });
-                toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
-            } catch (error) {
-                console.error("Error denying event: ", error);
-                toast({ variant: "destructive", title: "Error", description: "Could not deny the event." });
-            }
+            const eventDocRef = doc(firestore, 'events', eventId);
+            const updateData = { status: 'denied', feedback };
+
+            updateDoc(eventDocRef, updateData)
+                 .then(() => {
+                    toast({ variant: "destructive", title: "Event Denied", description: `"${eventToUpdate.title}" has been denied.` });
+                })
+                .catch((serverError) => {
+                    const permissionError = new FirestorePermissionError({
+                        path: eventDocRef.path,
+                        operation: 'update',
+                        requestResourceData: updateData,
+                    });
+                    errorEmitter.emit('permission-error', permissionError);
+                });
         }
     };
 
