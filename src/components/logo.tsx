@@ -1,20 +1,16 @@
 'use client';
 
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export default function Logo({ className }: { className?: string }) {
-  // The parent element must have position: relative and a defined size for `fill` to work.
-  // object-contain will ensure the image aspect ratio is preserved.
+  // Using a standard img tag for simplicity and to avoid Next/Image issues.
+  // The user should place their logo.png in the /public directory.
   return (
-    <div className={cn("relative h-10 w-24", className)}>
-      <Image
-        src="/logo.png"
-        alt="Eventide Logo"
-        fill
-        style={{ objectFit: 'contain' }}
-        priority
-      />
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo.png"
+      alt="Eventide Logo"
+      className={cn("h-12 w-28 object-contain", className)}
+    />
   );
 }
