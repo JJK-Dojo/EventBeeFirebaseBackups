@@ -41,6 +41,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Combobox } from '@/components/ui/combobox';
 import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
@@ -53,7 +61,7 @@ import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
-import { extractEventDetails } from '@/ai/flows/extract-event-details';
+import { extractEventDetails, type ExtractDetailsOutput } from '@/ai/flows/extract-event-details';
 
 type PostOffice = {
   Name: string;
@@ -145,14 +153,18 @@ const parseDateString = (dateString: string): Date | null => {
     const formats = [
         'MM/dd/yyyy', 'dd/MM/yyyy', 'yyyy-MM-dd', 'MM-dd-yyyy',
         'dd-MM-yyyy', 'MMMM d, yyyy', 'd MMMM yyyy', 'yyyy, MMMM d',
-        'MMMM d yyyy', 'M/d/yy', 'M/d/yyyy',
+        'MMMM d yyyy', 'M/d/yy', 'M/d/yyyy', 'PP'
     ];
     for (const format of formats) {
-        date = parse(dateString, format, new Date());
-        if (!isNaN(date.getTime())) return date;
+        try {
+            date = parse(dateString, format, new Date());
+            if (!isNaN(date.getTime())) return date;
+        } catch {}
     }
-    date = new Date(dateString);
-    if (!isNaN(date.getTime())) return date;
+    try {
+        date = new Date(dateString);
+        if (!isNaN(date.getTime())) return date;
+    } catch {}
     return null;
 }
 
@@ -205,7 +217,12 @@ export default function CreateEventPage() {
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // AI Extraction State
   const [isExtracting, setIsExtracting] = useState(false);
+  const [isExtractionDialogOpen, setIsExtractionDialogOpen] = useState(false);
+  const [editedExtractedData, setEditedExtractedData] = useState<Partial<ExtractDetailsOutput>>({});
+
   
   const districts = useMemo(() => {
     if (selectedState) {
@@ -363,19 +380,20 @@ export default function CreateEventPage() {
     setIsExtracting(true);
     try {
         const jpegDataUrl = await toJpegDataURL(imagePreviews[0]);
-        const extractedText = await extractEventDetails({ imageDataUri: jpegDataUrl });
+        const result = await extractEventDetails({ imageDataUri: jpegDataUrl });
 
-        if (extractedText) {
-            setDescription(prev => prev ? `${prev}\n\n${extractedText}` : extractedText);
+        if (result) {
+            setEditedExtractedData(result);
+            setIsExtractionDialogOpen(true);
             toast({
                 title: "Extraction Complete!",
-                description: "The event description has been updated from the image.",
+                description: "Please review the extracted details in the popup.",
             });
         } else {
             toast({
                 variant: "destructive",
                 title: "Extraction Failed",
-                description: "Could not extract any text from the image.",
+                description: "Could not extract any details from the image.",
             });
         }
     } catch (error) {
@@ -389,6 +407,41 @@ export default function CreateEventPage() {
         setIsExtracting(false);
     }
   };
+
+  const handleConfirmExtraction = () => {
+    if (editedExtractedData.title) setTitle(editedExtractedData.title);
+    if (editedExtractedData.description) setDescription(editedExtractedData.description);
+    if (editedExtractedData.venue) setPincodeSearchInput(editedExtractedData.venue);
+
+    if (editedExtractedData.date) {
+        let parsedDate = parseDateString(editedExtractedData.date);
+        if (parsedDate) {
+            let finalDate = new Date(parsedDate);
+            if (editedExtractedData.time) {
+                const timeRegex = /(\d{1,2}):?(\d{2})?\s?(AM|PM)?/i;
+                const timeMatch = editedExtractedData.time.match(timeRegex);
+                if (timeMatch) {
+                    let hours = parseInt(timeMatch[1], 10);
+                    const minutes = timeMatch[2] ? parseInt(timeMatch[2], 10) : 0;
+                    const ampm = timeMatch[3];
+                    if (ampm && ampm.toLowerCase() === 'pm' && hours < 12) {
+                        hours += 12;
+                    }
+                    if (ampm && ampm.toLowerCase() === 'am' && hours === 12) {
+                        hours = 0;
+                    }
+                    finalDate.setHours(hours, minutes);
+                }
+            }
+            setDate(finalDate);
+        }
+    }
+    setIsExtractionDialogOpen(false);
+    toast({
+      title: "Fields Updated",
+      description: "The event details have been populated from the AI extraction.",
+    });
+  }
 
   const handleSubmit = async () => {
     if (!firestore || !user) {
@@ -843,6 +896,64 @@ export default function CreateEventPage() {
           </Card>
         </div>
       </main>
+      
+      <Dialog open={isExtractionDialogOpen} onOpenChange={setIsExtractionDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>AI Extracted Event Details</DialogTitle>
+            <DialogDescription>
+              Review and edit the details extracted from your image. Click confirm to populate them into the form.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="ai-title">Event Title</Label>
+              <Input 
+                id="ai-title" 
+                value={editedExtractedData.title || ''} 
+                onChange={(e) => setEditedExtractedData(prev => ({ ...prev, title: e.target.value }))}
+              />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="ai-date">Date</Label>
+              <Input 
+                id="ai-date" 
+                value={editedExtractedData.date || ''}
+                onChange={(e) => setEditedExtractedData(prev => ({ ...prev, date: e.target.value }))} 
+              />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="ai-time">Time</Label>
+              <Input 
+                id="ai-time" 
+                value={editedExtractedData.time || ''} 
+                onChange={(e) => setEditedExtractedData(prev => ({ ...prev, time: e.target.value }))}
+              />
+            </div>
+             <div className="space-y-2">
+              <Label htmlFor="ai-venue">Venue</Label>
+              <Input 
+                id="ai-venue" 
+                value={editedExtractedData.venue || ''}
+                onChange={(e) => setEditedExtractedData(prev => ({ ...prev, venue: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="ai-description">Description</Label>
+              <Textarea 
+                id="ai-description"
+                rows={5}
+                value={editedExtractedData.description || ''} 
+                onChange={(e) => setEditedExtractedData(prev => ({ ...prev, description: e.target.value }))}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsExtractionDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmExtraction}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
