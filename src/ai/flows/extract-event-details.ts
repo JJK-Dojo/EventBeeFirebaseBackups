@@ -5,7 +5,7 @@
  * - extractEventDetails - A function that extracts structured text from an image.
  */
 
-import { ai } from '@/ai/genkit';
+import { ai } from '../genkit';
 import { 
     ExtractDetailsInput, 
     ExtractDetailsInputSchema, 
