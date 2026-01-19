@@ -16,6 +16,7 @@ import {
 
 const extractDetailsPrompt = ai.definePrompt({
   name: 'extractDetailsPrompt',
+  model: 'googleai/gemini-pro-vision',
   input: { schema: ExtractDetailsInputSchema },
   output: { schema: ExtractDetailsOutputSchema },
   prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer and extract its key details.
