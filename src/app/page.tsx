@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
-import Logo from '@/components/logo';
 import EventCardMini from '@/components/event-card-mini';
-import { LogIn, UserPlus, Search, PlusCircle, Users } from 'lucide-react';
+import { Search, PlusCircle, Users } from 'lucide-react';
 import { collection, query, where } from 'firebase/firestore';
+import Header from '@/components/header';
 
 export default function LandingPage() {
   const firestore = useFirestore();
@@ -83,31 +83,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-card shadow-sm">
-          <div className="container mx-auto flex h-20 items-center justify-between px-4">
-            <Link href="/">
-              <Logo className="h-16 w-36" />
-            </Link>
-             <div className="flex items-center gap-2 sm:gap-4">
-                <Link href="/login" passHref>
-                    <Button
-                     style={{ color: 'hsl(var(--accent))' }}
-                    >
-                      <LogIn className="mr-2 h-4 w-4" />
-                      Sign In
-                    </Button>
-                </Link>
-                <Link href="/signup" passHref>
-                    <Button
-                     style={{ color: 'hsl(var(--accent))' }}
-                    >
-                      <UserPlus className="mr-2 h-4 w-4" />
-                      Sign Up
-                    </Button>
-                </Link>
-             </div>
-          </div>
-      </header>
+      <Header showNavButtons={false} />
        <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
             <div className="mb-8 p-6 rounded-lg bg-card border text-center">

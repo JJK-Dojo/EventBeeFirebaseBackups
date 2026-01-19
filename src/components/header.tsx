@@ -8,7 +8,7 @@ import Logo from './logo';
 import { useUser } from '@/firebase/auth/use-user';
 import { UserMenu } from './user-menu';
 
-export default function Header() {
+export default function Header({ showNavButtons = true }: { showNavButtons?: boolean }) {
   const { user, isLoading } = useUser();
   
   const logoHref = '/';
@@ -20,57 +20,47 @@ export default function Header() {
           <Logo className="h-12 w-28" />
         </Link>
         <div className="flex items-center gap-2 sm:gap-4">
-          <Link href="/find-events" passHref>
-             <Button
-                className="hidden sm:flex hover:opacity-90 font-bold"
-                aria-label="Find Event"
-                 style={{
-                    backgroundColor: 'hsl(var(--primary))',
-                    color: 'hsl(var(--primary-foreground))',
-                }}
-              >
-                <Search className="mr-2 h-5 w-5" />
-                Find Event
-              </Button>
-          </Link>
-          <Link href="/find-events" passHref>
-             <Button
-                size="icon"
-                className="flex sm:hidden hover:opacity-90"
-                aria-label="Find Event"
-                 style={{
-                    backgroundColor: 'hsl(var(--primary))',
-                    color: 'hsl(var(--primary-foreground))',
-                }}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-          </Link>
-           <Link href="/create-event" passHref>
-              <Button
-                className="hidden sm:flex hover:opacity-90 font-bold"
-                 style={{
-                    backgroundColor: 'hsl(var(--accent))',
-                    color: 'hsl(var(--accent-foreground))',
-                }}
-              >
-                <PlusCircle className="mr-2 h-5 w-5" />
-                Create Event
-              </Button>
-          </Link>
-            <Link href="/create-event" passHref>
-              <Button
-                size="icon"
-                className="flex hover:opacity-90 sm:hidden"
-                style={{
-                    backgroundColor: 'hsl(var(--accent))',
-                    color: 'hsl(var(--accent-foreground))',
-                }}
-                aria-label="Create Event"
-              >
-                <PlusCircle className="h-5 w-5" />
-              </Button>
-          </Link>
+          {showNavButtons && (
+            <>
+              <Link href="/find-events" passHref>
+                <Button
+                  className="hidden sm:flex hover:opacity-90 font-bold"
+                  aria-label="Find Event"
+                >
+                  <Search className="mr-2 h-5 w-5" />
+                  Find Event
+                </Button>
+              </Link>
+              <Link href="/find-events" passHref>
+                <Button
+                  size="icon"
+                  className="flex sm:hidden hover:opacity-90"
+                  aria-label="Find Event"
+                >
+                  <Search className="h-5 w-5" />
+                </Button>
+              </Link>
+              <Link href="/create-event" passHref>
+                <Button
+                  variant="accent"
+                  className="hidden sm:flex hover:opacity-90 font-bold"
+                >
+                  <PlusCircle className="mr-2 h-5 w-5" />
+                  Create Event
+                </Button>
+              </Link>
+              <Link href="/create-event" passHref>
+                <Button
+                  variant="accent"
+                  size="icon"
+                  className="flex hover:opacity-90 sm:hidden"
+                  aria-label="Create Event"
+                >
+                  <PlusCircle className="h-5 w-5" />
+                </Button>
+              </Link>
+            </>
+          )}
           {!isLoading && <UserMenu user={user} />}
         </div>
       </div>

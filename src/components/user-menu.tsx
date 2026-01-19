@@ -1,3 +1,4 @@
+
 'use client';
 import {
   DropdownMenu,
@@ -9,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette, UserPlus } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { useSignOut } from '@/firebase/auth/hooks';
 import Link from 'next/link';
@@ -23,12 +24,20 @@ export function UserMenu({ user }: { user: User | null }) {
 
   if (!user) {
     return (
-        <Link href="/login" passHref>
-            <Button variant="outline">
-                <LogIn className="mr-2 h-4 w-4" />
-                Login
-            </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+            <Link href="/login" passHref>
+                <Button variant="outline">
+                    <LogIn className="mr-2 h-4 w-4" />
+                    Sign In
+                </Button>
+            </Link>
+            <Link href="/signup" passHref>
+                <Button>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Sign Up
+                </Button>
+            </Link>
+        </div>
     );
   }
 
