@@ -53,6 +53,7 @@ import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import { extractEventDetails } from '@/ai/flows/extract-event-details';
 
 type PostOffice = {
   Name: string;
@@ -204,6 +205,7 @@ export default function CreateEventPage() {
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
   
   const districts = useMemo(() => {
     if (selectedState) {
@@ -347,6 +349,46 @@ export default function CreateEventPage() {
         setDate(newDate);
     }
   }
+
+  const handleAiExtraction = async () => {
+    if (!imagePreviews[0]) {
+        toast({
+            variant: "destructive",
+            title: "No Image Found",
+            description: "Please upload an image first to use AI Extraction.",
+        });
+        return;
+    }
+
+    setIsExtracting(true);
+    try {
+        const jpegDataUrl = await toJpegDataURL(imagePreviews[0]);
+        const extractedText = await extractEventDetails({ imageDataUri: jpegDataUrl });
+
+        if (extractedText) {
+            setDescription(prev => prev ? `${prev}\n\n${extractedText}` : extractedText);
+            toast({
+                title: "Extraction Complete!",
+                description: "The event description has been updated from the image.",
+            });
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Extraction Failed",
+                description: "Could not extract any text from the image.",
+            });
+        }
+    } catch (error) {
+        console.error("AI Extraction failed:", error);
+        toast({
+            variant: "destructive",
+            title: "AI Extraction Error",
+            description: "An unexpected error occurred. Please try again.",
+        });
+    } finally {
+        setIsExtracting(false);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!firestore || !user) {
@@ -690,6 +732,24 @@ export default function CreateEventPage() {
                             <span className="mt-2 text-sm text-center">Add Images</span>
                         </Label>
                     </div>
+                    
+                    {imagePreviews.length > 0 && (
+                        <div className="flex justify-start">
+                            <Button
+                                variant="outline"
+                                onClick={handleAiExtraction}
+                                disabled={isExtracting || !imagePreviews[0]}
+                            >
+                                {isExtracting ? (
+                                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Sparkles className="mr-2 h-4 w-4" style={{ color: 'hsl(var(--golden))' }} />
+                                )}
+                                AI Extraction
+                            </Button>
+                        </div>
+                    )}
+
                     <div className="w-full space-y-2">
                       <Input
                         id="image-upload"
