@@ -13,9 +13,7 @@ import {
     ExtractDetailsOutputSchema 
 } from '@/ai/schemas';
 
-
-export async function extractEventDetails(input: ExtractDetailsInput): Promise<ExtractDetailsOutput> {
-  const extractDetailsPrompt = ai.definePrompt({
+const extractDetailsPrompt = ai.definePrompt({
     name: 'extractDetailsPrompt',
     model: 'googleai/gemini-pro-vision',
     input: { schema: ExtractDetailsInputSchema },
@@ -33,9 +31,9 @@ export async function extractEventDetails(input: ExtractDetailsInput): Promise<E
     If a field is not present in the image, you must omit it from the JSON response. Do not invent details.
 
     Image: {{media url=imageDataUri}}`
-  });
+});
 
-  const extractEventDetailsFlow = ai.defineFlow(
+const extractEventDetailsFlow = ai.defineFlow(
     {
       name: 'extractEventDetailsFlow',
       inputSchema: ExtractDetailsInputSchema,
@@ -55,8 +53,9 @@ export async function extractEventDetails(input: ExtractDetailsInput): Promise<E
           throw new Error("The AI model failed to process the image. Please try again.");
       }
     }
-  );
+);
   
+export async function extractEventDetails(input: ExtractDetailsInput): Promise<ExtractDetailsOutput> {
   const result = await extractEventDetailsFlow(input);
   return result;
 }
