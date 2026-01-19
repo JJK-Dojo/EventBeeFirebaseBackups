@@ -1,22 +1,21 @@
 import type { Metadata } from 'next';
-import { PT_Sans, Lobster } from 'next/font/google';
+import { Inter, Poppins } from 'next/font/google';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
-const ptSans = PT_Sans({
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-pt-sans',
-  weight: ['400', '700'],
+  variable: '--font-inter',
 });
 
-const lobster = Lobster({
+const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-lobster',
-  weight: ['400'],
+  variable: '--font-poppins',
+  weight: ['400', '500', '600', '700', '800', '900'],
 });
 
 
@@ -34,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${ptSans.variable} ${lobster.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable}`}>
        <head>
         {/* Font links are now handled by next/font */}
       </head>
