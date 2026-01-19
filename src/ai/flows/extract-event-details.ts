@@ -17,7 +17,7 @@ const extractDetailsPrompt = ai.definePrompt({
     name: 'extractDetailsPrompt',
     model: 'googleai/gemini-1.5-pro',
     input: { schema: ExtractDetailsInputSchema },
-    output: { schema: ExtractDetailsOutputSchema },
+    // REMOVED: output schema to prevent forcing a mimeType.
     prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer and extract its key details.
 
     Return ONLY a valid JSON object that conforms to the specified schema.
@@ -41,14 +41,28 @@ const extractEventDetailsFlow = ai.defineFlow(
     },
     async (flowInput) => {
       try {
-        const { output } = await extractDetailsPrompt(flowInput);
-        // If the model returns nothing or an empty object, treat it as a failure.
-        if (!output || Object.keys(output).length === 0) {
+        const response = await extractDetailsPrompt(flowInput);
+        const responseText = response.text;
+
+        if (!responseText) {
+          throw new Error("The AI model returned an empty response.");
+        }
+
+        // Models can sometimes wrap the JSON in markdown, so we strip it.
+        const jsonText = responseText.replace(/^```json\s*/, '').replace(/\s*```$/, '').trim();
+        
+        const parsedJson = JSON.parse(jsonText);
+
+        // If the model returns an empty object, treat it as a failure.
+        if (!parsedJson || Object.keys(parsedJson).length === 0) {
           throw new Error("Could not extract any structured details. The image may be unclear or lack event information.");
         }
-        return output;
+
+        // Validate the data against our schema before returning
+        return ExtractDetailsOutputSchema.parse(parsedJson);
+
       } catch (e: any) {
-          console.error("Error during Genkit prompt execution:", e);
+          console.error("Error during Genkit flow execution:", e);
           // Re-throw a more user-friendly error to be caught by the client, including the original error message.
           throw new Error(`The AI model failed to process the image. Reason: ${e.message}`);
       }
