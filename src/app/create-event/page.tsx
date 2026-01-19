@@ -61,7 +61,8 @@ import { DUMMY_EVENTS } from '@/lib/data';
 import { useFirestore, useUser } from '@/firebase/provider';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
-import { extractEventDetails, type ExtractDetailsOutput } from '@/ai/flows/extract-event-details';
+import { extractEventDetails } from '@/ai/flows/extract-event-details';
+import type { ExtractDetailsOutput } from '@/ai/schemas';
 
 type PostOffice = {
   Name: string;
