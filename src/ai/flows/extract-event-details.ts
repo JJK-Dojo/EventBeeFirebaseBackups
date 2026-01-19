@@ -14,12 +14,13 @@ import {
 } from '@/ai/schemas';
 
 
-const extractDetailsPrompt = ai.definePrompt({
-  name: 'extractDetailsPrompt',
-  model: 'googleai/gemini-pro-vision',
-  input: { schema: ExtractDetailsInputSchema },
-  output: { schema: ExtractDetailsOutputSchema },
-  prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer and extract its key details.
+export async function extractEventDetails(input: ExtractDetailsInput): Promise<ExtractDetailsOutput> {
+  const extractDetailsPrompt = ai.definePrompt({
+    name: 'extractDetailsPrompt',
+    model: 'googleai/gemini-pro-vision',
+    input: { schema: ExtractDetailsInputSchema },
+    output: { schema: ExtractDetailsOutputSchema },
+    prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer and extract its key details.
 
     Return ONLY a valid JSON object that conforms to the specified schema.
     
@@ -32,32 +33,30 @@ const extractDetailsPrompt = ai.definePrompt({
     If a field is not present in the image, you must omit it from the JSON response. Do not invent details.
 
     Image: {{media url=imageDataUri}}`
-});
+  });
 
-const extractEventDetailsFlow = ai.defineFlow(
-  {
-    name: 'extractEventDetailsFlow',
-    inputSchema: ExtractDetailsInputSchema,
-    outputSchema: ExtractDetailsOutputSchema,
-  },
-  async (input) => {
-    try {
-      const { output } = await extractDetailsPrompt(input);
-      // If the model returns nothing or an empty object, treat it as a failure.
-      if (!output || Object.keys(output).length === 0) {
-        throw new Error("Could not extract any structured details. The image may be unclear or lack event information.");
+  const extractEventDetailsFlow = ai.defineFlow(
+    {
+      name: 'extractEventDetailsFlow',
+      inputSchema: ExtractDetailsInputSchema,
+      outputSchema: ExtractDetailsOutputSchema,
+    },
+    async (flowInput) => {
+      try {
+        const { output } = await extractDetailsPrompt(flowInput);
+        // If the model returns nothing or an empty object, treat it as a failure.
+        if (!output || Object.keys(output).length === 0) {
+          throw new Error("Could not extract any structured details. The image may be unclear or lack event information.");
+        }
+        return output;
+      } catch (e: any) {
+          console.error("Error during Genkit prompt execution:", e);
+          // Re-throw a more user-friendly error to be caught by the client.
+          throw new Error("The AI model failed to process the image. Please try again.");
       }
-      return output;
-    } catch (e: any) {
-        console.error("Error during Genkit prompt execution:", e);
-        // Re-throw a more user-friendly error to be caught by the client.
-        throw new Error("The AI model failed to process the image. Please try again.");
     }
-  }
-);
-
-export async function extractEventDetails(input: ExtractDetailsInput): Promise<ExtractDetailsOutput> {
-  // The flow now contains the try/catch logic, so we can call it directly.
+  );
+  
   const result = await extractEventDetailsFlow(input);
   return result;
 }
