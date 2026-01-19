@@ -58,7 +58,7 @@ import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { DUMMY_EVENTS } from '@/lib/data';
-import { useFirestore, useUser } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase/provider';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { extractEventDetails, type ExtractDetailsOutput } from '@/ai/flows/extract-event-details';
@@ -403,19 +403,13 @@ export default function CreateEventPage() {
                 title: "Extraction Complete!",
                 description: "Please review the extracted details in the popup.",
             });
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Extraction Failed",
-                description: "Could not extract any details from the image.",
-            });
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error("AI Extraction failed:", error);
         toast({
             variant: "destructive",
             title: "AI Extraction Error",
-            description: "An unexpected error occurred. Please try again.",
+            description: error.message || "An unexpected error occurred. Please try again.",
         });
     } finally {
         setIsExtracting(false);

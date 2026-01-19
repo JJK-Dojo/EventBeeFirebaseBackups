@@ -30,16 +30,17 @@ const extractDetailsPrompt = ai.definePrompt({
   name: 'extractDetailsPrompt',
   input: { schema: ExtractDetailsInputSchema },
   output: { schema: ExtractDetailsOutputSchema },
-  prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer.
+  prompt: `You are an expert event assistant. Your task is to analyze the provided image of an event poster or flyer and extract its key details.
 
-    Extract the following details and return them as a JSON object:
+    Return ONLY a valid JSON object that conforms to the specified schema.
+    
     - title: The main title of the event.
-    - date: The date of the event. Extract it exactly as written.
-    - time: The start time of the event. Extract it exactly as written.
+    - date: The date of the event. Extract it exactly as it is written on the flyer.
+    - time: The start time of the event. Extract it exactly as it is written.
     - venue: The location or venue of the event.
     - description: Based on all the text and visual elements, write a compelling and concise one-paragraph description for the event. This should be ready to be used directly in an event listing.
 
-    If a field is not present in the image, omit it from the JSON response.
+    If a field is not present in the image, you must omit it from the JSON response. Do not invent details.
 
     Image: {{media url=imageDataUri}}`
 });
@@ -51,11 +52,23 @@ const extractEventDetailsFlow = ai.defineFlow(
     outputSchema: ExtractDetailsOutputSchema,
   },
   async (input) => {
-    const { output } = await extractDetailsPrompt(input);
-    return output || {};
+    try {
+      const { output } = await extractDetailsPrompt(input);
+      // If the model returns nothing or an empty object, treat it as a failure.
+      if (!output || Object.keys(output).length === 0) {
+        throw new Error("Could not extract any structured details. The image may be unclear or lack event information.");
+      }
+      return output;
+    } catch (e: any) {
+        console.error("Error during Genkit prompt execution:", e);
+        // Re-throw a more user-friendly error to be caught by the client.
+        throw new Error("The AI model failed to process the image. Please try again.");
+    }
   }
 );
 
 export async function extractEventDetails(input: ExtractDetailsInput): Promise<ExtractDetailsOutput> {
-  return extractEventDetailsFlow(input);
+  // The flow now contains the try/catch logic, so we can call it directly.
+  const result = await extractEventDetailsFlow(input);
+  return result;
 }
