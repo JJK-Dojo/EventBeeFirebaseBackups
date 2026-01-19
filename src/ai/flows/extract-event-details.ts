@@ -49,8 +49,8 @@ const extractEventDetailsFlow = ai.defineFlow(
         return output;
       } catch (e: any) {
           console.error("Error during Genkit prompt execution:", e);
-          // Re-throw a more user-friendly error to be caught by the client.
-          throw new Error("The AI model failed to process the image. Please try again.");
+          // Re-throw a more user-friendly error to be caught by the client, including the original error message.
+          throw new Error(`The AI model failed to process the image. Reason: ${e.message}`);
       }
     }
 );
