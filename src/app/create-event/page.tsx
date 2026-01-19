@@ -168,19 +168,33 @@ const parseDateString = (dateString: string): Date | null => {
     return null;
 }
 
-// Function to convert an image to a JPEG data URI
-const toJpegDataURL = (dataUrl: string, quality = 0.9): Promise<string> => {
+// Function to convert an image to a JPEG data URI, with resizing
+const toJpegDataURL = (dataUrl: string, quality = 0.9, maxWidth = 1024, maxHeight = 1024): Promise<string> => {
     return new Promise((resolve, reject) => {
         const img = new window.Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
+            let { width, height } = img;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            
             const ctx = canvas.getContext('2d');
             if (!ctx) {
                 return reject(new Error('Could not get canvas context'));
             }
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, 0, 0, width, height);
             resolve(canvas.toDataURL('image/jpeg', quality));
         };
         img.onerror = (err) => reject(err);
