@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { PlusCircle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Logo from './logo';
-import { useUser } from '@/firebase/auth/use-user';
+import { useUser } from '@/firebase';
 import { UserMenu } from './user-menu';
 
 export default function Header({ showNavButtons = true }: { showNavButtons?: boolean }) {

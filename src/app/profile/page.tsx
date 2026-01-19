@@ -33,7 +33,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { useUser } from '@/firebase/auth/use-user';
+import { useUser } from '@/firebase';
 import { useUserEvents } from '@/firebase/firestore/use-user-events';
 
 type UserEvent = Event & {

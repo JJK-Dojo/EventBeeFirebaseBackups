@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
 import EventCardMini from '@/components/event-card-mini';
-import { Search, PlusCircle, Users } from 'lucide-react';
+import { Search, PlusCircle } from 'lucide-react';
 import { collection, query, where } from 'firebase/firestore';
 import Header from '@/components/header';
 
@@ -95,21 +95,15 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
-                        <Button style={{ color: 'hsl(var(--accent))' }}>
+                        <Button variant="accent">
                           <Search className="mr-2 h-5 w-5" />
                           Find an Event
                         </Button>
                     </Link>
                     <Link href="/create-event" passHref>
-                        <Button style={{ color: 'hsl(var(--accent))' }}>
+                        <Button variant="accent">
                           <PlusCircle className="mr-2 h-5 w-5" />
                           Create an Event
-                        </Button>
-                    </Link>
-                    <Link href="/find-events" passHref>
-                        <Button style={{ color: 'hsl(var(--accent))' }}>
-                          <Users className="mr-2 h-5 w-5" />
-                          Continue as Guest
                         </Button>
                     </Link>
                 </div>

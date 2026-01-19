@@ -50,9 +50,8 @@ import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { DUMMY_EVENTS } from '@/lib/data';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
-import { useUser } from '@/firebase/auth/use-user';
 import Image from 'next/image';
 
 type PostOffice = {
@@ -182,7 +181,7 @@ export default function CreateEventPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const firestore = useFirestore();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const [isEditing, setIsEditing] = useState(false);
   const [eventToEdit, setEventToEdit] = useState<Event | null>(null);

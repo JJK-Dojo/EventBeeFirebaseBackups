@@ -24,7 +24,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import type { Event } from '@/lib/types';
-import { useUser } from '@/firebase/auth/use-user';
+import { useUser } from '@/firebase';
 import { useUserEvents } from '@/firebase/firestore/use-user-events';
 
 function EventListItem({ event }: { event: Event }) {
@@ -74,7 +74,7 @@ function EventListItem({ event }: { event: Event }) {
 
 export default function DashboardPage() {
     const router = useRouter();
-    const { user, isLoading: isUserLoading } = useUser();
+    const { user, isUserLoading } = useUser();
     const { data: userEvents, isLoading: areEventsLoading } = useUserEvents(user?.uid);
     
     const isLoading = isUserLoading || areEventsLoading;
