@@ -139,12 +139,14 @@ service cloud.firestore {
           isSignedIn() &&
           isExistingDoc() &&
           // On any update, ensure 'id' and 'userId' are not being changed.
-          !('id' in request.resource.data) &&
-          !('userId' in request.resource.data) &&
-          // Allow update if the user is the owner of the event
-          (request.auth.uid == resource.data.userId ||
-          // OR if the request only changes 'status' or 'feedback' (admin action)
-          request.resource.data.keys().hasOnly(['status', 'feedback']));
+          request.resource.data.id == resource.data.id &&
+          request.resource.data.userId == resource.data.userId &&
+          (
+            // Allow update if the user is the owner of the event...
+            request.auth.uid == resource.data.userId ||
+            // ...OR if the request only changes 'status' or 'feedback' (for admin actions).
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'feedback'])
+          );
       allow delete: if isExistingResourceOwner();
     }
   }
