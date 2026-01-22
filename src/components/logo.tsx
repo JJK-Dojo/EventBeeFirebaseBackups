@@ -14,9 +14,9 @@ export default function Logo({ className }: { className?: string }) {
         </div>
         
         {/* Text */}
-        <div className="flex flex-col items-start leading-tight">
+        <div className="flex flex-col items-center leading-tight">
             <div className="text-lg font-bold glitter-text tracking-widest">WIME</div>
-            <div className="text-[0.6rem] font-semibold whitespace-nowrap text-primary">Where is My Event</div>
+            <div className="text-[0.6rem] font-semibold text-primary">Where is My Event</div>
         </div>
     </div>
   );
