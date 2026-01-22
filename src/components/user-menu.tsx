@@ -13,13 +13,20 @@ import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, B
 import type { User } from 'firebase/auth';
 import { useSignOut } from '@/firebase/auth/hooks';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export function UserMenu({ user }: { user: User | null }) {
   const { signOut, error } = useSignOut();
+  const router = useRouter();
 
   if (error) {
     console.error('Sign out error:', error);
   }
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   if (!user) {
     return (
@@ -98,7 +105,7 @@ export function UserMenu({ user }: { user: User | null }) {
             <Link href="/test-ui"><Palette className="mr-2 h-4 w-4" />UI Showcase</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={signOut}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
