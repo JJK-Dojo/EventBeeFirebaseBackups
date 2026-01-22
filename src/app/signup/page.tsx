@@ -32,7 +32,7 @@ export default function SignupPage() {
   const { toast } = useToast();
   const { signUp, error: signUpError } = useSignUp();
   const { signInWithGoogle, error: googleError } = useSignInWithGoogle();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);

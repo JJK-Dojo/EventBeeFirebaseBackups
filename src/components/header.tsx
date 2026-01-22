@@ -9,7 +9,7 @@ import { useUser } from '@/firebase';
 import { UserMenu } from './user-menu';
 
 export default function Header({ showNavButtons = true }: { showNavButtons?: boolean }) {
-  const { user, isLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   
   const logoHref = '/';
 
@@ -61,7 +61,7 @@ export default function Header({ showNavButtons = true }: { showNavButtons?: boo
               </Link>
             </>
           )}
-          {!isLoading && <UserMenu user={user} />}
+          {!isUserLoading && <UserMenu user={user} />}
         </div>
       </div>
     </header>

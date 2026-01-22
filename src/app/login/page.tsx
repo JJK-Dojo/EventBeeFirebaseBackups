@@ -32,7 +32,7 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-    const { user, isLoading: isUserLoading } = useUser();
+    const { user, isUserLoading } = useUser();
 
     useEffect(() => {
         if (!isUserLoading && user) {

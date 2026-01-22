@@ -130,7 +130,7 @@ function EventListItem({ event }: { event: UserEvent }) {
 }
 
 export default function ProfilePage() {
-    const { user, isLoading: isUserLoading } = useUser();
+    const { user, isUserLoading } = useUser();
     const { data: events, isLoading: areEventsLoading } = useUserEvents(user?.uid);
     
     const [userEvents, setUserEvents] = useState<UserEvent[]>([]);
