@@ -10,7 +10,7 @@ import {
   signOut as firebaseSignOut,
   updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useAuth, useFirestore } from '../provider';
 
 export function useSignUp() {
@@ -34,6 +34,7 @@ export function useSignUp() {
         firstName: profileData.firstName,
         lastName: profileData.lastName,
         createdAt: new Date().toISOString(),
+        role: 'basic',
       });
 
       setError(null);
@@ -76,17 +77,28 @@ export function useSignInWithGoogle() {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
 
-            // Check if the user is new or existing
             const userDocRef = doc(firestore, 'users', user.uid);
-            
-            // For a new user, create a profile document
-            await setDoc(userDocRef, {
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+              // If the user is new, create their profile with a default 'basic' role
+              await setDoc(userDocRef, {
+                  uid: user.uid,
+                  email: user.email,
+                  displayName: user.displayName,
+                  photoURL: user.photoURL,
+                  createdAt: new Date().toISOString(),
+                  role: 'basic',
+              });
+            } else {
+              // If user exists, just update their info but do not touch the role
+              await setDoc(userDocRef, {
                 uid: user.uid,
                 email: user.email,
                 displayName: user.displayName,
                 photoURL: user.photoURL,
-                createdAt: new Date().toISOString(),
-            }, { merge: true }); // Use merge to avoid overwriting existing data if they sign up differently later
+              }, { merge: true });
+            }
 
             setError(null);
             return true;
@@ -109,11 +121,13 @@ export function useSignOut() {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      setError(null);
+      router.push('/');
     } catch (e: any) {
       setError(e.message);
     }
   };
+
+  const router = useRouter();
 
   return { signOut, error };
 }

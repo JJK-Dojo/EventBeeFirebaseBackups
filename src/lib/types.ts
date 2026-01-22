@@ -1,3 +1,4 @@
+
 export type Event = {
   id: string;
   title: string;
@@ -25,4 +26,15 @@ export type PostOffice = {
   District: string;
   State: string;
   Pincode: string;
+};
+
+export type UserProfile = {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL?: string | null;
+  firstName?: string;
+  lastName?: string;
+  createdAt?: string | Date;
+  role?: 'admin' | 'advanced' | 'basic';
 };

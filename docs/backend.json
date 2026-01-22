@@ -33,6 +33,15 @@
           "type": "string",
           "description": "Date and time of the user's last login.",
           "format": "date-time"
+        },
+        "role": {
+          "type": "string",
+          "description": "The access level of the user.",
+          "enum": [
+            "basic",
+            "advanced",
+            "admin"
+          ]
         }
       },
       "required": [
@@ -129,7 +138,7 @@
           "schema": {
             "$ref": "#/entities/User"
           },
-          "description": "Stores private user profile information. The 'userId' parameter represents the unique identifier for each user, enforcing ownership.",
+          "description": "Stores private user profile information. The 'userId' parameter represents the unique identifier for each user. Admins can view and manage all users, while regular users can only access their own data.",
           "params": [
             {
               "name": "userId",
@@ -158,5 +167,3 @@
     "reasoning": "The Firestore structure is designed for a public-facing event platform. It uses a dual-collection model: a private `/users` collection for profile data, secured by path-based ownership, and a public-readable `/events` collection for all event listings. This separation is key: it allows any authenticated user to query and discover all events (essential for the `find-events` page) while still enforcing strict ownership for all write operations (create, update, delete) on individual events. Ownership of an event is determined by a `userId` field denormalized into each event document, which allows security rules to be both efficient and secure without needing cross-collection queries. This model supports the core functionality of a public event board while protecting user-specific data and event integrity."
   }
 }
-
-    

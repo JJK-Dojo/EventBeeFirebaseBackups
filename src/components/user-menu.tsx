@@ -1,3 +1,4 @@
+
 'use client';
 import {
   DropdownMenu,
@@ -9,15 +10,30 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette, UserPlus, Monitor } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette, UserPlus, Monitor, Users } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { useSignOut } from '@/firebase/auth/hooks';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
+
 
 export function UserMenu({ user }: { user: User | null }) {
   const { signOut, error } = useSignOut();
   const router = useRouter();
+  const firestore = useFirestore();
+
+  const userProfileRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
+  const { data: userProfile } = useDoc<UserProfile>(userProfileRef);
+
+  const isAdmin = userProfile?.role === 'admin';
+
 
   if (error) {
     console.error('Sign out error:', error);
@@ -80,6 +96,11 @@ export function UserMenu({ user }: { user: User | null }) {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
          <DropdownMenuLabel>Admin & Dev</DropdownMenuLabel>
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+              <Link href="/users"><Users className="mr-2 h-4 w-4" />Manage Users</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
             <Link href="/admin"><Shield className="mr-2 h-4 w-4" />Admin Panel</Link>
         </DropdownMenuItem>

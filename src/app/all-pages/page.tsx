@@ -1,3 +1,4 @@
+
 'use client';
 
 import Header from '@/components/header';
@@ -107,6 +108,12 @@ export const allAppPages = [
     title: 'UI Showcase', 
     description: 'A utility page for previewing UI components.',
     fields: ['Event Card Preview', 'Event Filters Preview', 'Buttons', 'Inputs', 'Badges']
+  },
+  { 
+    href: '/users', 
+    title: 'User Management', 
+    description: 'A page for admins to view and manage all users and their permissions.',
+    fields: ['User Avatar & Name', 'Email', 'Role (Basic, Advanced, Admin)', 'Edit Permission Button']
   },
 ];
 
