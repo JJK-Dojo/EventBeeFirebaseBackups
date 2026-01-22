@@ -9,7 +9,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
 } from '@/components/ui/card';
 import { Sheet, Plus, Trash2, Download, Pencil, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -630,6 +629,45 @@ export default function SitePlannerPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="outline" onClick={handleSyncPages}>
+                        <Zap className="mr-2 h-4 w-4" />
+                        Sync Pages
+                    </Button>
+                    <Button variant="outline" onClick={handleExport}>
+                        <Download className="mr-2 h-4 w-4" />
+                        Download as CSV
+                    </Button>
+                </div>
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                    <DialogTrigger asChild>
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Row
+                    </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl">
+                    <DialogHeader>
+                        <DialogTitle>Add New Page Detail</DialogTitle>
+                        <DialogDescription>
+                        Fill in the details for the new page you want to document.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {renderDetailForm(newRowData, setNewRowData)}
+                    <DialogFooter>
+                        <Button
+                        variant="outline"
+                        onClick={() => setIsAddDialogOpen(false)}
+                        >
+                        Cancel
+                        </Button>
+                        <Button onClick={handleSaveNewRow}>Save Row</Button>
+                    </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+              </div>
+
               <div className="w-full rounded-lg border">
                   {/* Non-scrolling Header */}
                   <div className="flex border-b bg-muted/50 text-sm font-medium text-muted-foreground">
@@ -763,44 +801,6 @@ export default function SitePlannerPage() {
                   </div>
               </div>
             </CardContent>
-            <CardFooter className="justify-between border-t pt-6">
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleExport}>
-                  <Download className="mr-2 h-4 w-4" />
-                  Download as CSV
-                </Button>
-                <Button variant="outline" onClick={handleSyncPages}>
-                  <Zap className="mr-2 h-4 w-4" />
-                  Sync Pages
-                </Button>
-              </div>
-              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Row
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl">
-                  <DialogHeader>
-                    <DialogTitle>Add New Page Detail</DialogTitle>
-                    <DialogDescription>
-                      Fill in the details for the new page you want to document.
-                    </DialogDescription>
-                  </DialogHeader>
-                  {renderDetailForm(newRowData, setNewRowData)}
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsAddDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={handleSaveNewRow}>Save Row</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </CardFooter>
           </Card>
         </div>
       </main>
