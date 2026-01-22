@@ -625,7 +625,7 @@ export default function SitePlannerPage() {
               </CardTitle>
               <CardDescription>
                 A detailed breakdown of each page's logic, functionality, and
-                purpose. Each row scrolls horizontally.
+                purpose. The table is horizontally scrollable.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -668,9 +668,10 @@ export default function SitePlannerPage() {
                 </Dialog>
               </div>
 
-              <div className="w-full rounded-lg border">
-                  {/* Non-scrolling Header */}
-                  <div className="flex border-b bg-muted/50 text-sm font-medium text-muted-foreground">
+              <div className="w-full overflow-x-auto rounded-lg border">
+                <div style={{ minWidth: totalWidth }}>
+                  {/* Sticky Header */}
+                  <div className="sticky top-0 z-10 flex border-b bg-muted/80 text-sm font-medium text-muted-foreground backdrop-blur-sm">
                     {columnStyles.map((col) => (
                       <div
                         key={col.name}
@@ -682,14 +683,13 @@ export default function SitePlannerPage() {
                     ))}
                   </div>
 
-                  {/* Body with individually scrolling rows */}
+                  {/* Body */}
                   <div className="text-sm">
                     {details.map((detail) => (
                       <div
                         key={detail.id}
-                        className="overflow-x-auto border-b last:border-none hover:bg-muted/20"
+                        className="flex items-start border-b last:border-none hover:bg-muted/20"
                       >
-                        <div className="flex items-start" style={{ width: totalWidth }}>
                            {/* Actions */}
                           <div
                             className="p-2"
@@ -796,9 +796,9 @@ export default function SitePlannerPage() {
                             {detail.remarks}
                           </div>
                         </div>
-                      </div>
                     ))}
                   </div>
+                </div>
               </div>
             </CardContent>
           </Card>
