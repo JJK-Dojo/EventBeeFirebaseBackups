@@ -73,6 +73,12 @@ export const allAppPages = [
     fields: ['User Avatar & Name', 'Total "Bees"', 'Sortable Lists (Published, Pending, Denied, Drafts)', 'Event Stats (Views, Comments, Bees)', 'Edit Button']
   },
   { 
+    href: '/responsive-preview', 
+    title: 'Responsive Preview', 
+    description: 'Preview the app in mobile and desktop views with live functionality.',
+    fields: ['Desktop View Button', 'Mobile View Button', 'Interactive Iframe']
+  },
+  { 
     href: '/share', 
     title: 'Share Page', 
     description: 'Generates a QR code and link to share the application.',
