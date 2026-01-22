@@ -10,7 +10,7 @@ import {
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import { Sheet, Plus, Trash2, Download, Pencil } from 'lucide-react';
+import { Sheet, Plus, Trash2, Download, Pencil, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -25,6 +25,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
+import { allAppPages } from '../all-pages/page';
 
 type ButtonDetail = {
   id: string;
@@ -417,6 +418,36 @@ export default function SitePlannerPage() {
     document.body.removeChild(link);
   };
 
+  const handleSyncPages = () => {
+    const existingPagePaths = details.map(d => d.page);
+    const newPages = allAppPages.filter(p => !existingPagePaths.includes(p.href));
+
+    if (newPages.length === 0) {
+      toast({
+        title: 'Already up to date!',
+        description: 'No new pages were found in the application.',
+      });
+      return;
+    }
+
+    const newDetails: Detail[] = newPages.map((page, index) => ({
+      id: (details.length > 0 ? Math.max(...details.map(d => d.id)) : 0) + 1 + index,
+      page: page.href,
+      pageLogic: '',
+      buttons: [],
+      currentUse: '',
+      futureAdditions: '',
+      remarks: `Synced from page list. Title: ${page.title}. Description: ${page.description}`,
+    }));
+
+    setDetails(prevDetails => [...prevDetails, ...newDetails]);
+
+    toast({
+      title: 'Sync Complete',
+      description: `${newPages.length} new page(s) have been added to the planner.`,
+    });
+  };
+
   const renderDetailForm = (
     data: Omit<Detail, 'id'>,
     setData: (data: any) => void
@@ -613,7 +644,7 @@ export default function SitePlannerPage() {
                 {/* Scrolling Rows */}
                 <div className="text-sm">
                   {details.map((detail) => (
-                    <div key={detail.id} className="overflow-x-scroll border-b">
+                    <div key={detail.id} className="overflow-x-auto border-b">
                       <div className="flex items-start">
                         {/* Actions */}
                         <div
@@ -727,10 +758,16 @@ export default function SitePlannerPage() {
               </div>
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
-              <Button variant="outline" onClick={handleExport}>
-                <Download className="mr-2 h-4 w-4" />
-                Download as CSV
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleExport}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download as CSV
+                </Button>
+                <Button variant="outline" onClick={handleSyncPages}>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Sync Pages
+                </Button>
+              </div>
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                 <DialogTrigger asChild>
                   <Button>

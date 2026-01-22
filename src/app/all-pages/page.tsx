@@ -1,4 +1,3 @@
-
 'use client';
 
 import Header from '@/components/header';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { List } from 'lucide-react';
 import Link from 'next/link';
 
-const pages = [
+export const allAppPages = [
   { 
     href: '/admin', 
     title: 'Admin Panel', 
@@ -123,7 +122,7 @@ export default function AllPages() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {pages.sort((a, b) => a.title.localeCompare(b.title)).map((page) => (
+                {allAppPages.sort((a, b) => a.title.localeCompare(b.title)).map((page) => (
                   <li key={page.href}>
                     <Link href={page.href}>
                       <div className="block rounded-lg border p-4 transition-all hover:bg-muted hover:shadow-md">
