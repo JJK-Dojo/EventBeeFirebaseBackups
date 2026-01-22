@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -623,29 +624,32 @@ export default function SitePlannerPage() {
               </CardTitle>
               <CardDescription>
                 A detailed breakdown of each page's logic, functionality, and
-                purpose. Each row scrolls horizontally.
+                purpose. The table below scrolls horizontally.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-lg">
-                {/* Non-scrolling Header */}
-                <div className="flex items-center border-b bg-muted/50 font-medium text-muted-foreground text-sm sticky top-0 z-10">
-                  {columnStyles.map((col) => (
-                    <div
-                      key={col.name}
-                      className="p-2 text-left"
-                      style={{ flex: `0 0 ${col.width}` }}
-                    >
-                      {col.name}
-                    </div>
-                  ))}
-                </div>
+              <div className="w-full overflow-x-auto rounded-lg border">
+                <div className="relative min-w-[1650px]">
+                  {/* Sticky Header */}
+                  <div className="sticky top-0 z-10 flex border-b bg-muted/50 text-sm font-medium text-muted-foreground">
+                    {columnStyles.map((col) => (
+                      <div
+                        key={col.name}
+                        className="p-2 text-left"
+                        style={{ flex: `0 0 ${col.width}` }}
+                      >
+                        {col.name}
+                      </div>
+                    ))}
+                  </div>
 
-                {/* Scrolling Rows */}
-                <div className="text-sm">
-                  {details.map((detail) => (
-                    <div key={detail.id} className="overflow-x-auto border-b">
-                      <div className="flex items-start">
+                  {/* Body */}
+                  <div className="text-sm">
+                    {details.map((detail) => (
+                      <div
+                        key={detail.id}
+                        className="flex items-start border-b last:border-none hover:bg-muted/20"
+                      >
                         {/* Actions */}
                         <div
                           className="p-2"
@@ -691,7 +695,7 @@ export default function SitePlannerPage() {
                             <div className="space-y-2">
                               {detail.buttons.map((button, index) => (
                                 <Card key={index} className="bg-muted/30">
-                                  <CardContent className="p-3 text-xs space-y-1">
+                                  <CardContent className="space-y-1 p-3 text-xs">
                                     <p>
                                       <strong className="font-semibold text-foreground">
                                         Name:
@@ -752,8 +756,8 @@ export default function SitePlannerPage() {
                           {detail.remarks}
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </CardContent>
