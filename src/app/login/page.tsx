@@ -83,12 +83,12 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="mb-4 flex justify-center">
             <Link href="/">
-              <Logo className="h-24 w-48" />
+              <Logo />
             </Link>
           </div>
           <CardTitle className="font-headline text-2xl">Welcome Back!</CardTitle>
           <CardDescription>
-            Sign in to your Eventide account to continue.
+            Sign in to your account to continue.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-4">

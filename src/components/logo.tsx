@@ -3,12 +3,14 @@
 import { cn } from '@/lib/utils';
 
 export default function Logo({ className }: { className?: string }) {
-  // eslint-disable-next-line @next/next/no-img-element
   return (
-    <img
-      src="https://i.postimg.cc/fTX70zjV/Vibrant-evening-them5.png"
-      alt="Eventide Logo"
-      className={cn("h-full w-full object-contain", className)}
-    />
+    <div className={cn("flex flex-col items-center justify-center -space-y-1", className)}>
+      <span className="font-headline text-xl font-semibold tracking-tighter whitespace-nowrap text-foreground">
+        Where is My Event
+      </span>
+      <span className="text-3xl font-black glitter-text tracking-widest">
+        WIME
+      </span>
+    </div>
   );
 }

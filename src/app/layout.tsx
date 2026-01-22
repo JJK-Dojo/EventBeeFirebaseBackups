@@ -21,10 +21,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Eventide',
-    template: '%s | Eventide',
+    default: 'Where is My Event',
+    template: '%s | WIME',
   },
-  description: 'Eventide: Your guide to local happenings.',
+  description: 'WIME: Your guide to local happenings.',
 };
 
 export default function RootLayout({
