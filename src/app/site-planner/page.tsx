@@ -610,7 +610,7 @@ export default function SitePlannerPage() {
     { name: 'Remarks', width: '250px' },
   ];
 
-  const totalWidth = columnStyles.reduce((acc, col) => acc + parseInt(col.width, 10), 0) + 'px';
+  const totalWidth = columnStyles.reduce((acc, col) => acc + parseInt(col.width.replace('px', '')), 0) + 'px';
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -625,7 +625,7 @@ export default function SitePlannerPage() {
               </CardTitle>
               <CardDescription>
                 A detailed breakdown of each page's logic, functionality, and
-                purpose. The table is horizontally scrollable.
+                purpose. Each row is horizontally scrollable.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -668,29 +668,33 @@ export default function SitePlannerPage() {
                 </Dialog>
               </div>
 
-              <div className="w-full overflow-x-auto rounded-lg border">
-                <div style={{ minWidth: totalWidth }}>
-                  {/* Sticky Header */}
-                  <div className="sticky top-0 z-10 flex border-b bg-muted/80 text-sm font-medium text-muted-foreground backdrop-blur-sm">
-                    {columnStyles.map((col) => (
-                      <div
-                        key={col.name}
-                        className="p-2 text-left"
-                        style={{ flex: `0 0 ${col.width}` }}
-                      >
-                        {col.name}
-                      </div>
-                    ))}
-                  </div>
+              <div className="w-full rounded-lg border">
+                {/* Non-scrolling Header */}
+                <div className="flex border-b bg-muted/80 text-sm font-medium text-muted-foreground">
+                  {columnStyles.map((col) => (
+                    <div
+                      key={col.name}
+                      className="p-2 text-left"
+                      style={{ flex: `0 0 ${col.width}` }}
+                    >
+                      {col.name}
+                    </div>
+                  ))}
+                </div>
 
-                  {/* Body */}
-                  <div className="text-sm">
-                    {details.map((detail) => (
-                      <div
-                        key={detail.id}
-                        className="flex items-start border-b last:border-none hover:bg-muted/20"
-                      >
-                           {/* Actions */}
+                {/* Body with individual scrolling rows */}
+                <div className="text-sm">
+                  {details.map((detail) => (
+                    <div
+                      key={detail.id}
+                      className="border-b last:border-none hover:bg-muted/20"
+                    >
+                      <div className="overflow-x-auto">
+                        <div
+                          className="flex items-start"
+                          style={{ minWidth: totalWidth }}
+                        >
+                          {/* Actions */}
                           <div
                             className="p-2"
                             style={{ flex: `0 0 ${columnStyles[0].width}` }}
@@ -796,8 +800,9 @@ export default function SitePlannerPage() {
                             {detail.remarks}
                           </div>
                         </div>
-                    ))}
-                  </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </CardContent>
