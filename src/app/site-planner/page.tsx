@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -13,7 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Sheet, Plus, Trash2, Download } from 'lucide-react';
+import { Sheet, Plus, Trash2, Download, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -29,8 +28,19 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 
+type Detail = {
+    id: number;
+    page: string;
+    pageLogic: string;
+    buttonsAndLinks: string;
+    buttonLogic: string;
+    currentUse: string;
+    futureAdditions: string;
+    remarks: string;
+};
 
-const initialDetails = [
+
+const initialDetails: Detail[] = [
     { id: 1, page: '/admin', pageLogic: 'Displays events with "pending" status for admin approval or denial. Admins can provide feedback for denials.', buttonsAndLinks: 'Approve, Deny', buttonLogic: 'Approve: Updates event status to "published". Deny: Opens a dialog to enter feedback and updates status to "denied".', currentUse: 'Core admin functionality for content moderation.', futureAdditions: 'Bulk actions (approve/deny all), filtering by user, direct link to user profile.', remarks: 'Security rules must ensure only admins can access this page and perform updates.' },
     { id: 2, page: '/analytics', pageLogic: 'Visualizes event data using charts. Shows events by category, status, top locations, and tag popularity.', buttonsAndLinks: 'None', buttonLogic: 'N/A', currentUse: 'Provides insights into event trends. Currently uses dummy data.', futureAdditions: 'Connect to live Firestore data, add date range filters, show user engagement metrics.', remarks: 'Chart components from Recharts are used.' },
     { id: 3, page: '/contact-us', pageLogic: 'A standard contact form that collects user name, email, subject, and message.', buttonsAndLinks: 'Send Message', buttonLogic: 'On submit, displays a toast notification. In a real app, it would trigger an email or save the message.', currentUse: 'Static contact page.', futureAdditions: 'Integrate with an email service or save messages to Firestore.', remarks: '' },
@@ -47,16 +57,19 @@ const initialDetails = [
     { id: 14, page: '/test-ui', pageLogic: 'A showroom for all major UI components used in the application, such as cards, buttons, inputs, and filters.', buttonsAndLinks: 'N/A', buttonLogic: 'N/A', currentUse: 'A visual regression testing and component gallery page for developers.', futureAdditions: 'Add more complex component compositions.', remarks: 'Useful for ensuring design consistency.' },
 ];
 
+const emptyDetail: Omit<Detail, 'id'> = { page: '', pageLogic: '', buttonsAndLinks: '', buttonLogic: '', currentUse: '', futureAdditions: '', remarks: '' };
+
 export default function SitePlannerPage() {
   const [details, setDetails] = useState(initialDetails);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [newRowData, setNewRowData] = useState({ page: '', pageLogic: '', buttonsAndLinks: '', buttonLogic: '', currentUse: '', futureAdditions: '', remarks: '' });
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [newRowData, setNewRowData] = useState(emptyDetail);
+  const [currentRow, setCurrentRow] = useState<Detail | null>(null);
   const { toast } = useToast();
 
-  const handleInputChange = (id: number, field: keyof typeof initialDetails[0], value: string) => {
-    setDetails(details.map(detail => 
-      detail.id === id ? { ...detail, [field]: value } : detail
-    ));
+  const handleOpenEditDialog = (detail: Detail) => {
+    setCurrentRow({ ...detail }); // Create a copy to edit
+    setIsEditDialogOpen(true);
   };
   
   const handleSaveNewRow = () => {
@@ -70,9 +83,17 @@ export default function SitePlannerPage() {
     }
     const newId = details.length > 0 ? Math.max(...details.map(d => d.id)) + 1 : 1;
     setDetails([...details, { ...newRowData, id: newId }]);
-    setNewRowData({ page: '', pageLogic: '', buttonsAndLinks: '', buttonLogic: '', currentUse: '', futureAdditions: '', remarks: '' });
-    setIsDialogOpen(false);
+    setNewRowData(emptyDetail);
+    setIsAddDialogOpen(false);
   };
+  
+  const handleSaveEditedRow = () => {
+    if (!currentRow) return;
+    setDetails(details.map(d => d.id === currentRow.id ? currentRow : d));
+    setIsEditDialogOpen(false);
+    setCurrentRow(null);
+  };
+
 
   const handleDeleteRow = (id: number) => {
     setDetails(details.filter(detail => detail.id !== id));
@@ -103,6 +124,39 @@ export default function SitePlannerPage() {
     link.click();
     document.body.removeChild(link);
   };
+
+  const renderDetailForm = (data: Omit<Detail, 'id'>, setData: (data: any) => void) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
+        <div className="space-y-2">
+            <Label htmlFor="page-path">Page Path</Label>
+            <Input id="page-path" value={data.page} onChange={(e) => setData({ ...data, page: e.target.value })} placeholder="/example-page" />
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="buttons-links">Buttons & Links</Label>
+            <Textarea id="buttons-links" value={data.buttonsAndLinks} onChange={(e) => setData({ ...data, buttonsAndLinks: e.target.value })} placeholder="List all interactive elements..." />
+        </div>
+        <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="page-logic">Page Logic</Label>
+            <Textarea id="page-logic" value={data.pageLogic} onChange={(e) => setData({ ...data, pageLogic: e.target.value })} placeholder="Describe the core logic..." />
+        </div>
+        <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="button-logic">Button Logic</Label>
+            <Textarea id="button-logic" value={data.buttonLogic} onChange={(e) => setData({ ...data, buttonLogic: e.target.value })} placeholder="Explain what each button does..." />
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="current-use">Current Use</Label>
+            <Textarea id="current-use" value={data.currentUse} onChange={(e) => setData({ ...data, currentUse: e.target.value })} placeholder="What is its current state?" />
+        </div>
+        <div className="space-y-2">
+            <Label htmlFor="future-additions">Future Additions</Label>
+            <Textarea id="future-additions" value={data.futureAdditions} onChange={(e) => setData({ ...data, futureAdditions: e.target.value })} placeholder="What features could be added?" />
+        </div>
+        <div className="md:col-span-2 space-y-2">
+            <Label htmlFor="remarks">Remarks</Label>
+            <Textarea id="remarks" value={data.remarks} onChange={(e) => setData({ ...data, remarks: e.target.value })} placeholder="Any other notes..." />
+        </div>
+    </div>
+  );
   
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -116,62 +170,59 @@ export default function SitePlannerPage() {
                 Site Details Planner
               </CardTitle>
               <CardDescription>
-                A detailed breakdown of each page's logic, functionality, and purpose.
+                A detailed breakdown of each page's logic, functionality, and purpose. Click the pencil to edit a row.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableCaption>Application page details.</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[150px]">Page</TableHead>
-                    <TableHead className="min-w-[300px]">Page Logic</TableHead>
-                    <TableHead className="min-w-[200px]">Buttons & Links</TableHead>
-                    <TableHead className="min-w-[300px]">Button Logic</TableHead>
-                    <TableHead className="min-w-[250px]">Current Use</TableHead>
-                    <TableHead className="min-w-[250px]">Future Additions</TableHead>
-                    <TableHead className="min-w-[250px]">Remarks</TableHead>
-                    <TableHead className="w-[50px] text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {details.map((detail) => (
-                    <TableRow key={detail.id}>
-                      <TableCell>
-                        <Input 
-                            value={detail.page}
-                            onChange={(e) => handleInputChange(detail.id, 'page', e.target.value)}
-                            className="border-none bg-transparent p-0 focus-visible:ring-0 h-auto"
-                        />
-                      </TableCell>
-                      {[ 'pageLogic', 'buttonsAndLinks', 'buttonLogic', 'currentUse', 'futureAdditions', 'remarks' ].map(field => (
-                        <TableCell key={field}>
-                          <Textarea
-                            value={detail[field as keyof typeof detail] as string}
-                            onChange={(e) => handleInputChange(detail.id, field as keyof typeof detail, e.target.value)}
-                            className="border-none bg-transparent p-0 focus-visible:ring-0 h-auto"
-                            rows={4}
-                          />
-                        </TableCell>
-                      ))}
-                      <TableCell className="text-right align-top">
-                         <Button variant="ghost" size="icon" onClick={() => handleDeleteRow(detail.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                         </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableCaption>Application page details.</TableCaption>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">Actions</TableHead>
+                      <TableHead className="min-w-[150px]">Page</TableHead>
+                      <TableHead className="min-w-[300px]">Page Logic</TableHead>
+                      <TableHead className="min-w-[200px]">Buttons & Links</TableHead>
+                      <TableHead className="min-w-[300px]">Button Logic</TableHead>
+                      <TableHead className="min-w-[250px]">Current Use</TableHead>
+                      <TableHead className="min-w-[250px]">Future Additions</TableHead>
+                      <TableHead className="min-w-[250px]">Remarks</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {details.map((detail) => (
+                      <TableRow key={detail.id}>
+                        <TableCell className="align-top">
+                           <div className="flex gap-1">
+                             <Button variant="ghost" size="icon" onClick={() => handleOpenEditDialog(detail)}>
+                                <Pencil className="h-4 w-4 text-blue-500" />
+                             </Button>
+                             <Button variant="ghost" size="icon" onClick={() => handleDeleteRow(detail.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                             </Button>
+                           </div>
+                        </TableCell>
+                        <TableCell className="font-medium align-top">{detail.page}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.pageLogic}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.buttonsAndLinks}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.buttonLogic}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.currentUse}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.futureAdditions}</TableCell>
+                        <TableCell className="align-top whitespace-pre-wrap">{detail.remarks}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
                 <Button variant="outline" onClick={handleExport}>
                     <Download className="mr-2 h-4 w-4" />
                     Download as CSV
                 </Button>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button onClick={() => setIsDialogOpen(true)}>
+                    <Button>
                         <Plus className="mr-2 h-4 w-4" />
                         Add Row
                     </Button>
@@ -183,37 +234,9 @@ export default function SitePlannerPage() {
                               Fill in the details for the new page you want to document.
                           </DialogDescription>
                       </DialogHeader>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
-                           <div className="space-y-2">
-                              <Label htmlFor="page-path">Page Path</Label>
-                              <Input id="page-path" value={newRowData.page} onChange={(e) => setNewRowData({...newRowData, page: e.target.value})} placeholder="/example-page" />
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="page-logic">Page Logic</Label>
-                              <Textarea id="page-logic" value={newRowData.pageLogic} onChange={(e) => setNewRowData({...newRowData, pageLogic: e.target.value})} placeholder="Describe the core logic..." />
-                          </div>
-                           <div className="space-y-2">
-                              <Label htmlFor="buttons-links">Buttons & Links</Label>
-                              <Textarea id="buttons-links" value={newRowData.buttonsAndLinks} onChange={(e) => setNewRowData({...newRowData, buttonsAndLinks: e.target.value})} placeholder="List all interactive elements..." />
-                          </div>
-                           <div className="space-y-2">
-                              <Label htmlFor="button-logic">Button Logic</Label>
-                              <Textarea id="button-logic" value={newRowData.buttonLogic} onChange={(e) => setNewRowData({...newRowData, buttonLogic: e.target.value})} placeholder="Explain what each button does..." />
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="current-use">Current Use</Label>
-                              <Textarea id="current-use" value={newRowData.currentUse} onChange={(e) => setNewRowData({...newRowData, currentUse: e.target.value})} placeholder="What is its current state?" />
-                          </div>
-                          <div className="space-y-2">
-                              <Label htmlFor="future-additions">Future Additions</Label>
-                              <Textarea id="future-additions" value={newRowData.futureAdditions} onChange={(e) => setNewRowData({...newRowData, futureAdditions: e.target.value})} placeholder="What features could be added?" />
-                          </div>
-                          <div className="md:col-span-2 space-y-2">
-                              <Label htmlFor="remarks">Remarks</Label>
-                              <Textarea id="remarks" value={newRowData.remarks} onChange={(e) => setNewRowData({...newRowData, remarks: e.target.value})} placeholder="Any other notes..." />
-                          </div>
-                      </div>
+                      {renderDetailForm(newRowData, setNewRowData)}
                       <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>Cancel</Button>
                           <Button onClick={handleSaveNewRow}>Save Row</Button>
                       </DialogFooter>
                   </DialogContent>
@@ -222,6 +245,23 @@ export default function SitePlannerPage() {
           </Card>
         </div>
       </main>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="max-w-4xl">
+            <DialogHeader>
+                <DialogTitle>Edit Page Detail</DialogTitle>
+                <DialogDescription>
+                    Update the details for the page: {currentRow?.page}
+                </DialogDescription>
+            </DialogHeader>
+            {currentRow && renderDetailForm(currentRow, (data) => setCurrentRow(data as Detail))}
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                <Button onClick={handleSaveEditedRow}>Save Changes</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
