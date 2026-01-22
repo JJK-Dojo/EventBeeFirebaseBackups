@@ -611,6 +611,8 @@ export default function SitePlannerPage() {
     { name: 'Remarks', width: '250px' },
   ];
 
+  const totalWidth = columnStyles.reduce((acc, col) => acc + parseInt(col.width, 10), 0) + 'px';
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -624,14 +626,13 @@ export default function SitePlannerPage() {
               </CardTitle>
               <CardDescription>
                 A detailed breakdown of each page's logic, functionality, and
-                purpose. The table below scrolls horizontally.
+                purpose. Each row scrolls horizontally.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="w-full overflow-x-auto rounded-lg border">
-                <div className="relative min-w-[1650px]">
-                  {/* Sticky Header */}
-                  <div className="sticky top-0 z-10 flex border-b bg-muted/50 text-sm font-medium text-muted-foreground">
+              <div className="w-full rounded-lg border">
+                  {/* Non-scrolling Header */}
+                  <div className="flex border-b bg-muted/50 text-sm font-medium text-muted-foreground">
                     {columnStyles.map((col) => (
                       <div
                         key={col.name}
@@ -643,122 +644,123 @@ export default function SitePlannerPage() {
                     ))}
                   </div>
 
-                  {/* Body */}
+                  {/* Body with individually scrolling rows */}
                   <div className="text-sm">
                     {details.map((detail) => (
                       <div
                         key={detail.id}
-                        className="flex items-start border-b last:border-none hover:bg-muted/20"
+                        className="overflow-x-auto border-b last:border-none hover:bg-muted/20"
                       >
-                        {/* Actions */}
-                        <div
-                          className="p-2"
-                          style={{ flex: `0 0 ${columnStyles[0].width}` }}
-                        >
-                          <div className="flex gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleOpenEditDialog(detail)}
-                            >
-                              <Pencil className="h-4 w-4 text-blue-500" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => handleDeleteRow(detail.id)}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                        <div className="flex items-start" style={{ width: totalWidth }}>
+                           {/* Actions */}
+                          <div
+                            className="p-2"
+                            style={{ flex: `0 0 ${columnStyles[0].width}` }}
+                          >
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleOpenEditDialog(detail)}
+                              >
+                                <Pencil className="h-4 w-4 text-blue-500" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDeleteRow(detail.id)}
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        {/* Page */}
-                        <div
-                          className="p-2 font-medium"
-                          style={{ flex: `0 0 ${columnStyles[1].width}` }}
-                        >
-                          {detail.page}
-                        </div>
-                        {/* Page Logic */}
-                        <div
-                          className="p-2 whitespace-pre-wrap"
-                          style={{ flex: `0 0 ${columnStyles[2].width}` }}
-                        >
-                          {detail.pageLogic}
-                        </div>
-                        {/* Button/Link Details */}
-                        <div
-                          className="p-2"
-                          style={{ flex: `0 0 ${columnStyles[3].width}` }}
-                        >
-                          {detail.buttons.length > 0 ? (
-                            <div className="space-y-2">
-                              {detail.buttons.map((button, index) => (
-                                <Card key={index} className="bg-muted/30">
-                                  <CardContent className="space-y-1 p-3 text-xs">
-                                    <p>
-                                      <strong className="font-semibold text-foreground">
-                                        Name:
-                                      </strong>{' '}
-                                      {button.name}
-                                    </p>
-                                    <p>
-                                      <strong className="font-semibold text-foreground">
-                                        Link:
-                                      </strong>{' '}
-                                      <span className="font-mono">
-                                        {button.link}
-                                      </span>
-                                    </p>
-                                    <p>
-                                      <strong className="font-semibold text-foreground">
-                                        Logic:
-                                      </strong>{' '}
-                                      {button.logic}
-                                    </p>
-                                    {button.remarks && (
+                          {/* Page */}
+                          <div
+                            className="p-2 font-medium"
+                            style={{ flex: `0 0 ${columnStyles[1].width}` }}
+                          >
+                            {detail.page}
+                          </div>
+                          {/* Page Logic */}
+                          <div
+                            className="p-2 whitespace-pre-wrap"
+                            style={{ flex: `0 0 ${columnStyles[2].width}` }}
+                          >
+                            {detail.pageLogic}
+                          </div>
+                          {/* Button/Link Details */}
+                          <div
+                            className="p-2"
+                            style={{ flex: `0 0 ${columnStyles[3].width}` }}
+                          >
+                            {detail.buttons.length > 0 ? (
+                              <div className="space-y-2">
+                                {detail.buttons.map((button, index) => (
+                                  <Card key={index} className="bg-muted/30">
+                                    <CardContent className="space-y-1 p-3 text-xs">
                                       <p>
                                         <strong className="font-semibold text-foreground">
-                                          Remarks:
+                                          Name:
                                         </strong>{' '}
-                                        {button.remarks}
+                                        {button.name}
                                       </p>
-                                    )}
-                                  </CardContent>
-                                </Card>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              None
-                            </span>
-                          )}
-                        </div>
-                        {/* Current Use */}
-                        <div
-                          className="p-2 whitespace-pre-wrap"
-                          style={{ flex: `0 0 ${columnStyles[4].width}` }}
-                        >
-                          {detail.currentUse}
-                        </div>
-                        {/* Future Additions */}
-                        <div
-                          className="p-2 whitespace-pre-wrap"
-                          style={{ flex: `0 0 ${columnStyles[5].width}` }}
-                        >
-                          {detail.futureAdditions}
-                        </div>
-                        {/* Remarks */}
-                        <div
-                          className="p-2 whitespace-pre-wrap"
-                          style={{ flex: `0 0 ${columnStyles[6].width}` }}
-                        >
-                          {detail.remarks}
+                                      <p>
+                                        <strong className="font-semibold text-foreground">
+                                          Link:
+                                        </strong>{' '}
+                                        <span className="font-mono">
+                                          {button.link}
+                                        </span>
+                                      </p>
+                                      <p>
+                                        <strong className="font-semibold text-foreground">
+                                          Logic:
+                                        </strong>{' '}
+                                        {button.logic}
+                                      </p>
+                                      {button.remarks && (
+                                        <p>
+                                          <strong className="font-semibold text-foreground">
+                                            Remarks:
+                                          </strong>{' '}
+                                          {button.remarks}
+                                        </p>
+                                      )}
+                                    </CardContent>
+                                  </Card>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">
+                                None
+                              </span>
+                            )}
+                          </div>
+                          {/* Current Use */}
+                          <div
+                            className="p-2 whitespace-pre-wrap"
+                            style={{ flex: `0 0 ${columnStyles[4].width}` }}
+                          >
+                            {detail.currentUse}
+                          </div>
+                          {/* Future Additions */}
+                          <div
+                            className="p-2 whitespace-pre-wrap"
+                            style={{ flex: `0 0 ${columnStyles[5].width}` }}
+                          >
+                            {detail.futureAdditions}
+                          </div>
+                          {/* Remarks */}
+                          <div
+                            className="p-2 whitespace-pre-wrap"
+                            style={{ flex: `0 0 ${columnStyles[6].width}` }}
+                          >
+                            {detail.remarks}
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
               </div>
             </CardContent>
             <CardFooter className="justify-between border-t pt-6">
