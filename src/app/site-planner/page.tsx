@@ -600,17 +600,6 @@ export default function SitePlannerPage() {
     );
   };
   
-  const columnStyles = [
-    { name: 'Actions', width: '100px' },
-    { name: 'Page', width: '150px' },
-    { name: 'Page Logic', width: '300px' },
-    { name: 'Button/Link Details', width: '350px' },
-    { name: 'Current Use', width: '250px' },
-    { name: 'Future Additions', width: '250px' },
-    { name: 'Remarks', width: '250px' },
-  ];
-
-  const totalWidth = columnStyles.reduce((acc, col) => acc + parseInt(col.width.replace('px', '')), 0) + 'px';
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -668,142 +657,87 @@ export default function SitePlannerPage() {
                 </Dialog>
               </div>
 
-              <div className="w-full rounded-lg border">
-                {/* Non-scrolling Header */}
-                <div className="flex border-b bg-muted/80 text-sm font-medium text-muted-foreground">
-                  {columnStyles.map((col) => (
-                    <div
-                      key={col.name}
-                      className="p-2 text-left"
-                      style={{ flex: `0 0 ${col.width}` }}
-                    >
-                      {col.name}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Body with individual scrolling rows */}
-                <div className="text-sm">
-                  {details.map((detail) => (
-                    <div
-                      key={detail.id}
-                      className="border-b last:border-none hover:bg-muted/20"
-                    >
+              <div className="space-y-6">
+                {details.map((detail) => (
+                  <Card key={detail.id} className="overflow-hidden">
+                    <CardHeader className="flex flex-row items-center justify-between border-b bg-muted/30 p-3">
+                      <div className="flex items-center gap-4">
+                         <div className="flex gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleOpenEditDialog(detail)}
+                            >
+                              <Pencil className="h-4 w-4 text-blue-500" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={() => handleDeleteRow(detail.id)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        <h3 className="font-mono text-lg font-semibold">{detail.page}</h3>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-0">
                       <div className="overflow-x-auto">
-                        <div
-                          className="flex items-start"
-                          style={{ minWidth: totalWidth }}
-                        >
-                          {/* Actions */}
-                          <div
-                            className="p-2"
-                            style={{ flex: `0 0 ${columnStyles[0].width}` }}
-                          >
-                            <div className="flex gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleOpenEditDialog(detail)}
-                              >
-                                <Pencil className="h-4 w-4 text-blue-500" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleDeleteRow(detail.id)}
-                              >
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </div>
+                        <div className="flex items-start p-4" style={{ minWidth: '1500px' }}>
+                          <div className="w-[300px] flex-shrink-0 pr-4">
+                            <h4 className="font-semibold text-muted-foreground mb-2">Page Logic</h4>
+                            <p className="text-sm whitespace-pre-wrap">{detail.pageLogic || <span className='text-muted-foreground/60'>N/A</span>}</p>
                           </div>
-                          {/* Page */}
-                          <div
-                            className="p-2 font-medium"
-                            style={{ flex: `0 0 ${columnStyles[1].width}` }}
-                          >
-                            {detail.page}
-                          </div>
-                          {/* Page Logic */}
-                          <div
-                            className="p-2 whitespace-pre-wrap"
-                            style={{ flex: `0 0 ${columnStyles[2].width}` }}
-                          >
-                            {detail.pageLogic}
-                          </div>
-                          {/* Button/Link Details */}
-                          <div
-                            className="p-2"
-                            style={{ flex: `0 0 ${columnStyles[3].width}` }}
-                          >
+                          <div className="w-[350px] flex-shrink-0 pr-4">
+                             <h4 className="font-semibold text-muted-foreground mb-2">Button/Link Details</h4>
                             {detail.buttons.length > 0 ? (
                               <div className="space-y-2">
                                 {detail.buttons.map((button, index) => (
-                                  <Card key={index} className="bg-muted/30">
-                                    <CardContent className="space-y-1 p-3 text-xs">
-                                      <p>
-                                        <strong className="font-semibold text-foreground">
-                                          Name:
-                                        </strong>{' '}
-                                        {button.name}
+                                  <div key={index} className="rounded-md border bg-muted/50 p-2">
+                                    <p className="text-xs">
+                                      <strong className="font-semibold text-foreground">Name:</strong>{' '}
+                                      {button.name}
+                                    </p>
+                                    <p className="text-xs">
+                                      <strong className="font-semibold text-foreground">Link:</strong>{' '}
+                                      <span className="font-mono">{button.link}</span>
+                                    </p>
+                                    <p className="text-xs">
+                                      <strong className="font-semibold text-foreground">Logic:</strong>{' '}
+                                      {button.logic}
+                                    </p>
+                                    {button.remarks && (
+                                      <p className="text-xs">
+                                        <strong className="font-semibold text-foreground">Remarks:</strong>{' '}
+                                        {button.remarks}
                                       </p>
-                                      <p>
-                                        <strong className="font-semibold text-foreground">
-                                          Link:
-                                        </strong>{' '}
-                                        <span className="font-mono">
-                                          {button.link}
-                                        </span>
-                                      </p>
-                                      <p>
-                                        <strong className="font-semibold text-foreground">
-                                          Logic:
-                                        </strong>{' '}
-                                        {button.logic}
-                                      </p>
-                                      {button.remarks && (
-                                        <p>
-                                          <strong className="font-semibold text-foreground">
-                                            Remarks:
-                                          </strong>{' '}
-                                          {button.remarks}
-                                        </p>
-                                      )}
-                                    </CardContent>
-                                  </Card>
+                                    )}
+                                  </div>
                                 ))}
                               </div>
                             ) : (
-                              <span className="text-xs text-muted-foreground">
-                                None
-                              </span>
+                              <span className="text-xs text-muted-foreground/60">None</span>
                             )}
                           </div>
-                          {/* Current Use */}
-                          <div
-                            className="p-2 whitespace-pre-wrap"
-                            style={{ flex: `0 0 ${columnStyles[4].width}` }}
-                          >
-                            {detail.currentUse}
+                          <div className="w-[250px] flex-shrink-0 pr-4">
+                            <h4 className="font-semibold text-muted-foreground mb-2">Current Use</h4>
+                            <p className="text-sm whitespace-pre-wrap">{detail.currentUse || <span className='text-muted-foreground/60'>N/A</span>}</p>
                           </div>
-                          {/* Future Additions */}
-                          <div
-                            className="p-2 whitespace-pre-wrap"
-                            style={{ flex: `0 0 ${columnStyles[5].width}` }}
-                          >
-                            {detail.futureAdditions}
+                          <div className="w-[250px] flex-shrink-0 pr-4">
+                             <h4 className="font-semibold text-muted-foreground mb-2">Future Additions</h4>
+                            <p className="text-sm whitespace-pre-wrap">{detail.futureAdditions || <span className='text-muted-foreground/60'>N/A</span>}</p>
                           </div>
-                          {/* Remarks */}
-                          <div
-                            className="p-2 whitespace-pre-wrap"
-                            style={{ flex: `0 0 ${columnStyles[6].width}` }}
-                          >
-                            {detail.remarks}
+                           <div className="w-[300px] flex-shrink-0">
+                            <h4 className="font-semibold text-muted-foreground mb-2">Remarks</h4>
+                            <p className="text-sm whitespace-pre-wrap">{detail.remarks || <span className='text-muted-foreground/60'>N/A</span>}</p>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>
