@@ -34,9 +34,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${poppins.variable}`}>
-       <head>
-        {/* Font links are now handled by next/font */}
-      </head>
       <body className="font-body antialiased">
         <div className="watermark">Site Under Construction</div>
         <FirebaseClientProvider>
