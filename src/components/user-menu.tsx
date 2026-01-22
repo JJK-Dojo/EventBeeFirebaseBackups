@@ -80,7 +80,10 @@ export function UserMenu({ user }: { user: User | null }) {
             <Link href="/analytics"><BarChart2 className="mr-2 h-4 w-4" />Analytics</Link>
         </DropdownMenuItem>
          <DropdownMenuItem asChild>
-            <Link href="/site-planner-excel"><Sheet className="mr-2 h-4 w-4" />Site Planner</Link>
+            <Link href="/site-planner"><Sheet className="mr-2 h-4 w-4" />Site Details</Link>
+        </DropdownMenuItem>
+         <DropdownMenuItem asChild>
+            <Link href="/site-planner-excel"><Sheet className="mr-2 h-4 w-4" />Site Planner (Legacy)</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
             <Link href="/db-view"><Database className="mr-2 h-4 w-4" />DB View</Link>

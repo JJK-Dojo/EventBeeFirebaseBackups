@@ -79,6 +79,12 @@ const pages = [
     description: 'Generates a QR code and link to share the application.',
     fields: ['QR Code', 'Shareable Link']
   },
+    { 
+    href: '/site-planner', 
+    title: 'Site Details Planner', 
+    description: 'A spreadsheet-like view for detailing all application pages.',
+    fields: ['Page', 'Page Logic', 'Buttons/Links', 'Button Logic', 'Current Use', 'Future Additions', 'Remarks']
+  },
   { 
     href: '/signup', 
     title: 'Signup Page', 
@@ -87,7 +93,7 @@ const pages = [
   },
   { 
     href: '/site-planner-excel', 
-    title: 'Site Planner', 
+    title: 'Site Planner (Legacy)', 
     description: 'An Excel-like sheet to track development activities.',
     fields: ['Task', 'Assignee', 'Status', 'Due Date']
   },
