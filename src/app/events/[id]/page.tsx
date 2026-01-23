@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { format } from 'date-fns';
 import {
   CalendarDays,
@@ -12,6 +13,7 @@ import {
   LoaderCircle,
   Mail,
   MessageSquare,
+  Edit,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -51,6 +53,8 @@ export default function EventDetailPage() {
   }, [firestore, id]);
 
   const { data: event, isLoading } = useDoc<Event>(eventDocRef);
+
+  const isOwner = user && event && user.uid === event.organizer.id;
 
   const handleShareClick = (method: 'email' | 'whatsapp') => {
     if (!event) return;
@@ -153,9 +157,19 @@ View more details here: ${window.location.href}
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <h1 className="mb-4 font-headline text-3xl font-bold tracking-tight md:text-4xl">
-                {event.title}
-              </h1>
+              <div className="flex items-start justify-between gap-4 mb-4">
+                  <h1 className="font-headline text-3xl font-bold tracking-tight md:text-4xl">
+                      {event.title}
+                  </h1>
+                  {isOwner && (
+                      <Link href={`/create-event?edit=${event.id}`} passHref>
+                          <Button variant="outline">
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Event
+                          </Button>
+                      </Link>
+                  )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
                   <Dialog>
