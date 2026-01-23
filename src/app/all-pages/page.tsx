@@ -43,6 +43,12 @@ export const allAppPages = [
     description: 'A simple page to view the contents of the Firestore database.',
     fields: ['Event ID', 'Title', 'Date', 'Location', 'Status']
   },
+  {
+    href: '/docs',
+    title: 'Docs',
+    description: 'Displays application architecture documents like sitemap, user flows, and wireframes.',
+    fields: ['Sitemap', 'Information Architecture', 'User Flow Charts', 'Wireframes']
+  },
   { 
     href: '/events/1', 
     title: 'Event Detail Page', 

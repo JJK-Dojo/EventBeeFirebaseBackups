@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette, UserPlus, Monitor, Users } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, LayoutDashboard, PlusCircle, Shield, BarChart2, Sheet, Database, FlaskConical, Palette, UserPlus, Monitor, Users, BookOpen } from 'lucide-react';
 import type { User } from 'firebase/auth';
 import { useSignOut } from '@/firebase/auth/hooks';
 import Link from 'next/link';
@@ -118,6 +118,9 @@ export function UserMenu({ user }: { user: User | null }) {
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
             <Link href="/db-view"><Database className="mr-2 h-4 w-4" />DB View</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+            <Link href="/docs"><BookOpen className="mr-2 h-4 w-4" />Docs</Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
             <Link href="/test-ai"><FlaskConical className="mr-2 h-4 w-4" />Test AI</Link>
