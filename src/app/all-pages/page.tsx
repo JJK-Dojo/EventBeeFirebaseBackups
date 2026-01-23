@@ -1,10 +1,16 @@
-
 'use client';
 
 import Header from '@/components/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { List } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import { List, Download } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export const allAppPages = [
   { 
@@ -124,6 +130,28 @@ export const allAppPages = [
 ];
 
 export default function AllPages() {
+  const handleDownload = () => {
+    const headers = ['Href', 'Title', 'Description', 'Key Fields'];
+    const rows = allAppPages.map((page) => {
+      const escapedHref = `"${page.href.replace(/"/g, '""')}"`;
+      const escapedTitle = `"${page.title.replace(/"/g, '""')}"`;
+      const escapedDescription = `"${page.description.replace(/"/g, '""')}"`;
+      const escapedFields = `"${(page.fields || []).join('; ').replace(/"/g, '""')}"`;
+      return [escapedHref, escapedTitle, escapedDescription, escapedFields].join(',');
+    });
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'application-pages.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -131,41 +159,54 @@ export default function AllPages() {
         <div className="container mx-auto max-w-3xl px-4 py-8">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl md:text-3xl">
-                <List className="h-8 w-8 text-primary" />
-                Application Pages
-              </CardTitle>
-              <CardDescription>
-                Here is a complete list of all the pages available in your portal, along with their key fields.
-              </CardDescription>
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <CardTitle className="flex items-center gap-2 text-2xl md:text-3xl">
+                    <List className="h-8 w-8 text-primary" />
+                    Application Pages
+                  </CardTitle>
+                  <CardDescription>
+                    Here is a complete list of all the pages available in your
+                    portal, along with their key fields.
+                  </CardDescription>
+                </div>
+                <Button variant="outline" onClick={handleDownload}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Download as CSV
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">
-                {allAppPages.sort((a, b) => a.title.localeCompare(b.title)).map((page) => (
-                  <li key={page.href}>
-                    <Link href={page.href}>
-                      <div className="block rounded-lg border p-4 transition-all hover:bg-muted hover:shadow-md">
-                        <p className="font-bold text-primary group-hover:underline">
-                          {page.title}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {page.description}
-                        </p>
-                         <p className="text-xs font-mono text-muted-foreground/70 mt-1">
-                          {page.href}
-                        </p>
-                        {page.fields && (
+                {allAppPages
+                  .sort((a, b) => a.title.localeCompare(b.title))
+                  .map((page) => (
+                    <li key={page.href}>
+                      <Link href={page.href}>
+                        <div className="block rounded-lg border p-4 transition-all hover:bg-muted hover:shadow-md">
+                          <p className="font-bold text-primary group-hover:underline">
+                            {page.title}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {page.description}
+                          </p>
+                          <p className="text-xs font-mono text-muted-foreground/70 mt-1">
+                            {page.href}
+                          </p>
+                          {page.fields && (
                             <div className="mt-3">
-                                <h4 className="text-xs font-semibold uppercase text-muted-foreground">Key Fields:</h4>
-                                <p className="text-xs text-muted-foreground/80">
-                                    {page.fields.join(' • ')}
-                                </p>
+                              <h4 className="text-xs font-semibold uppercase text-muted-foreground">
+                                Key Fields:
+                              </h4>
+                              <p className="text-xs text-muted-foreground/80">
+                                {page.fields.join(' • ')}
+                              </p>
                             </div>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
+                          )}
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </CardContent>
           </Card>
