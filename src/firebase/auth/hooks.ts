@@ -28,6 +28,7 @@ export function useSignUp() {
 
       const userDocRef = doc(firestore, 'users', user.uid);
       await setDoc(userDocRef, {
+        id: user.uid,
         uid: user.uid,
         email: user.email,
         displayName: displayName,
@@ -83,6 +84,7 @@ export function useSignInWithGoogle() {
             if (!userDoc.exists()) {
               // If the user is new, create their profile with a default 'basic' role
               await setDoc(userDocRef, {
+                  id: user.uid,
                   uid: user.uid,
                   email: user.email,
                   displayName: user.displayName,
@@ -93,6 +95,7 @@ export function useSignInWithGoogle() {
             } else {
               // If user exists, just update their info but do not touch the role
               await setDoc(userDocRef, {
+                id: user.uid,
                 uid: user.uid,
                 email: user.email,
                 displayName: user.displayName,
