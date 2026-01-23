@@ -19,6 +19,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Combobox } from '@/components/ui/combobox';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -173,6 +179,7 @@ export default function SitePlannerExcelPage() {
                     <TableHead>Assignee</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Due Date</TableHead>
+                    <TableHead>Export</TableHead>
                     <TableHead className="w-[50px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -214,6 +221,26 @@ export default function SitePlannerExcelPage() {
                             className="border-none bg-transparent p-0 focus-visible:ring-0"
                          />
                       </TableCell>
+                       <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon', description: 'PDF export is not yet available.'})}>
+                              Export as PDF
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon', description: 'DOC export is not yet available.'})}>
+                              Export as DOC
+                            </DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => toast({ title: 'Coming Soon', description: 'PPT export is not yet available.'})}>
+                              Export as PPT
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                       </TableCell>
                        <TableCell className="text-right">
                          <Button variant="ghost" size="icon" onClick={() => handleDeleteRow(activity.id)}>
                             <Trash2 className="h-4 w-4 text-destructive" />
@@ -267,3 +294,5 @@ export default function SitePlannerExcelPage() {
     </div>
   );
 }
+
+    
