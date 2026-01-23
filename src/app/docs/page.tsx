@@ -16,7 +16,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { FileText, ArrowRight, Map, Share2, Workflow, Layout } from 'lucide-react';
+import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const FlowStep = ({ title, description }: { title: string; description: string; }) => (
     <div className="flex items-start gap-4">
@@ -40,6 +42,15 @@ const WireframeBox = ({ title, children, className }: { title: string, children:
 );
 
 export default function DocsPage() {
+  const { toast } = useToast();
+
+  const handleDownloadClick = (format: string) => {
+    toast({
+      title: `Export to ${format}`,
+      description: 'This feature is not yet available.',
+    });
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <Header />
@@ -81,6 +92,17 @@ export default function DocsPage() {
                     <li><b>/analytics</b> - Dashboard for viewing event statistics.</li>
                     <li><b>/docs</b> - This documentation page.</li>
                 </ul>
+                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as DOC
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PPT
+                    </Button>
+                </div>
               </AccordionContent>
             </AccordionItem>
 
@@ -110,6 +132,17 @@ export default function DocsPage() {
                             <li><b>Events</b>: Stores all data for events, including a `userId` to link to the creator and a `status` for the moderation workflow.</li>
                         </ul>
                     </div>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as DOC
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PPT
+                    </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -144,6 +177,17 @@ export default function DocsPage() {
                             <FlowStep title="Action Prompt" description="To create an event or access a dashboard, the guest is prompted to log in or sign up." />
                         </div>
                     </div>
+                </div>
+                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as DOC
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PPT
+                    </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -216,7 +260,17 @@ export default function DocsPage() {
                         </WireframeBox>
                     </CardContent>
                 </Card>
-
+                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as DOC
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PPT
+                    </Button>
+                </div>
               </AccordionContent>
             </AccordionItem>
 
