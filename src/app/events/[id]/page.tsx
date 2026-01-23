@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -15,7 +14,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
 import {
   Dialog,
@@ -193,46 +192,48 @@ View more details here: ${window.location.href}
             <div className="space-y-6">
               <Card>
                 <CardContent className="p-6">
-                  <div className="space-y-4 text-sm">
-                    <div className="flex items-start">
-                      <CalendarDays className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                      <div>
-                        <p className="font-semibold">Date</p>
-                        <p className="text-muted-foreground">
-                          {event.date &&
-                            format(event.date, 'EEEE, MMMM d, yyyy')}
-                        </p>
-                      </div>
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2 text-sm">
+                    <div className="space-y-4">
+                        <div className="flex items-start">
+                        <CalendarDays className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                        <div>
+                            <p className="font-semibold">Date</p>
+                            <p className="text-muted-foreground">
+                            {event.date &&
+                                format(event.date, 'EEEE, MMMM d, yyyy')}
+                            </p>
+                        </div>
+                        </div>
+                        <div className="flex items-start">
+                        <Clock className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                        <div>
+                            <p className="font-semibold">Time</p>
+                            <p className="text-muted-foreground">
+                            {event.date && format(event.date, 'h:mm a')}
+                            </p>
+                        </div>
+                        </div>
+                        <div className="flex items-start">
+                        <MapPin className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
+                        <div>
+                            <p className="font-semibold">Location</p>
+                            <p className="text-muted-foreground">{event.location}</p>
+                        </div>
+                        </div>
                     </div>
-                    <div className="flex items-start">
-                      <Clock className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                      <div>
-                        <p className="font-semibold">Time</p>
-                        <p className="text-muted-foreground">
-                          {event.date && format(event.date, 'h:mm a')}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start">
-                      <MapPin className="mr-3 mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                      <div>
-                        <p className="font-semibold">Location</p>
-                        <p className="text-muted-foreground">{event.location}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-6 aspect-video w-full">
-                    <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                      Map Placeholder
+                    <div className="space-y-4">
+                        <div className="aspect-video w-full">
+                            <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                                Map Placeholder
+                            </div>
+                        </div>
+                        <Button size="lg" className="w-full">
+                            <Navigation className="mr-2 h-5 w-5" />
+                            Get Directions
+                        </Button>
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="p-6 pt-0">
-                  <Button size="lg" className="w-full">
-                    <Navigation className="mr-2 h-5 w-5" />
-                    Get Directions
-                  </Button>
-                </CardFooter>
               </Card>
 
               <div className="grid grid-cols-2 gap-2">
