@@ -4,7 +4,15 @@
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
-import { CalendarDays, MapPin, Navigation, Clock, LoaderCircle } from 'lucide-react';
+import {
+  CalendarDays,
+  MapPin,
+  Navigation,
+  Clock,
+  LoaderCircle,
+  Mail,
+  MessageSquare,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/header';
@@ -16,43 +24,89 @@ import {
 import type { Event } from '@/lib/types';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
 
 export default function EventDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const eventDocRef = useMemoFirebase(() => {
     if (!firestore || !id) return null;
     return doc(firestore, 'events', id);
   }, [firestore, id]);
-  
+
   const { data: event, isLoading } = useDoc<Event>(eventDocRef);
+
+  const handleSendEmail = () => {
+    if (!event) return;
+    const subject = `Check out this event: ${event.title}`;
+    const body = `
+Hi,
+
+I thought you might be interested in this event:
+
+Event: ${event.title}
+Date: ${event.date ? format(event.date, 'PPPP p') : 'TBA'}
+Location: ${event.location}
+Description: ${event.description}
+
+You can view it here: ${window.location.href}
+    `.trim();
+    const mailtoLink = `mailto:?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoLink;
+    toast({
+      title: 'Opening Email Client',
+      description: 'Your default email client should open shortly.',
+    });
+  };
+
+  const handleSendWhatsApp = () => {
+    if (!event) return;
+    const text = `
+Check out this event: *${event.title}*
+
+*Date*: ${event.date ? format(event.date, 'PPPP p') : 'TBA'}
+*Location*: ${event.location}
+
+View more details here: ${window.location.href}
+    `.trim();
+    const whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+      text
+    )}`;
+    window.open(whatsappLink, '_blank');
+    toast({
+      title: 'Opening WhatsApp',
+      description: 'A new tab will open to share the event details.',
+    });
+  };
 
   if (isLoading) {
     return (
-        <div className="flex min-h-screen w-full flex-col bg-background">
-          <Header />
-          <main className="flex-1 flex items-center justify-center">
-             <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
-          </main>
-        </div>
-    )
+      <div className="flex min-h-screen w-full flex-col bg-background">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <LoaderCircle className="h-12 w-12 animate-spin text-primary" />
+        </main>
+      </div>
+    );
   }
 
   if (!event) {
     return (
-        <div className="flex min-h-screen w-full flex-col bg-background">
-          <Header />
-          <main className="flex-1">
-            <div className="container mx-auto px-4 py-8 text-center">
-              <p>Event not found.</p>
-            </div>
-            </main>
-        </div>
-    )
+      <div className="flex min-h-screen w-full flex-col bg-background">
+        <Header />
+        <main className="flex-1">
+          <div className="container mx-auto px-4 py-8 text-center">
+            <p>Event not found.</p>
+          </div>
+        </main>
+      </div>
+    );
   }
-
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -88,7 +142,9 @@ export default function EventDetailPage() {
               <h1 className="mb-4 font-headline text-3xl font-bold tracking-tight md:text-4xl">
                 {event.title}
               </h1>
-              <p className="text-lg text-muted-foreground">{event.description}</p>
+              <p className="text-lg text-muted-foreground">
+                {event.description}
+              </p>
             </div>
             <div className="space-y-6">
               <Card>
@@ -99,7 +155,8 @@ export default function EventDetailPage() {
                       <div>
                         <p className="font-semibold">Date</p>
                         <p className="text-muted-foreground">
-                          {event.date && format(event.date, 'EEEE, MMMM d, yyyy')}
+                          {event.date &&
+                            format(event.date, 'EEEE, MMMM d, yyyy')}
                         </p>
                       </div>
                     </div>
@@ -132,10 +189,30 @@ export default function EventDetailPage() {
                 </CardContent>
               </Card>
 
-              <Button size="lg" className="w-full">
-                <Navigation className="mr-2 h-5 w-5" />
-                Get Directions
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button size="lg" className="w-full">
+                  <Navigation className="mr-2 h-5 w-5" />
+                  Get Directions
+                </Button>
+                <Button
+                  size="lg"
+                  className="w-full"
+                  variant="outline"
+                  onClick={handleSendEmail}
+                >
+                  <Mail className="mr-2 h-5 w-5" />
+                  Send to Email
+                </Button>
+                <Button
+                  size="lg"
+                  className="w-full"
+                  variant="outline"
+                  onClick={handleSendWhatsApp}
+                >
+                  <MessageSquare className="mr-2 h-5 w-5" />
+                  Send to WhatsApp
+                </Button>
+              </div>
             </div>
           </div>
         </div>
