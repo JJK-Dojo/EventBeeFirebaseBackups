@@ -1,4 +1,3 @@
-
 'use client';
 
 import Header from '@/components/header';
@@ -18,7 +17,6 @@ import {
 } from '@/components/ui/accordion';
 import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
 
 const FlowStep = ({ title, description }: { title: string; description: string; }) => (
     <div className="flex items-start gap-4">
@@ -42,13 +40,35 @@ const WireframeBox = ({ title, children, className }: { title: string, children:
 );
 
 export default function DocsPage() {
-  const { toast } = useToast();
-
-  const handleDownloadClick = (format: string) => {
-    toast({
-      title: `Export to ${format}`,
-      description: 'This feature is not yet available.',
-    });
+  const handleDownloadClick = (format: string, sectionTitle: string) => {
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+        newWindow.document.write(`
+            <html>
+                <head>
+                    <title>${sectionTitle} - ${format} Preview</title>
+                    <style>
+                        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; color: #333; }
+                        .container { text-align: center; padding: 2rem; background-color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                        h1 { font-size: 1.5rem; }
+                        p { color: #666; }
+                        .badge { display: inline-block; padding: 0.25rem 0.75rem; background-color: #e0e0e0; border-radius: 1rem; font-size: 0.8rem; font-weight: bold; margin-top: 1rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>${sectionTitle}</h1>
+                        <p>The preview for the <strong>${format.toUpperCase()}</strong> format is not yet available.</p>
+                        <p>This window will display the document once the feature is implemented.</p>
+                        <div class="badge">Feature Under Development</div>
+                    </div>
+                </body>
+            </html>
+        `);
+        newWindow.document.close();
+    } else {
+        alert('Please allow pop-ups for this site to see the preview.');
+    }
   };
 
   return (
@@ -93,13 +113,13 @@ export default function DocsPage() {
                     <li><b>/docs</b> - This documentation page.</li>
                 </ul>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Sitemap')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Sitemap')}>
                         <Download className="mr-2 h-4 w-4" /> Download as DOC
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Sitemap')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
@@ -134,13 +154,13 @@ export default function DocsPage() {
                     </div>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Information Architecture')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Information Architecture')}>
                         <Download className="mr-2 h-4 w-4" /> Download as DOC
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Information Architecture')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
@@ -179,13 +199,13 @@ export default function DocsPage() {
                     </div>
                 </div>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'User Flow Charts')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'User Flow Charts')}>
                         <Download className="mr-2 h-4 w-4" /> Download as DOC
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'User Flow Charts')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
@@ -261,13 +281,13 @@ export default function DocsPage() {
                     </CardContent>
                 </Card>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Wireframes')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Wireframes')}>
                         <Download className="mr-2 h-4 w-4" /> Download as DOC
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Wireframes')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
