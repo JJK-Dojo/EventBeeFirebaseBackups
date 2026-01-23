@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { format } from 'date-fns';
@@ -19,10 +20,16 @@ import Header from '@/components/header';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import type { Event } from '@/lib/types';
-import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { useDoc, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,6 +38,13 @@ export default function EventDetailPage() {
   const id = params.id as string;
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { user } = useUser();
+
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareMethod, setShareMethod] = useState<'email' | 'whatsapp' | null>(
+    null
+  );
+  const [recipient, setRecipient] = useState('');
 
   const eventDocRef = useMemoFirebase(() => {
     if (!firestore || !id) return null;
@@ -39,10 +53,23 @@ export default function EventDetailPage() {
 
   const { data: event, isLoading } = useDoc<Event>(eventDocRef);
 
-  const handleSendEmail = () => {
+  const handleShareClick = (method: 'email' | 'whatsapp') => {
     if (!event) return;
-    const subject = `Check out this event: ${event.title}`;
-    const body = `
+    setShareMethod(method);
+    if (method === 'email' && user?.email) {
+      setRecipient(user.email);
+    } else {
+      setRecipient(''); // Clear previous recipient
+    }
+    setIsShareDialogOpen(true);
+  };
+
+  const handleConfirmShare = () => {
+    if (!event || !shareMethod || !recipient) return;
+
+    if (shareMethod === 'email') {
+      const subject = `Check out this event: ${event.title}`;
+      const body = `
 Hi,
 
 I thought you might be interested in this event:
@@ -54,19 +81,16 @@ Description: ${event.description}
 
 You can view it here: ${window.location.href}
     `.trim();
-    const mailtoLink = `mailto:?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoLink;
-    toast({
-      title: 'Opening Email Client',
-      description: 'Your default email client should open shortly.',
-    });
-  };
-
-  const handleSendWhatsApp = () => {
-    if (!event) return;
-    const text = `
+      const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+      toast({
+        title: 'Opening Email Client',
+        description: 'Your default email client should open shortly.',
+      });
+    } else if (shareMethod === 'whatsapp') {
+      const text = `
 Check out this event: *${event.title}*
 
 *Date*: ${event.date ? format(event.date, 'PPPP p') : 'TBA'}
@@ -74,14 +98,29 @@ Check out this event: *${event.title}*
 
 View more details here: ${window.location.href}
     `.trim();
-    const whatsappLink = `https://api.whatsapp.com/send?text=${encodeURIComponent(
-      text
-    )}`;
-    window.open(whatsappLink, '_blank');
-    toast({
-      title: 'Opening WhatsApp',
-      description: 'A new tab will open to share the event details.',
-    });
+
+      // Basic phone number cleaning
+      const phone = recipient.replace(/[^0-9]/g, '');
+      if (!phone) {
+        toast({
+          variant: 'destructive',
+          title: 'Invalid Phone Number',
+          description: 'Please enter a valid phone number.',
+        });
+        return;
+      }
+      const whatsappLink = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(
+        text
+      )}`;
+      window.open(whatsappLink, '_blank');
+      toast({
+        title: 'Opening WhatsApp',
+        description: 'A new tab will open to share the event details.',
+      });
+    }
+
+    setIsShareDialogOpen(false);
+    setRecipient('');
   };
 
   if (isLoading) {
@@ -198,7 +237,7 @@ View more details here: ${window.location.href}
                   size="lg"
                   className="w-full"
                   variant="outline"
-                  onClick={handleSendEmail}
+                  onClick={() => handleShareClick('email')}
                 >
                   <Mail className="mr-2 h-5 w-5" />
                   Send to Email
@@ -207,7 +246,7 @@ View more details here: ${window.location.href}
                   size="lg"
                   className="w-full"
                   variant="outline"
-                  onClick={handleSendWhatsApp}
+                  onClick={() => handleShareClick('whatsapp')}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
                   Send to WhatsApp
@@ -217,6 +256,59 @@ View more details here: ${window.location.href}
           </div>
         </div>
       </main>
+
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Share via {shareMethod === 'email' ? 'Email' : 'WhatsApp'}
+            </DialogTitle>
+            <DialogDescription>
+              Enter the{' '}
+              {shareMethod === 'email' ? 'email address' : 'phone number'} you
+              want to send this event to.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="recipient">
+                {shareMethod === 'email' ? 'Email Address' : 'Phone Number'}
+              </Label>
+              <Input
+                id="recipient"
+                value={recipient}
+                onChange={(e) => setRecipient(e.target.value)}
+                placeholder={
+                  shareMethod === 'email'
+                    ? 'recipient@example.com'
+                    : '+919876543210'
+                }
+                type={shareMethod === 'email' ? 'email' : 'tel'}
+              />
+              {shareMethod === 'email' && user?.email && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Your email: {user.email}. Change above to send to someone
+                  else.
+                </p>
+              )}
+               {shareMethod === 'whatsapp' && (
+                <p className="text-xs text-muted-foreground mt-2">
+                 Include the country code (e.g., +91 for India).
+                </p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsShareDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmShare}>Send</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
