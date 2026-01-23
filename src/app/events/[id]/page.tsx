@@ -154,36 +154,41 @@ View more details here: ${window.location.href}
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <div className="relative mb-6 h-80 w-full cursor-pointer overflow-hidden rounded-lg shadow-lg md:h-[450px]">
-                    <Image
-                      src={event.imageUrl}
-                      alt={event.title}
-                      fill
-                      className="object-cover transition-transform duration-300 hover:scale-105"
-                      data-ai-hint={event.imageHint}
-                    />
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="max-w-4xl p-0">
-                  <div className="relative h-[80vh] w-full">
-                    <Image
-                      src={event.imageUrl}
-                      alt={event.title}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-                </DialogContent>
-              </Dialog>
-
               <h1 className="mb-4 font-headline text-3xl font-bold tracking-tight md:text-4xl">
                 {event.title}
               </h1>
-              <p className="text-lg text-muted-foreground">
-                {event.description}
-              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="relative h-80 w-full cursor-pointer overflow-hidden rounded-lg shadow-lg md:h-[450px]">
+                        <Image
+                          src={event.imageUrl}
+                          alt={event.title}
+                          fill
+                          className="object-cover transition-transform duration-300 hover:scale-105"
+                          data-ai-hint={event.imageHint}
+                        />
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl p-0">
+                      <div className="relative h-[80vh] w-full">
+                        <Image
+                          src={event.imageUrl}
+                          alt={event.title}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                <div>
+                  <p className="text-lg text-muted-foreground">
+                    {event.description}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="space-y-6">
               <Card>
