@@ -1,6 +1,6 @@
 
 /**
- * Eventide Firestore Security Rules
+ * HIYE Firestore Security Rules
  *
  * Core Philosophy:
  * This ruleset uses a dual-collection approach. The `/users` collection enforces

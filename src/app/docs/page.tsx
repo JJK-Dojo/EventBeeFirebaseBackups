@@ -82,7 +82,7 @@ export default function DocsPage() {
               Application Design Documents
             </h1>
             <p className="text-lg text-muted-foreground">
-              A centralized reference for the architecture, flows, and design of the Eventide platform.
+              A centralized reference for the architecture, flows, and design of the HIYE platform.
             </p>
           </div>
 
