@@ -1,161 +1,106 @@
-
 /**
- * HIYE Firestore Security Rules
+ * This ruleset enforces a security model for the LocalLooms application, balancing
+ * user privacy with public event discovery.
  *
  * Core Philosophy:
- * This ruleset uses a dual-collection approach. The `/users` collection enforces
- * a strict user-ownership model for private profile data. The `/events` collection
- * provides a public space for event documents, allowing them to be listed by any
- * authenticated user, while still restricting write access to the event's creator.
+ * The rules establish a strict user-ownership model for personal data while making
+ * event data publicly readable. All write operations (create, update, delete) are
+ * strictly authenticated and authorized, ensuring that users can only modify their
+ * own content.
  *
- * Data Structure & Key Decisions:
- * - User Data: `/users/{userId}` is strictly private. Only the owner can read or
- *   write their own profile. Listing the `/users` collection is forbidden to
- *   prevent user enumeration and protect privacy.
- * - Event Data: `/events/{eventId}` is the central, public collection for all
- *   event listings.
- *   - Read Access (`get`, `list`): Any user (authenticated or not) can read events,
- *     which is essential for public-facing pages like the landing page and event discovery.
- *   - Write Access (`create`, `update`, `delete`): Only the user whose UID matches
- *     the `userId` field inside the event document can modify it. This enforces
- *     ownership at the document level.
+ * Data Structure:
+ * - /users/{userId}: Stores private user profile information. Each user's document
+ *   is only accessible by that specific user.
+ * - /events/{eventId}: A public collection of all events. Anyone can read these
+ *   documents, but only the original creator can modify or delete them.
+ * - /geo_events/{eventId}: A denormalized collection for location-based queries,
+ *   mirroring the security rules of the main /events collection.
+ *
+ * Key Security Decisions:
+ * - User Privacy: Listing all users from the /users collection is explicitly
+ *   disallowed to protect user privacy and prevent data scraping.
+ * - Public Discovery: Event data in /events and /geo_events is publicly readable
+ *   to allow browsing and discovery by all users, including those not signed in.
+ * - Ownership Enforcement: All write operations on events are gated by an ownership
+ *   check, ensuring users cannot tamper with events they did not create.
  *
  * Denormalization for Authorization:
- * Each `Event` document contains a `userId` field. This denormalization is
- * crucial, as it allows security rules to verify ownership directly from the
- * document's data (`resource.data.userId`) without needing extra database reads,
- * ensuring fast and cost-effective authorization checks for all write operations.
- *
- * Relational Integrity:
- * On document creation, the `id` and `userId` fields within the data must match
- * the document's ID and the authenticated user's UID, respectively. These fields
- * are enforced as immutable on updates, creating a permanent and trustworthy link
- * between the document, its ID, and its owner.
+ * To ensure fast and secure authorization checks, the `userId` of the event creator
+ * is denormalized and stored directly on each document in the /events and /geo_events
+ * collections. This avoids costly and slow `get()` calls in security rules,
+ * making the rules more performant and easier to reason about.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --------------------------------------------------------------------
-    // Helper Functions
-    // --------------------------------------------------------------------
-
+    // Helper functions for reusable logic
     /**
-     * Checks if the user is authenticated.
+     * Checks if a user is authenticated.
      */
     function isSignedIn() {
       return request.auth != null;
     }
 
     /**
-     * Checks if the authenticated user's UID matches the document's owner ID from the path.
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the primary function for verifying document ownership.
      */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
-    
+
     /**
-     * Checks if the document being written to already exists.
-     * Crucial for protecting against unintended updates or deletes on non-existent paths.
+     * Checks for ownership on an existing document. Used for update and delete
+     * operations to prevent actions on non-existent data.
      */
-    function isExistingDoc() {
-      return resource != null;
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
 
     /**
-     * Combines owner and existence checks for secure update/delete operations on path-based ownership.
-     */
-    function isExistingPathOwner(userId) {
-      return isOwner(userId) && isExistingDoc();
-    }
-    
-     /**
-     * Combines owner and existence checks for secure update/delete operations on resource-based ownership.
-     */
-    function isExistingResourceOwner() {
-      return isSignedIn() && isExistingDoc() && request.auth.uid == resource.data.userId;
-    }
-    
-    /**
-     * On create, validates that the user document's internal 'id' field matches the path.
-     */
-    function createdWithMatchingId(userId) {
-      return request.resource.data.id == userId;
-    }
-    
-    /**
-     * On create, validates that the event document's internal 'userId' field matches the authenticated user.
-     */
-    function createdWithMatchingUserId() {
-      return request.resource.data.userId == request.auth.uid;
-    }
-    
-     /**
-     * On create, validates that the event document's 'id' field matches its actual document ID.
-     */
-    function eventIdMatchesDocId(eventId) {
-        return request.resource.data.id == eventId;
-    }
-    
-    /**
-     * Checks if the currently authenticated user has an 'admin' role.
-     * This requires reading the user's own profile document.
-     */
-    function isUserAdmin() {
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-
-    // --------------------------------------------------------------------
-    // Collection Rules
-    // --------------------------------------------------------------------
-
-    /**
-     * @description Secures a user's own profile document.
+     * @description Rules for the user profile collection.
      * @path /users/{userId}
-     * @allow (get) A signed-in user ('user_abc') reading their own profile at `/users/user_abc`.
-     * @allow (list) An admin user listing all documents in the `/users` collection.
-     * @allow (create) A new user ('user_abc') creating their own profile document at `/users/user_abc`.
-     * @deny (list) Any non-admin user attempting to list all documents in the `/users` collection.
-     * @deny (get) User 'user_123' trying to read the profile of 'user_abc' unless 'user_123' is an admin.
-     * @principle Restricts access to a user's own private data tree and prevents user enumeration, except for admins.
+     * @allow A signed-in user (auth.uid='user123') can (create) their own profile at /users/user123.
+     * @deny A signed-in user (auth.uid='user456') cannot (get) another user's profile at /users/user123.
+     * @principle Restricts access to a user's own data tree and prevents user enumeration.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId) || isUserAdmin();
-      allow list: if isUserAdmin();
-      allow create: if isOwner(userId) && createdWithMatchingId(userId);
-      allow update: if isExistingDoc() && (
-        isUserAdmin() ||
-        (isOwner(userId) &&
-          !('id' in request.resource.data) &&
-          !('uid' in request.resource.data) &&
-          !('role' in request.resource.data)
-        )
-      );
-      allow delete: if isExistingPathOwner(userId) || isUserAdmin();
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
     }
-    
+
     /**
-     * @description Secures the public collection of all events.
+     * @description Rules for the primary events collection.
      * @path /events/{eventId}
-     * @allow (list, get) Any authenticated user can read event data for discovery.
-     * @allow (create) A user can create an event if the `userId` in the new document matches their own UID.
-     * @allow (update, delete) A user can modify or delete an event only if the `userId` in the *existing* document matches their UID.
-     * @deny (update) A user trying to change the `userId` of an event after it has been created.
-     * @principle Enables public discovery of events while strictly enforcing ownership for all write operations.
+     * @allow Any user, including anonymous ones, can (get) or (list) events.
+     * @deny A signed-in user cannot (update) an event where their UID does not match the event's 'userId' field.
+     * @principle Implements a "Public Read with Owner-Only Writes" model.
      */
     match /events/{eventId} {
-      allow list, get;
-      allow create: if isSignedIn() && createdWithMatchingUserId() && eventIdMatchesDocId(eventId);
-      allow update: if isUserAdmin() || (
-        isSignedIn() &&
-        isExistingDoc() &&
-        // On any update, ensure 'id' and 'userId' are not being changed by a non-admin.
-        request.resource.data.id == resource.data.id &&
-        request.resource.data.userId == resource.data.userId &&
-        request.auth.uid == resource.data.userId
-      );
-      allow delete: if isExistingResourceOwner() || isUserAdmin();
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
+    }
+
+    /**
+     * @description Rules for the geo-queriable events collection. Mirrors /events rules.
+     * @path /geo_events/{eventId}
+     * @allow Any user, including anonymous ones, can (get) or (list) geo_events.
+     * @deny A signed-in user cannot (delete) a geo_event created by another user.
+     * @principle Implements a "Public Read with Owner-Only Writes" model, consistent with the primary data source.
+     */
+    match /geo_events/{eventId} {
+      allow get: if true;
+      allow list: if true;
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(resource.data.userId);
     }
   }
 }

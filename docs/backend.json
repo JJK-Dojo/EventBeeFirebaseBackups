@@ -1,11 +1,10 @@
-
 {
   "entities": {
     "User": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a user of the HIYE platform.",
+      "description": "Represents a user of the LocalLooms platform.",
       "properties": {
         "id": {
           "type": "string",
@@ -26,22 +25,8 @@
         },
         "creationDate": {
           "type": "string",
-          "description": "Date and time the user account was created.",
+          "description": "Date the user account was created.",
           "format": "date-time"
-        },
-        "lastLogin": {
-          "type": "string",
-          "description": "Date and time of the user's last login.",
-          "format": "date-time"
-        },
-        "role": {
-          "type": "string",
-          "description": "The access level of the user.",
-          "enum": [
-            "basic",
-            "advanced",
-            "admin"
-          ]
         }
       },
       "required": [
@@ -53,7 +38,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Event",
       "type": "object",
-      "description": "Represents an event posted on the HIYE platform.",
+      "description": "Represents an event posted on the LocalLooms platform.",
       "properties": {
         "id": {
           "type": "string",
@@ -61,7 +46,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "Reference to the User who created the event."
+          "description": "Reference to the User who created the event. (Relationship: User 1:N Event)"
         },
         "title": {
           "type": "string",
@@ -69,7 +54,19 @@
         },
         "description": {
           "type": "string",
-          "description": "Description of the event."
+          "description": "Detailed description of the event."
+        },
+        "locationName": {
+          "type": "string",
+          "description": "Name of the event location."
+        },
+        "latitude": {
+          "type": "number",
+          "description": "Latitude of the event location."
+        },
+        "longitude": {
+          "type": "number",
+          "description": "Longitude of the event location."
         },
         "startDate": {
           "type": "string",
@@ -78,36 +75,12 @@
         },
         "endDate": {
           "type": "string",
-          "description": "End date and time of the event.",
+          "description": "End date and time of the event.  Maximum duration is 30 days from the start date.",
           "format": "date-time"
-        },
-        "locationName": {
-          "type": "string",
-          "description": "Name of the event location."
-        },
-        "locationLatitude": {
-          "type": "number",
-          "description": "Latitude of the event location."
-        },
-        "locationLongitude": {
-          "type": "number",
-          "description": "Longitude of the event location."
         },
         "category": {
           "type": "string",
-          "description": "Category of the event (e.g., Music, Sports, Art)."
-        },
-        "imageUrl": {
-          "type": "string",
-          "description": "URL of the event image.",
-          "format": "uri"
-        },
-        "tags": {
-          "type": "array",
-          "description": "Tags associated with the event",
-          "items": {
-            "type": "string"
-          }
+          "description": "Category of the event (e.g., sports, music, community)."
         }
       },
       "required": [
@@ -115,55 +88,70 @@
         "userId",
         "title",
         "description",
+        "latitude",
+        "longitude",
         "startDate",
-        "endDate",
-        "locationName",
-        "locationLatitude",
-        "locationLongitude"
+        "endDate"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
     "structure": [
       {
-        "path": "users/{userId}",
+        "path": "/users/{userId}",
         "definition": {
           "entityName": "User",
           "schema": {
-            "$ref": "#/entities/User"
+            "$ref": "#/backend/entities/User"
           },
-          "description": "Stores private user profile information. The 'userId' parameter represents the unique identifier for each user. Admins can view and manage all users, while regular users can only access their own data.",
+          "description": "Stores user profiles.  Access is restricted to the user themselves.",
           "params": [
             {
               "name": "userId",
-              "description": "Unique identifier for the user."
+              "description": "The unique identifier of the user."
             }
           ]
         }
       },
       {
-        "path": "events/{eventId}",
+        "path": "/events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
-            "$ref": "#/entities/Event"
+            "$ref": "#/backend/entities/Event"
           },
-          "description": "Stores all public event data. Documents are readable by any authenticated user but writable only by the owner, as determined by the 'userId' field within the document.",
+          "description": "Stores event data. Includes 'userId' for authorization independence.",
           "params": [
             {
               "name": "eventId",
-              "description": "Unique identifier for the event."
+              "description": "The unique identifier of the event."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/geo_events/{eventId}",
+        "definition": {
+          "entityName": "Event",
+          "schema": {
+            "$ref": "#/backend/entities/Event"
+          },
+          "description": "Stores location based event data. Includes 'userId' for authorization independence.",
+          "params": [
+            {
+              "name": "eventId",
+              "description": "The unique identifier of the event."
             }
           ]
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed for a public-facing event platform. It uses a dual-collection model: a private `/users` collection for profile data, secured by path-based ownership, and a public-readable `/events` collection for all event listings. This separation is key: it allows any authenticated user to query and discover all events (essential for the `find-events` page) while still enforcing strict ownership for all write operations (create, update, delete) on individual events. Ownership of an event is determined by a `userId` field denormalized into each event document, which allows security rules to be both efficient and secure without needing cross-collection queries. This model supports the core functionality of a public event board while protecting user-specific data and event integrity."
+    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability for the LocalLooms application. The core principle is to denormalize authorization data to avoid using `get()` calls in security rules, enabling atomic operations and simplifying debugging. The structure also supports secure `list` operations and enforces invariants for data integrity.\n\n1.  **Users Collection:** Stores user profiles. Access is restricted to the user themselves, ensuring privacy.\n2.  **Events Collection:** Stores event data. Events are organized under the `/events/{eventId}` path. The `userId` field indicates the event creator, enabling path-based ownership security rules. To support listing and filtering, the location data is duplicated to `/geo_events`. This allows location-based queries without requiring complex security rules that depend on user context.\n3. **Geo Events Collection:** This structure is used to keep separate location-based information in order to query the location-based information without using the user context information.\n\nThis structure achieves Authorization Independence by:\n\n*   Storing the `userId` within each event document, eliminating the need to fetch user data for authorization.\n*   Duplicating geo information in `/geo_events` collection, allowing search and filtering for events within a specified distance from a selected location.\n\nIt supports required QAPs (Rules are not Filters) by:\n\n*   Segregating user data and event data into separate collections, each with its own security rules.\n*   Using path-based ownership for events, enabling secure `list` operations based on the user ID."
   }
 }
