@@ -121,13 +121,10 @@ export function useSignOut() {
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
-      router.push('/');
     } catch (e: any) {
       setError(e.message);
     }
   };
-
-  const router = useRouter();
 
   return { signOut, error };
 }
