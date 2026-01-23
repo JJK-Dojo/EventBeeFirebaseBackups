@@ -15,7 +15,7 @@ import {
   MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Header from '@/components/header';
 import {
   Dialog,
@@ -215,24 +215,22 @@ View more details here: ${window.location.href}
                         <p className="text-muted-foreground">{event.location}</p>
                       </div>
                     </div>
-                    {/* Organizer details removed */}
+                  </div>
+                  <div className="mt-6 aspect-video w-full">
+                    <div className="flex h-full w-full items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                      Map Placeholder
+                    </div>
                   </div>
                 </CardContent>
+                <CardFooter className="p-6 pt-0">
+                  <Button size="lg" className="w-full">
+                    <Navigation className="mr-2 h-5 w-5" />
+                    Get Directions
+                  </Button>
+                </CardFooter>
               </Card>
 
-              <Card>
-                <CardContent className="p-0">
-                  <div className="flex h-60 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                    Map Placeholder
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="flex flex-col gap-2">
-                <Button size="lg" className="w-full">
-                  <Navigation className="mr-2 h-5 w-5" />
-                  Get Directions
-                </Button>
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   size="lg"
                   className="w-full"
@@ -240,7 +238,7 @@ View more details here: ${window.location.href}
                   onClick={() => handleShareClick('email')}
                 >
                   <Mail className="mr-2 h-5 w-5" />
-                  Send to Email
+                  Email
                 </Button>
                 <Button
                   size="lg"
@@ -249,7 +247,7 @@ View more details here: ${window.location.href}
                   onClick={() => handleShareClick('whatsapp')}
                 >
                   <MessageSquare className="mr-2 h-5 w-5" />
-                  Send to WhatsApp
+                  WhatsApp
                 </Button>
               </div>
             </div>
