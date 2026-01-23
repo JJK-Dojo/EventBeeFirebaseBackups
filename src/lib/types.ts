@@ -5,6 +5,7 @@ export type Event = {
   description: string;
   date: Date;
   createdAt: Date; // Add createdAt field
+  updatedAt?: Date;
   location: string;
   imageUrl: string;
   imageHint: string;

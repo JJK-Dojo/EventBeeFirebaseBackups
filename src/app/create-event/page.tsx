@@ -57,9 +57,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { DUMMY_EVENTS } from '@/lib/data';
-import { useFirestore, useUser } from '@/firebase/provider';
-import { collection, addDoc, serverTimestamp, doc, setDoc } from 'firebase/firestore';
+import { useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
+import { collection, addDoc, serverTimestamp, doc, setDoc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { extractEventDetails } from '@/ai/flows/extract-event-details';
 import type { ExtractDetailsOutput } from '@/ai/schemas';
@@ -211,8 +210,15 @@ export default function CreateEventPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [eventToEdit, setEventToEdit] = useState<Event | null>(null);
+  const eventId = searchParams.get('edit');
+  const [isEditing, setIsEditing] = useState(!!eventId);
+
+  const eventDocRef = useMemoFirebase(() => {
+    if (!firestore || !eventId) return null;
+    return doc(firestore, 'events', eventId);
+  }, [firestore, eventId]);
+
+  const { data: eventToEdit, isLoading: isEventLoading } = useDoc<Event>(eventDocRef);
 
   // Form State
   const [visibility, setVisibility] = useState('public');
@@ -252,26 +258,19 @@ export default function CreateEventPage() {
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
-
   
   useEffect(() => {
-    const eventId = searchParams.get('edit');
-    if (eventId) {
-      const foundEvent = DUMMY_EVENTS.find(e => e.id === eventId);
-      if (foundEvent) {
-        setIsEditing(true);
-        setEventToEdit(foundEvent);
-        setVisibility(foundEvent.status === 'draft' ? 'private' : 'public');
-        setTitle(foundEvent.title);
-        setDescription(foundEvent.description);
-        setDate(new Date(foundEvent.date));
-        setSelectedCategory(foundEvent.category);
-        setImagePreviews([foundEvent.imageUrl]);
-        setSelectedTags(foundEvent.tags || []);
-        setPincodeSearchInput(foundEvent.location);
-      }
+    if (eventToEdit && isEditing) {
+      setVisibility(eventToEdit.status === 'draft' ? 'private' : 'public');
+      setTitle(eventToEdit.title);
+      setDescription(eventToEdit.description);
+      setDate(eventToEdit.date ? new Date(eventToEdit.date) : undefined);
+      setSelectedCategory(categories.find(c => c.label === eventToEdit.category)?.value || '');
+      setImagePreviews([eventToEdit.imageUrl]);
+      setSelectedTags(eventToEdit.tags || []);
+      setPincodeSearchInput(eventToEdit.location);
     }
-  }, [searchParams]);
+  }, [eventToEdit, isEditing]);
 
   useEffect(() => {
     // When the state changes, we should reset the selected district.
@@ -472,41 +471,55 @@ export default function CreateEventPage() {
         
         const finalImageUrl = imagePreviews.length > 0 ? imagePreviews[0] : getBrandedImageUrl();
         
-        const eventCollectionRef = collection(firestore, 'events');
-        const newEventRef = doc(eventCollectionRef);
-        
-        const eventData = {
-            id: newEventRef.id,
-            userId: user.uid,
+        if (isEditing && eventToEdit) {
+          const eventDocRef = doc(firestore, 'events', eventToEdit.id);
+          const updateData: Partial<Event> & { updatedAt?: any } = {
             title,
             description,
             date: date ? date.toISOString() : new Date().toISOString(),
             location: pincodeSearchInput,
             imageUrl: finalImageUrl,
-            imageHint: 'event image', // Consider generating this with AI or from tags
-            organizer: {
-                id: user.uid,
-                name: user.displayName || 'Anonymous Contributor',
-                avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/40/40`,
-            },
             category: categories.find(c => c.value === selectedCategory)?.label || 'General',
             tags: selectedTags,
             status: newStatus,
-            editCount: 0,
-            createdAt: serverTimestamp(),
-            // Storing multiple image URLs would require a schema change.
-            // For now, only the first image is saved.
-        };
+            editCount: (eventToEdit.editCount || 0) + (eventToEdit.status === 'denied' ? 1 : 0),
+            feedback: newStatus !== 'denied' ? eventToEdit.feedback : '', // Clear feedback on resubmission
+            updatedAt: serverTimestamp(),
+          };
 
-        if (isEditing && eventToEdit) {
-          // Update logic will go here
-          console.log('Simulating update for event:', eventToEdit.id);
+          await updateDoc(eventDocRef, updateData);
+
           toast({
             title: `Event ${newStatus === 'pending' ? 'Resubmitted' : 'Updated'}!`,
             description: `${title} has been successfully updated.`,
           });
           router.push('/profile');
+
         } else {
+          const eventCollectionRef = collection(firestore, 'events');
+          const newEventRef = doc(eventCollectionRef);
+          
+          const eventData = {
+              id: newEventRef.id,
+              userId: user.uid,
+              title,
+              description,
+              date: date ? date.toISOString() : new Date().toISOString(),
+              location: pincodeSearchInput,
+              imageUrl: finalImageUrl,
+              imageHint: 'event image', // Consider generating this with AI or from tags
+              organizer: {
+                  id: user.uid,
+                  name: user.displayName || 'Anonymous Contributor',
+                  avatarUrl: user.photoURL || `https://picsum.photos/seed/${user.uid}/40/40`,
+              },
+              category: categories.find(c => c.value === selectedCategory)?.label || 'General',
+              tags: selectedTags,
+              status: newStatus,
+              editCount: 0,
+              createdAt: serverTimestamp(),
+          };
+
           await setDoc(newEventRef, eventData);
           console.log("Document written with ID: ", newEventRef.id);
           
@@ -517,7 +530,7 @@ export default function CreateEventPage() {
           router.push(newStatus === 'draft' ? '/profile' : '/find-events');
         }
     } catch (error) {
-        console.error('Error adding document: ', error);
+        console.error('Error adding/updating document: ', error);
         toast({
             variant: "destructive",
             title: "Submission Failed",
@@ -529,7 +542,7 @@ export default function CreateEventPage() {
   }
 
 
-  if (isUserLoading) {
+  if (isUserLoading || (eventId && isEventLoading)) {
     return (
         <div className="flex min-h-screen w-full flex-col bg-background">
             <Header />
