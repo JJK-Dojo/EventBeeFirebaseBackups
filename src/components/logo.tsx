@@ -7,7 +7,7 @@ export default function Logo({ className }: { className?: string }) {
     <div className={cn("rounded-lg bg-gradient-to-br from-blue-100 via-white to-yellow-100 p-2 shadow-sm flex items-center gap-2", className)}>
         {/* SVG Logo */}
         <div className="flex-shrink-0">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Here Is Your Event Logo">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="EventBee Logo">
                 <path d="M8 2V5" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M16 2V5" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M3.5 9.09H20.5" stroke="hsl(var(--primary))" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
@@ -20,8 +20,8 @@ export default function Logo({ className }: { className?: string }) {
         
         {/* Text */}
         <div className="flex flex-col items-center leading-tight">
-            <div className="text-lg font-bold glitter-text tracking-widest">HIYE</div>
-            <div className="text-[0.6rem] font-semibold text-primary">Here Is Your Event</div>
+            <div className="text-lg font-bold glitter-text tracking-widest">EventBee</div>
+            <div className="text-[0.6rem] font-semibold text-primary">Your Event Hub</div>
         </div>
     </div>
   );

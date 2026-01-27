@@ -21,10 +21,10 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Here Is Your Event',
-    template: '%s | HIYE',
+    default: 'EventBee',
+    template: '%s | EventBee',
   },
-  description: 'HIYE: Your Events, Discovered.',
+  description: 'EventBee: Your event hub.',
 };
 
 export default function RootLayout({

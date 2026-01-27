@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
  
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://hiye.com'; // Replace with your actual domain
+  const baseUrl = 'https://eventbeegit-32070598.web.app'; // Replace with your actual domain
 
   // For now, we'll only include static pages.
   // Dynamic event pages would require access to your event data source here.

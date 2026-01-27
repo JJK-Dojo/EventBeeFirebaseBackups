@@ -166,12 +166,12 @@ export default function SitePlannerExcelPage() {
                 Site Planner
               </CardTitle>
               <CardDescription>
-                A high-level activity planner to track the development of the HIYE portal.
+                A high-level activity planner to track the development of the EventBee portal.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
-                <TableCaption>HIYE development activity list.</TableCaption>
+                <TableCaption>EventBee development activity list.</TableCaption>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]">Done</TableHead>
