@@ -57,7 +57,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useMemoFirebase, useDoc } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { extractEventDetails } from '@/ai/flows/extract-event-details';
@@ -980,3 +980,5 @@ export default function CreateEventPage() {
     </div>
   );
 }
+
+    
