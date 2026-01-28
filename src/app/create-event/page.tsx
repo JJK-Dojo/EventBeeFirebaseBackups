@@ -57,9 +57,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import type { Event } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, useUser, useAuth, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, doc, setDoc, updateDoc } from 'firebase/firestore';
-import { sendEmailVerification } from 'firebase/auth';
 import Image from 'next/image';
 import { extractEventDetails } from '@/ai/flows/extract-event-details';
 import type { ExtractDetailsOutput } from '@/ai/schemas';
@@ -210,7 +209,6 @@ export default function CreateEventPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
-  const auth = useAuth();
 
   const eventId = searchParams.get('edit');
   const [isEditing, setIsEditing] = useState(!!eventId);
@@ -240,8 +238,6 @@ export default function CreateEventPage() {
   const [isPincodePopoverOpen, setIsPincodePopoverOpen] = useState(false);
   const [isDatePopoverOpen, setIsDatePopoverOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVerificationDialogOpen, setIsVerificationDialogOpen] = useState(false);
-  const [isSendingVerification, setIsSendingVerification] = useState(false);
   
   // AI Extraction State
   const [isExtracting, setIsExtracting] = useState(false);
@@ -455,29 +451,6 @@ export default function CreateEventPage() {
     });
   }
 
-  const handleSendVerification = async () => {
-    if (user && auth.currentUser) {
-      setIsSendingVerification(true);
-      try {
-        await sendEmailVerification(auth.currentUser);
-        toast({
-          title: 'Verification Email Sent',
-          description:
-            'Please check your inbox, verify your email, and then try submitting again.',
-        });
-        setIsVerificationDialogOpen(false);
-      } catch (error: any) {
-        toast({
-            variant: "destructive",
-            title: 'Error Sending Email',
-            description: error.message,
-        });
-      } finally {
-        setIsSendingVerification(false);
-      }
-    }
-  };
-
   const handleSubmit = async () => {
     if (!firestore || !user) {
         toast({
@@ -485,11 +458,6 @@ export default function CreateEventPage() {
             title: "Authentication Error",
             description: "You must be logged in to create an event.",
         });
-        return;
-    }
-
-    if (!user.emailVerified) {
-        setIsVerificationDialogOpen(true);
         return;
     }
 
@@ -1007,32 +975,6 @@ export default function CreateEventPage() {
             <Button variant="outline" onClick={() => setIsExtractionDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleConfirmExtraction}>Confirm</Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isVerificationDialogOpen} onOpenChange={setIsVerificationDialogOpen}>
-        <DialogContent>
-            <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                    <AlertCircle className="h-6 w-6 text-yellow-500" />
-                    Email Verification Required
-                </DialogTitle>
-                <DialogDescription>
-                To ensure the security of our platform, you must verify your email address before creating an event.
-                </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-                <p className="text-sm text-muted-foreground">
-                    A verification link was sent to <strong>{user?.email}</strong> when you signed up. If you can't find it, you can request a new one.
-                </p>
-            </div>
-            <DialogFooter>
-                <Button variant="outline" onClick={() => setIsVerificationDialogOpen(false)}>Later</Button>
-                <Button onClick={handleSendVerification} disabled={isSendingVerification}>
-                    {isSendingVerification && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                    Resend Verification Email
-                </Button>
-            </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
