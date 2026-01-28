@@ -49,13 +49,11 @@ export function UserMenu({ user }: { user: User | null }) {
         <div className="flex items-center gap-2">
             <Link href="/login" passHref>
                 <Button variant="outline">
-                    <LogIn className="mr-2 h-4 w-4" />
                     Sign In
                 </Button>
             </Link>
             <Link href="/signup" passHref>
                 <Button>
-                    <UserPlus className="mr-2 h-4 w-4" />
                     Sign Up
                 </Button>
             </Link>
