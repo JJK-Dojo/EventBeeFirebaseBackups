@@ -34,6 +34,8 @@ const nextConfig = {
     'recharts',
     'react-day-picker',
     'date-fns',
+    'embla-carousel-react',
+    'embla-carousel-autoplay'
   ],
   images: {
     remotePatterns: [
@@ -52,6 +54,12 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'storage.googleapis.com',
         port: '',
         pathname: '/**',
       },

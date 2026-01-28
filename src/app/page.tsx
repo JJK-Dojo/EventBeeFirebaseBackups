@@ -1,19 +1,32 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { Event } from '@/lib/types';
 import EventCardMini from '@/components/event-card-mini';
+import FeaturedEventCard from '@/components/featured-event-card';
 import { Search, PlusCircle } from 'lucide-react';
 import { collection, query, where } from 'firebase/firestore';
 import Header from '@/components/header';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function LandingPage() {
   const firestore = useFirestore();
+
+  const plugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true })
+  );
 
   const publishedEventsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -21,6 +34,13 @@ export default function LandingPage() {
   }, [firestore]);
 
   const { data: allEvents, isLoading } = useCollection<Event>(publishedEventsQuery);
+
+  const featuredEvents = useMemo(() => {
+    if (!allEvents) return [];
+    return [...allEvents]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  }, [allEvents]);
 
   const eventsByDate = useMemo(() => {
     if (!allEvents) return [];
@@ -86,12 +106,44 @@ export default function LandingPage() {
       <Header showNavButtons={false} />
        <main className="flex-1">
         <div className="container mx-auto px-4 py-8">
+            <div className="mb-12">
+                {isLoading ? (
+                    <Skeleton className="h-[50vh] w-full rounded-lg" />
+                ) : featuredEvents.length > 0 ? (
+                    <Carousel
+                        plugins={[plugin.current]}
+                        className="w-full"
+                        onMouseEnter={plugin.current.stop}
+                        onMouseLeave={plugin.current.reset}
+                    >
+                        <CarouselContent className="-ml-4 h-[50vh]">
+                            {featuredEvents.map((event) => (
+                                <CarouselItem key={event.id} className="pl-4">
+                                    <FeaturedEventCard event={event} />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious className="left-4" />
+                        <CarouselNext className="right-4" />
+                    </Carousel>
+                ) : (
+                    <div className="mb-8 p-6 rounded-lg bg-card border text-center">
+                        <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                            Discover Your Next Experience
+                        </h1>
+                        <p className="text-lg text-muted-foreground mb-6">
+                          Your guide to local happenings.
+                        </p>
+                    </div>
+                )}
+            </div>
+            
             <div className="mb-8 p-6 rounded-lg bg-card border text-center">
-                <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                    Discover Your Next Experience
-                </h1>
+                 <h2 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                    Find an Event
+                </h2>
                 <p className="text-lg text-muted-foreground mb-6">
-                  Your guide to local happenings.
+                  Browse events or create your own.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4">
                     <Link href="/find-events" passHref>
