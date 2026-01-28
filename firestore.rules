@@ -1,5 +1,5 @@
 /**
- * This ruleset enforces a security model for the LocalLooms application, balancing
+ * This ruleset enforces a security model for the EventBee application, balancing
  * user privacy with public event discovery.
  *
  * Core Philosophy:
@@ -23,6 +23,8 @@
  *   to allow browsing and discovery by all users, including those not signed in.
  * - Ownership Enforcement: All write operations on events are gated by an ownership
  *   check, ensuring users cannot tamper with events they did not create.
+ * - Email Verification: Creating events requires the user to have a verified email address,
+ *   enhancing the quality and security of event submissions.
  *
  * Denormalization for Authorization:
  * To ensure fast and secure authorization checks, the `userId` of the event creator
@@ -40,6 +42,13 @@ service cloud.firestore {
      */
     function isSignedIn() {
       return request.auth != null;
+    }
+    
+    /**
+     * Checks if the user's email address has been verified.
+     */
+    function isEmailVerified() {
+        return request.auth.token.email_verified == true;
     }
 
     /**
@@ -83,7 +92,7 @@ service cloud.firestore {
     match /events/{eventId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isEmailVerified() && request.resource.data.userId == request.auth.uid;
       allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
       allow delete: if isExistingOwner(resource.data.userId);
     }
@@ -98,7 +107,7 @@ service cloud.firestore {
     match /geo_events/{eventId} {
       allow get: if true;
       allow list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isEmailVerified() && request.resource.data.userId == request.auth.uid;
       allow update: if isExistingOwner(resource.data.userId) && request.resource.data.userId == resource.data.userId;
       allow delete: if isExistingOwner(resource.data.userId);
     }
