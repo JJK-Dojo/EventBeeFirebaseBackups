@@ -23,10 +23,9 @@
           "type": "string",
           "description": "User's display name."
         },
-        "creationDate": {
+        "location": {
           "type": "string",
-          "description": "Date the user account was created.",
-          "format": "date-time"
+          "description": "User's current location for personalized event suggestions. Stored as a GeoPoint (latitude, longitude)."
         }
       },
       "required": [
@@ -46,7 +45,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "Reference to the User who created the event. (Relationship: User 1:N Event)"
+          "description": "Reference to User who created the event. (Relationship: User 1:N Event)"
         },
         "title": {
           "type": "string",
@@ -56,31 +55,32 @@
           "type": "string",
           "description": "Detailed description of the event."
         },
-        "locationName": {
+        "startTime": {
           "type": "string",
-          "description": "Name of the event location."
-        },
-        "latitude": {
-          "type": "number",
-          "description": "Latitude of the event location."
-        },
-        "longitude": {
-          "type": "number",
-          "description": "Longitude of the event location."
-        },
-        "startDate": {
-          "type": "string",
-          "description": "Start date and time of the event.",
+          "description": "The start date and time of the event.",
           "format": "date-time"
         },
-        "endDate": {
+        "endTime": {
           "type": "string",
-          "description": "End date and time of the event.  Maximum duration is 30 days from the start date.",
+          "description": "The end date and time of the event.",
           "format": "date-time"
+        },
+        "location": {
+          "type": "string",
+          "description": "Location of the event. Stored as a GeoPoint (latitude, longitude)."
+        },
+        "address": {
+          "type": "string",
+          "description": "Address of the event."
         },
         "category": {
           "type": "string",
-          "description": "Category of the event (e.g., sports, music, community)."
+          "description": "Category of the event (e.g., Music, Sports, Food)."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the event image.",
+          "format": "uri"
         }
       },
       "required": [
@@ -88,18 +88,15 @@
         "userId",
         "title",
         "description",
-        "latitude",
-        "longitude",
-        "startDate",
-        "endDate"
+        "startTime",
+        "location"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -111,7 +108,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profiles.  Access is restricted to the user themselves.",
+          "description": "Stores user profile information.  Path-based ownership ensures only the user can read/write their profile.",
           "params": [
             {
               "name": "userId",
@@ -121,30 +118,18 @@
         }
       },
       {
-        "path": "/events/{eventId}",
+        "path": "/users/{userId}/events/{eventId}",
         "definition": {
           "entityName": "Event",
           "schema": {
             "$ref": "#/backend/entities/Event"
           },
-          "description": "Stores event data. Includes 'userId' for authorization independence.",
+          "description": "Stores events created by a specific user. Path-based ownership: Only the user who created the event (identified by {userId}) can manage it. ",
           "params": [
             {
-              "name": "eventId",
-              "description": "The unique identifier of the event."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/geo_events/{eventId}",
-        "definition": {
-          "entityName": "Event",
-          "schema": {
-            "$ref": "#/backend/entities/Event"
-          },
-          "description": "Stores location based event data. Includes 'userId' for authorization independence.",
-          "params": [
+              "name": "userId",
+              "description": "The unique identifier of the user who created the event."
+            },
             {
               "name": "eventId",
               "description": "The unique identifier of the event."
@@ -153,6 +138,6 @@
         }
       }
     ],
-    "reasoning": "The Firestore structure is designed to ensure authorization independence, clarity, and scalability for the LocalLooms application. The core principle is to denormalize authorization data to avoid using `get()` calls in security rules, enabling atomic operations and simplifying debugging. The structure also supports secure `list` operations and enforces invariants for data integrity.\n\n1.  **Users Collection:** Stores user profiles. Access is restricted to the user themselves, ensuring privacy.\n2.  **Events Collection:** Stores event data. Events are organized under the `/events/{eventId}` path. The `userId` field indicates the event creator, enabling path-based ownership security rules. To support listing and filtering, the location data is duplicated to `/geo_events`. This allows location-based queries without requiring complex security rules that depend on user context.\n3. **Geo Events Collection:** This structure is used to keep separate location-based information in order to query the location-based information without using the user context information.\n\nThis structure achieves Authorization Independence by:\n\n*   Storing the `userId` within each event document, eliminating the need to fetch user data for authorization.\n*   Duplicating geo information in `/geo_events` collection, allowing search and filtering for events within a specified distance from a selected location.\n\nIt supports required QAPs (Rules are not Filters) by:\n\n*   Segregating user data and event data into separate collections, each with its own security rules.\n*   Using path-based ownership for events, enabling secure `list` operations based on the user ID."
+    "reasoning": "The Firestore structure is designed to support the LocalLooms application, prioritizing authorization independence, scalability, and ease of debugging.  The core design revolves around user-centric event organization and denormalization for efficient security rules. Events are stored under the user who created them, enabling simple, path-based ownership. This structure is highly secure and makes ownership-based security rules simple and efficient. There is no need to store a userId property within each document, as its parent path defines the User. This approach avoids hierarchical authorization dependencies and the need for complex `get()` calls in security rules, facilitating atomic operations. The design adheres to the principle of homogeneous security posture within collections.  The chosen structure supports secure `list` operations (QAPs) by ensuring that listing events requires authorization at the user level."
   }
 }
