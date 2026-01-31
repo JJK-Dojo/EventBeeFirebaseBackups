@@ -15,7 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download, Target, Cpu, Database, Shield } from 'lucide-react';
+import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download, Target, Cpu, Database, Shield, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FlowStep = ({ title, description }: { title: string; description: string; }) => (
@@ -162,6 +162,75 @@ export default function DocsPage() {
                 </ul>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
                     <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Technical Stack')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
+                    </Button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="phase2">
+              <AccordionTrigger className="text-xl font-bold font-headline">
+                <div className="flex items-center gap-2">
+                    <Zap className="h-6 w-6 text-primary/80"/> Phase 2: The Extended Ecosystem
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-4 space-y-4">
+                <p className="text-muted-foreground">
+                  Phase 2 is about evolving EventBee from a simple discovery tool into a comprehensive, interactive community platform. The focus is on deepening user engagement, providing value to event organizers, and creating monetization pathways.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-muted/30">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Ticketing & Monetization</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                          <li><b>Integrated Ticketing:</b> Allow organizers to sell tickets directly on EventBee, taking a small commission.</li>
+                          <li><b>Featured Events:</b> Offer paid "featured" slots on the homepage and at the top of search results.</li>
+                          <li><b>Sponsored Categories:</b> Allow brands to sponsor a category (e.g., "Music" or "Tech") for a week.</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                     <Card className="bg-muted/30">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Community & Social Features</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                          <li><b>Event Reviews & Ratings:</b> Let users rate and review events they've attended.</li>
+                          <li><b>Commenting System:</b> Allow discussion on event pages.</li>
+                          <li><b>"I'm Going" Feature:</b> Let users see which of their friends are attending an event.</li>
+                          <li><b>User Groups:</b> Enable users to create groups based on interests (e.g., "Pune Board Gamers").</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-muted/30">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Advanced Organizer Tools</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                          <li><b>Organizer Dashboard:</b> Provide detailed analytics on event page views, audience demographics, and ticket sales.</li>
+                          <li><b>QR Code Check-in:</b> Generate QR codes for tickets to allow for easy attendee management at the venue.</li>
+                          <li><b>Direct Messaging:</b> Enable secure communication between organizers and attendees.</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                     <Card className="bg-muted/30">
+                      <CardHeader>
+                        <CardTitle className="text-lg">Gamification & Engagement</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="list-disc pl-5 text-sm space-y-1">
+                          <li><b>Expand Points System:</b> Award points for creating events, writing reviews, and attending events (via check-in).</li>
+                          <li><b>Leaderboards:</b> Feature top organizers and most active "EventBees" in each city.</li>
+                          <li><b>Badges & Achievements:</b> Unlock digital badges for milestones (e.g., "First Event," "Social Butterfly," "Super Host").</li>
+                        </ul>
+                      </CardContent>
+                    </Card>
+                </div>
+                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Phase 2 Ecosystem')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
                 </div>
