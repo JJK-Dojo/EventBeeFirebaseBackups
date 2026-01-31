@@ -23,14 +23,16 @@
           "type": "string",
           "description": "User's display name."
         },
-        "location": {
+        "creationDate": {
           "type": "string",
-          "description": "User's current location for personalized event suggestions. Stored as a GeoPoint (latitude, longitude)."
+          "description": "Date and time the user account was created.",
+          "format": "date-time"
         }
       },
       "required": [
         "id",
-        "email"
+        "email",
+        "creationDate"
       ]
     },
     "Event": {
@@ -45,7 +47,7 @@
         },
         "userId": {
           "type": "string",
-          "description": "Reference to User who created the event. (Relationship: User 1:N Event)"
+          "description": "Reference to the user who created the event. (Relationship: User 1:N Event)"
         },
         "title": {
           "type": "string",
@@ -53,29 +55,33 @@
         },
         "description": {
           "type": "string",
-          "description": "Detailed description of the event."
+          "description": "Description of the event."
         },
         "startTime": {
           "type": "string",
-          "description": "The start date and time of the event.",
+          "description": "Date and time the event starts.",
           "format": "date-time"
         },
         "endTime": {
           "type": "string",
-          "description": "The end date and time of the event.",
+          "description": "Date and time the event ends.",
           "format": "date-time"
         },
-        "location": {
+        "locationName": {
           "type": "string",
-          "description": "Location of the event. Stored as a GeoPoint (latitude, longitude)."
+          "description": "Name of the location where the event is held."
         },
-        "address": {
-          "type": "string",
-          "description": "Address of the event."
+        "locationLatitude": {
+          "type": "number",
+          "description": "Latitude of the event location."
+        },
+        "locationLongitude": {
+          "type": "number",
+          "description": "Longitude of the event location."
         },
         "category": {
           "type": "string",
-          "description": "Category of the event (e.g., Music, Sports, Food)."
+          "description": "Category of the event (e.g., sports, music, workshop)."
         },
         "imageUrl": {
           "type": "string",
@@ -89,15 +95,18 @@
         "title",
         "description",
         "startTime",
-        "location"
+        "endTime",
+        "locationName",
+        "locationLatitude",
+        "locationLongitude",
+        "category"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com"
+      "anonymous"
     ]
   },
   "firestore": {
@@ -109,11 +118,11 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Stores user profile information.  Path-based ownership ensures only the user can read/write their profile.",
+          "description": "Stores user profiles. User ID is used as the document ID.",
           "params": [
             {
               "name": "userId",
-              "description": "The unique identifier of the user."
+              "description": "The unique identifier for the user."
             }
           ]
         }
@@ -125,15 +134,16 @@
           "schema": {
             "$ref": "#/backend/entities/Event"
           },
-          "description": "Stores all events created on the platform. Events are publicly readable but writable only by their creators. This structure supports efficient querying for public event discovery while maintaining user-level write permissions through security rules that check the `userId` field within the document.",
+          "description": "Stores event details. Includes `userId` to denote the event creator for authorization. Supports geoqueries using `locationLatitude` and `locationLongitude`.",
           "params": [
             {
               "name": "eventId",
-              "description": "The unique identifier of the event."
+              "description": "The unique identifier for the event."
             }
           ]
         }
       }
-    ]
+    ],
+    "reasoning": "The Firestore structure is designed to provide a scalable and secure data model for the LocalLooms application. It primarily focuses on storing user and event data. User data is stored under `/users/{userId}` for private user-specific information. Events are stored in a dedicated collection `/events/{eventId}` with the `userId` of the event creator stored within each event document, establishing a direct relationship between users and their events. Geoqueries are facilitated through Firestore's built-in geo-querying capabilities, using `locationLatitude` and `locationLongitude` in the Event entity.\n\n**Authorization Independence:** Authorization independence is achieved by storing the `userId` within each `Event` document. This allows security rules to validate the event creator without needing to perform additional `get()` operations on other documents.\n\n**QAPs (Rules are not Filters):**  The structure supports secure `list` operations through Structural Segregation. Events are stored in a flat collection, allowing queries and list operations to be performed on the collection as a whole without needing to filter based on complex security rules."
   }
 }

@@ -1,45 +1,147 @@
-
+/**
+ * LocalLooms Firestore Security Rules
+ *
+ * Core Philosophy:
+ * This ruleset implements a dual-access security model. It strictly protects private user data
+ * while enabling public discovery of community content. User profiles are private and can only
+ * be accessed by their owners. In contrast, events are public and readable by anyone to
+ * facilitate the app's core discovery features, but write access (create, update, delete) is
+ * restricted to the event's original creator.
+ *
+ * Data Structure:
+ * The data is organized into two primary top-level collections:
+ * 1. /users/{userId}: Stores private user profile information. The document ID matches the
+ *    Firebase Auth UID of the user.
+ * 2. /events/{eventId}: Stores public event data. Each event document contains a `userId` field
+ *    that denormalizes the creator's identity for efficient authorization.
+ *
+ * Key Security Decisions:
+ * - User Enumeration is Disallowed: Listing the entire /users collection is explicitly forbidden
+ *   to protect user privacy and prevent data scraping.
+ * - Strict Ownership for Private Data: A user can only access the document tree under their
+ *   own /users/{userId} path.
+ * - Public Read, Owner-Only Writes: The /events collection is publicly readable to all users
+ *   (including unauthenticated ones), but only the authenticated author of an event can modify or
+ *   delete it.
+ *
+ * Denormalization for Authorization:
+ * To ensure fast and simple authorization, the `userId` of the event creator is denormalized
+ * (copied) directly onto each event document in `/events`. This allows security rules to check
+ * for ownership with a direct field lookup, avoiding slow and costly `get()` calls to other
+ * collections.
+ *
+ * Structural Segregation:
+ * The security model uses separate top-level collections for private user data (`/users`) and
+ * public event data (`/events`). This structural separation is more secure and performant than
+ * using a single collection with a 'isPublic' flag, especially for list operations, as it
+ * prevents any risk of accidentally exposing private data in public queries.
+ */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // ------------------------------------------------------------------------
+    // Helper Functions
+    // ------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
     function isSignedIn() {
       return request.auth != null;
     }
 
+    /**
+     * Checks if the currently authenticated user's UID matches the provided userId.
+     * This is the primary function for validating ownership of a resource.
+     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Rules for the 'users' collection
-    match /users/{userId} {
-      // A user can read their own document
-      allow get: if isOwner(userId);
-
-      // A user can create their own document
-      allow create: if isOwner(userId);
-
-      // A user can update their own document
-      allow update: if isOwner(userId);
-
-      // A user can delete their own document
-      allow delete: if isOwner(userId);
-
-      // Nobody can list all users
-      allow list: if false;
+    /**
+    * Checks for ownership on an existing document. Used for update and delete
+    * operations to prevent acting on documents that don't exist.
+    */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
     }
 
-    // Rules for the 'events' collection
+    /**
+     * Validates required authorization fields for User document creation.
+     * Enforces consistency between the document ID (path) and its internal 'id' field.
+     */
+    function hasValidUserDataOnCreate(userId) {
+      return request.resource.data.id == userId;
+    }
+
+    /**
+     * Ensures critical authorization fields for a User document are not changed.
+     * The internal 'id' field must remain immutable to prevent re-assigning ownership.
+     */
+    function hasValidUserDataOnUpdate() {
+      return request.resource.data.id == resource.data.id;
+    }
+
+    /**
+     * Validates required authorization fields for Event document creation.
+     * Enforces that the creator's ID is set correctly and the document ID is consistent.
+     */
+    function hasValidEventDataOnCreate(eventId) {
+      let incomingData = request.resource.data;
+      return incomingData.userId == request.auth.uid
+          && incomingData.id == eventId;
+    }
+
+    /**
+     * Ensures critical authorization fields for an Event document are not changed.
+     * The creator ID ('userId') and the document 'id' must remain immutable.
+     */
+    function hasValidEventDataOnUpdate() {
+      let incomingData = request.resource.data;
+      let existingData = resource.data;
+      return incomingData.userId == existingData.userId
+          && incomingData.id == existingData.id;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // Collection Rules
+    // ------------------------------------------------------------------------
+
+    /**
+     * @description Manages user profile documents. Access is strictly limited to the document owner.
+     * @path /users/{userId}
+     * @allow (get) An authenticated user with UID 'user_abc' reads their own document at /users/user_abc.
+     * @allow (create) An authenticated user with UID 'user_abc' creates their profile at /users/user_abc.
+     * @deny (list) Any user, authenticated or not, attempts to list documents in the /users collection.
+     * @deny (get) User 'user_abc' tries to read data from /users/user_xyz.
+     * @principle Restricts access to a user's own private data tree.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && hasValidUserDataOnCreate(userId);
+      allow update: if isExistingOwner(userId) && hasValidUserDataOnUpdate();
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Manages event documents. Events are public to read but can only be modified by their creator.
+     * @path /events/{eventId}
+     * @allow (list) Any user (including anonymous) lists all documents in the /events collection.
+     * @allow (get) Any user (including anonymous) reads a single document at /events/event_123.
+     * @allow (create) An authenticated user 'user_abc' creates an event where the document's 'userId' field is 'user_abc'.
+     * @deny (update) User 'user_xyz' attempts to update an event created by 'user_abc'.
+     * @deny (create) User 'user_abc' attempts to create an event and set the 'userId' field to 'user_xyz'.
+     * @principle Implements a "Public Read with Owner-Only Writes" pattern using a denormalized `userId` field for authorization.
+     */
     match /events/{eventId} {
-      // Anyone can read event details
       allow get: if true;
       allow list: if true;
-
-      // Only the authenticated owner of an event can create, update, or delete it
-      allow create: if isOwner(request.resource.data.organizer.id);
-      allow update: if isOwner(resource.data.organizer.id);
-      allow delete: if isOwner(resource.data.organizer.id);
+      allow create: if isSignedIn() && hasValidEventDataOnCreate(eventId);
+      allow update: if isExistingOwner(resource.data.userId) && hasValidEventDataOnUpdate();
+      allow delete: if isExistingOwner(resource.data.userId);
     }
   }
 }
