@@ -15,7 +15,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download } from 'lucide-react';
+import { FileText, ArrowRight, Map, Share2, Workflow, Layout, Download, Target, Cpu, Database, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FlowStep = ({ title, description }: { title: string; description: string; }) => (
@@ -46,7 +46,7 @@ export default function DocsPage() {
         newWindow.document.write(`
             <html>
                 <head>
-                    <title>${sectionTitle} - ${format} Preview</title>
+                    <title>Download Document</title>
                     <style>
                         body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f0f0; color: #333; }
                         .container { text-align: center; padding: 2rem; background-color: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -57,17 +57,17 @@ export default function DocsPage() {
                 </head>
                 <body>
                     <div class="container">
-                        <h1>${sectionTitle}</h1>
-                        <p>The preview for the <strong>${format.toUpperCase()}</strong> format is not yet available.</p>
-                        <p>This window will display the document once the feature is implemented.</p>
-                        <div class="badge">Feature Under Development</div>
+                        <h1>PDF Generation Not Available</h1>
+                        <p>Direct PDF generation is currently under development.</p>
+                        <p>To save this document, please use your browser's built-in <strong>Print to PDF</strong> functionality.</p>
+                        <div class="badge">Tip: Ctrl+P or Cmd+P</div>
                     </div>
                 </body>
             </html>
         `);
         newWindow.document.close();
     } else {
-        alert('Please allow pop-ups for this site to see the preview.');
+        alert('Please allow pop-ups for this site to see this message.');
     }
   };
 
@@ -79,89 +79,90 @@ export default function DocsPage() {
           <div className="mb-8">
             <h1 className="mb-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline flex items-center gap-2">
               <FileText className="h-8 w-8 text-primary" />
-              Application Design Documents
+              EventBee Ecosystem Document
             </h1>
             <p className="text-lg text-muted-foreground">
-              A centralized reference for the architecture, flows, and design of the EventBee platform.
+              A comprehensive overview of the EventBee platform, its architecture, and its core concepts.
             </p>
           </div>
 
-          <Accordion type="multiple" defaultValue={['sitemap', 'info-arch']} className="w-full">
+          <Accordion type="multiple" defaultValue={['vision', 'tech-stack']} className="w-full">
             
-            <AccordionItem value="sitemap">
+            <AccordionItem value="vision">
               <AccordionTrigger className="text-xl font-bold font-headline">
                 <div className="flex items-center gap-2">
-                    <Map className="h-6 w-6 text-primary/80"/> Sitemap
+                    <Target className="h-6 w-6 text-primary/80"/> Vision & Core Concepts
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="p-4">
-                <p className="mb-4 text-muted-foreground">
-                    The sitemap outlines the primary pages of the application.
-                </p>
-                <ul className="list-disc space-y-2 pl-5">
-                    <li><b>/</b> - Public landing page showing upcoming and recent events.</li>
-                    <li><b>/find-events</b> - Main discovery page with search and filtering.</li>
-                    <li><b>/events/[id]</b> - Detail page for a single event.</li>
-                    <li><b>/create-event</b> - Form for creating or editing an event.</li>
-                    <li><b>/login</b> - User sign-in page.</li>
-                    <li><b>/signup</b> - User registration page.</li>
-                    <li><b>/dashboard</b> - Personalized homepage for authenticated users.</li>
-                    <li><b>/profile</b> - User's personal page showing their events and stats.</li>
-                    <li><b>/admin</b> - Admin panel for reviewing pending events. (Admin only)</li>
-                    <li><b>/users</b> - Page for managing user roles. (Admin only)</li>
-                    <li><b>/analytics</b> - Dashboard for viewing event statistics.</li>
-                    <li><b>/docs</b> - This documentation page.</li>
-                </ul>
-                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Sitemap')}>
+              <AccordionContent className="p-4 space-y-4">
+                <div>
+                  <h3 className="font-semibold mb-2 text-base">Project Vision</h3>
+                  <p className="text-muted-foreground">
+                    EventBee is a hyperlocal event discovery platform designed for students and young professionals. It aims to be the go-to hub for finding and sharing local happenings, from campus workshops to city music festivals. The platform emphasizes ease of use for both event seekers and organizers.
+                  </p>
+                </div>
+                <Separator />
+                <div>
+                  <h3 className="font-semibold mb-2 text-base">Core Data Entities</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Card className="bg-muted/30">
+                        <CardHeader>
+                          <CardTitle className="text-lg">User</CardTitle>
+                          <CardDescription>Represents an individual on the platform.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="list-disc pl-5 text-sm space-y-1">
+                            <li>Stores profile info (name, email, photo).</li>
+                            <li>Manages authentication credentials.</li>
+                            <li>Assigned a role for permission control (basic, admin).</li>
+                          </ul>
+                        </CardContent>
+                      </Card>
+                       <Card className="bg-muted/30">
+                        <CardHeader>
+                          <CardTitle className="text-lg">Event</CardTitle>
+                           <CardDescription>Represents an event listing.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <ul className="list-disc pl-5 text-sm space-y-1">
+                            <li>Contains all event details (title, date, location).</li>
+                            <li>Linked to a creator (User) via `userId`.</li>
+                            <li>Has a `status` for the moderation workflow.</li>
+                          </ul>
+                        </CardContent>
+                      </Card>
+                  </div>
+                </div>
+                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Vision & Core Concepts')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Sitemap')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as DOC
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Sitemap')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
               </AccordionContent>
             </AccordionItem>
 
-            <AccordionItem value="info-arch">
+            <AccordionItem value="tech-stack">
               <AccordionTrigger className="text-xl font-bold font-headline">
                 <div className="flex items-center gap-2">
-                    <Share2 className="h-6 w-6 text-primary/80"/> Information Architecture
+                    <Cpu className="h-6 w-6 text-primary/80"/> Technical Stack
                 </div>
               </AccordionTrigger>
               <AccordionContent className="p-4">
-                <p className="mb-4 text-muted-foreground">
-                    The information architecture is designed around three core user roles and two main data entities.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <h3 className="font-semibold mb-2">User Roles</h3>
-                        <ul className="list-disc space-y-1 pl-5">
-                            <li><b>Guest (Unauthenticated)</b>: Can view the landing page and event detail pages. Must log in or sign up to interact further.</li>
-                            <li><b>User (Authenticated)</b>: Can create, edit, and manage their own events. Can access their dashboard and profile.</li>
-                            <li><b>Admin (Authenticated)</b>: Has all user permissions, plus access to the admin review panel and user management page.</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 className="font-semibold mb-2">Core Data Entities</h3>
-                         <ul className="list-disc space-y-1 pl-5">
-                            <li><b>Users</b>: Stores user profile information, including their role (basic, advanced, admin).</li>
-                            <li><b>Events</b>: Stores all data for events, including a `userId` to link to the creator and a `status` for the moderation workflow.</li>
-                        </ul>
-                    </div>
-                </div>
+                <ul className="list-disc space-y-2 pl-5 text-muted-foreground">
+                  <li><b>Frontend Framework:</b> <span className="font-semibold text-foreground">Next.js (React)</span> with the App Router for server-centric rendering and performance.</li>
+                  <li><b>Styling:</b> <span className="font-semibold text-foreground">Tailwind CSS</span> for utility-first styling, with <span className="font-semibold text-foreground">ShadCN UI</span> for pre-built, accessible components.</li>
+                  <li><b>Backend & Database:</b> <span className="font-semibold text-foreground">Firebase</span> is used for all backend services.
+                    <ul className="list-['-_'] space-y-1 pl-5 mt-1">
+                      <li><b>Authentication:</b> Manages user sign-up and login (Email/Password, Google).</li>
+                      <li><b>Firestore:</b> A NoSQL database for storing all user and event data.</li>
+                    </ul>
+                  </li>
+                  <li><b>Generative AI:</b> <span className="font-semibold text-foreground">Genkit</span> (with Google's Gemini models) powers AI features like extracting event details from uploaded images.</li>
+                   <li><b>Deployment:</b> Hosted on <span className="font-semibold text-foreground">Firebase App Hosting</span> for seamless integration and scalability.</li>
+                </ul>
                 <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Information Architecture')}>
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Technical Stack')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Information Architecture')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as DOC
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Information Architecture')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as PPT
                     </Button>
                 </div>
               </AccordionContent>
@@ -170,21 +171,31 @@ export default function DocsPage() {
             <AccordionItem value="user-flow">
               <AccordionTrigger className="text-xl font-bold font-headline">
                  <div className="flex items-center gap-2">
-                    <Workflow className="h-6 w-6 text-primary/80"/> User Flow Charts
+                    <Workflow className="h-6 w-6 text-primary/80"/> User Flows & Roles
                 </div>
               </AccordionTrigger>
               <AccordionContent className="p-4">
                 <div className="space-y-8">
                     <div>
-                        <h3 className="font-semibold text-lg mb-3">Core User Flow: Event Creation</h3>
+                        <h3 className="font-semibold text-lg mb-3">User Roles & Permissions</h3>
+                        <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
+                            <li><b>Guest (Unauthenticated)</b>: Can view the landing page and event detail pages. Must log in or sign up to interact further.</li>
+                            <li><b>User (Authenticated)</b>: Can create, edit, and manage their own events. Can access their dashboard and profile.</li>
+                            <li><b>Admin (Authenticated)</b>: Has all user permissions, plus access to the admin review panel, user management, and other developer pages.</li>
+                        </ul>
+                    </div>
+                    <Separator/>
+                    <div>
+                        <h3 className="font-semibold text-lg mb-3">Core Flow: Event Creation & Moderation</h3>
                         <div className="space-y-4">
                             <FlowStep title="Sign Up / Log In" description="User creates an account or logs in." />
                             <FlowStep title="Navigate to Create Event" description="User clicks the 'Create Event' button in the header." />
                             <FlowStep title="Fill Form" description="User provides event details like title, date, location, and uploads an image." />
-                            <FlowStep title="Save Event" description="User saves the event, either as a 'draft' (private) or submits for 'review' (public)." />
-                            <FlowStep title="Admin Review" description="If submitted, an admin views the event in the '/admin' panel." />
+                            <FlowStep title="Save Event" description="User saves the event. If visibility is 'Public', status becomes 'pending'; if 'Private', status is 'draft'." />
+                            <FlowStep title="Admin Review" description="If 'pending', an admin views the event in the '/admin' panel." />
                             <FlowStep title="Approval / Denial" description="Admin approves (status -> 'published') or denies (status -> 'denied') the event." />
                             <FlowStep title="Event is Live" description="If approved, the event appears on the 'Find Events' page and landing page." />
+                             <FlowStep title="User Revision" description="If denied, the user can edit and resubmit their event from their profile page." />
                         </div>
                     </div>
                      <Separator/>
@@ -202,13 +213,67 @@ export default function DocsPage() {
                     <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'User Flow Charts')}>
                         <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'User Flow Charts')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as DOC
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'User Flow Charts')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as PPT
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+
+             <AccordionItem value="db-security">
+              <AccordionTrigger className="text-xl font-bold font-headline">
+                <div className="flex items-center gap-2">
+                    <Database className="h-6 w-6 text-primary/80"/> Database & Security
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-4 space-y-4">
+                  <div>
+                    <h3 className="font-semibold mb-2 text-base">Firestore Data Structure</h3>
+                    <p className="text-muted-foreground mb-2">The database is structured to be simple, scalable, and secure.</p>
+                     <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
+                        <li><b>/users/{'userId'}</b>: Stores public and private profile information for each user. Rules are configured so a user can only read and write their own document.</li>
+                        <li><b>/events/{'eventId'}</b>: Stores all event documents. These are publicly readable so anyone can discover events. Write access (create, update, delete) is restricted to the user who created the event (`isOwner` check).</li>
+                    </ul>
+                  </div>
+                  <Separator />
+                   <div>
+                    <h3 className="font-semibold mb-2 text-base">Security Rules Philosophy</h3>
+                    <p className="text-muted-foreground mb-2">The rules are designed with a "secure by default" principle.</p>
+                     <ul className="list-disc space-y-1 pl-5 text-muted-foreground">
+                        <li><b className="text-foreground">Public Read, Private Write:</b> Event data is public for discovery, but all user data and all write operations are authenticated and authorized.</li>
+                        <li><b className="text-foreground">Ownership Model:</b> A user can only modify content they own. This is enforced by comparing `request.auth.uid` with the `userId` field stored inside each event document.</li>
+                        <li><b className="text-foreground">No `get()` in Rules:</b> The `userId` is denormalized and stored on each event to avoid slow and costly `get()` calls within security rules, making them faster and more secure.</li>
+                    </ul>
+                  </div>
+                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
+                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Database & Security')}>
+                        <Download className="mr-2 h-4 w-4" /> Download as PDF
                     </Button>
                 </div>
+              </AccordionContent>
+            </AccordionItem>
+            
+            <AccordionItem value="sitemap">
+              <AccordionTrigger className="text-xl font-bold font-headline">
+                <div className="flex items-center gap-2">
+                    <Map className="h-6 w-6 text-primary/80"/> Sitemap
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="p-4">
+                <p className="mb-4 text-muted-foreground">
+                    The sitemap outlines the primary pages and developer utilities of the application.
+                </p>
+                <ul className="list-disc space-y-2 pl-5">
+                    <li><b>/</b> - Public landing page showing upcoming and recent events.</li>
+                    <li><b>/find-events</b> - Main discovery page with search and filtering.</li>
+                    <li><b>/events/[id]</b> - Detail page for a single event.</li>
+                    <li><b>/create-event</b> - Form for creating or editing an event.</li>
+                    <li><b>/login</b> - User sign-in page.</li>
+                    <li><b>/signup</b> - User registration page.</li>
+                    <li><b>/dashboard</b> - Personalized homepage for authenticated users.</li>
+                    <li><b>/profile</b> - User's personal page showing their events and stats.</li>
+                    <li><b>/admin</b> - Admin panel for reviewing pending events.</li>
+                    <li><b>/users</b> - Page for managing user roles.</li>
+                    <li><b>/analytics</b> - Dashboard for viewing event statistics.</li>
+                    <li><b>/docs</b> - This documentation page.</li>
+                </ul>
               </AccordionContent>
             </AccordionItem>
             
@@ -220,7 +285,7 @@ export default function DocsPage() {
               </AccordionTrigger>
               <AccordionContent className="p-4 space-y-8">
                  <p className="text-muted-foreground">
-                    Simplified wireframes representing the layout and key components of major pages.
+                    Simplified wireframes representing the layout and key components of major pages. These are not a complete design but illustrate the core structure.
                 </p>
 
                 <Card>
@@ -280,20 +345,8 @@ export default function DocsPage() {
                         </WireframeBox>
                     </CardContent>
                 </Card>
-                <div className="mt-6 flex flex-wrap gap-2 border-t pt-4">
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PDF', 'Wireframes')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as PDF
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('DOC', 'Wireframes')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as DOC
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDownloadClick('PPT', 'Wireframes')}>
-                        <Download className="mr-2 h-4 w-4" /> Download as PPT
-                    </Button>
-                </div>
               </AccordionContent>
             </AccordionItem>
-
           </Accordion>
         </div>
       </main>
