@@ -1,138 +1,45 @@
-/**
- * Core Philosophy: This ruleset enforces a strict user-ownership security model.
- * All data is scoped under a user's unique ID, and access is restricted to the
- * authenticated owner of that data. This ensures user data is private and
- * isolated.
- *
- * Data Structure: The data is organized hierarchically. A top-level 'users'
- * collection holds user profile documents. Each user document can contain a
- * nested 'events' subcollection for the events they have created.
- *   - /users/{userId} -> User Profile
- *   - /users/{userId}/events/{eventId} -> User-created Event
- *
- * Key Security Decisions:
- * - User Isolation: All rules are based on the {userId} wildcard, ensuring a
- *   user can only ever access documents within their own data tree.
- * - No Public Access: All read and write operations require authentication.
- *   There are no publicly readable collections.
- * - User Listing Disabled: Listing the top-level '/users' collection is
- *   explicitly disallowed to prevent user enumeration attacks.
- * - Path-based Security: The rules rely on the document path for authorization
- *   (e.g., checking if the requestor's UID matches the {userId} in the path).
- *
- * Denormalization for Authorization: The data structure itself is a form of
- * denormalization. By nesting a user's events under their user document, we
- * create a simple, performant path-based ownership check. This avoids the need
- * for costly `get()` calls to other documents to verify permissions.
- *
- * Structural Segregation: This pattern is not used as there is no mixed
- * public/private data within any collection. All data is considered private
- * to the owner.
- */
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ----------------------------------------------------------------------
-    // Helper Functions
-    // ----------------------------------------------------------------------
-
-    /**
-     * Checks if the user is authenticated.
-     */
+    // Helper functions
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the currently authenticated user's ID matches the provided userId.
-     * This is the core function for verifying ownership.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Checks for ownership on an existing document. Used for update and delete
-     * operations to prevent acting on non-existent data.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * On create, validates that the user profile's internal 'id' field
-     * matches the document's ID ({userId}), ensuring relational integrity.
-     */
-    function hasValidUserData(userId) {
-      return request.resource.data.id == userId;
-    }
-
-    /**
-     * On update, ensures the user profile's internal 'id' field is immutable.
-     */
-    function isUserDataImmutable() {
-      return request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * On create, validates that the event's internal 'userId' field matches
-     * the {userId} from the path, ensuring the event is correctly linked.
-     */
-    function hasValidEventData(userId) {
-      return request.resource.data.userId == userId;
-    }
-
-    /**
-     * On update, ensures the event's 'userId' ownership field is immutable.
-     */
-    function isEventDataImmutable() {
-      return request.resource.data.userId == resource.data.userId;
-    }
-
-
-    // ----------------------------------------------------------------------
-    // Collection Rules
-    // ----------------------------------------------------------------------
-
-    /**
-     * @description Controls access to a user's own profile document.
-     * @path /users/{userId}
-     * @allow (get) An authenticated user reads their own profile.
-     * @allow (create) An authenticated user creates their own profile for the first time.
-     * @deny (list) A user attempts to list all user profiles (`db.collection('users').get()`).
-     * @deny (update) An authenticated user tries to update another user's profile.
-     * @principle Restricts access to a user's own data tree and enforces self-creation.
-     */
+    // Rules for the 'users' collection
     match /users/{userId} {
-      // READS
+      // A user can read their own document
       allow get: if isOwner(userId);
+
+      // A user can create their own document
+      allow create: if isOwner(userId);
+
+      // A user can update their own document
+      allow update: if isOwner(userId);
+
+      // A user can delete their own document
+      allow delete: if isOwner(userId);
+
+      // Nobody can list all users
       allow list: if false;
+    }
 
-      // WRITES
-      allow create: if isOwner(userId) && hasValidUserData(userId);
-      allow update: if isExistingOwner(userId) && isUserDataImmutable();
-      allow delete: if isExistingOwner(userId);
+    // Rules for the 'events' collection
+    match /events/{eventId} {
+      // Anyone can read event details
+      allow get: if true;
+      allow list: if true;
 
-      /**
-       * @description Controls access to the events created by a user.
-       * @path /users/{userId}/events/{eventId}
-       * @allow (create) An authenticated user creates a new event under their own profile.
-       * @allow (list) An authenticated user lists all of their own created events.
-       * @deny (get) An authenticated user tries to read an event created by another user.
-       * @deny (delete) A user tries to delete another user's event.
-       * @principle Enforces document ownership for all operations within a user's subcollection.
-       */
-      match /events/{eventId} {
-        // READS
-        allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
-
-        // WRITES
-        allow create: if isOwner(userId) && hasValidEventData(userId);
-        allow update: if isExistingOwner(userId) && isEventDataImmutable();
-        allow delete: if isExistingOwner(userId);
-      }
+      // Only the authenticated owner of an event can create, update, or delete it
+      allow create: if isOwner(request.resource.data.organizer.id);
+      allow update: if isOwner(resource.data.organizer.id);
+      allow delete: if isOwner(resource.data.organizer.id);
     }
   }
 }
