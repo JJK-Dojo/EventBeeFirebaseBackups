@@ -181,13 +181,14 @@ export default function DocsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card className="bg-muted/30">
                       <CardHeader>
-                        <CardTitle className="text-lg">Ticketing & Monetization</CardTitle>
+                        <CardTitle className="text-lg">Ticketing, Sponsors & Monetization</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <ul className="list-disc pl-5 text-sm space-y-1">
                           <li><b>Integrated Ticketing:</b> Allow organizers to sell tickets directly on EventBee, taking a small commission.</li>
                           <li><b>Featured Events:</b> Offer paid "featured" slots on the homepage and at the top of search results.</li>
-                          <li><b>Sponsored Categories:</b> Allow brands to sponsor a category (e.g., "Music" or "Tech") for a week.</li>
+                          <li><b>Sponsor Showcase:</b> Allow organizers to feature event sponsors (local shops, cafes) on the event page.</li>
+                          <li><b>Promoted Placements:</b> Offer sponsored listings for local businesses on relevant pages.</li>
                         </ul>
                       </CardContent>
                     </Card>
