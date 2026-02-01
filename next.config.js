@@ -35,7 +35,8 @@ const nextConfig = {
     'react-day-picker',
     'date-fns',
     'embla-carousel-react',
-    'embla-carousel-autoplay'
+    'embla-carousel-autoplay',
+    'react-hook-form'
   ],
   images: {
     remotePatterns: [
